@@ -15,11 +15,12 @@ class AuthRepositoryImpl @Inject constructor(
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : AuthRepository {
 
-    override fun login(email: String, password: String): Flow<Login> {
-        return flow {
-            val response = authRemoteDataSource.login(email, password)
-            emit(response.mapToDomain())
-        }.flowOn(ioDispatcher)
-    }
+    override fun login(
+        email: String,
+        password: String
+    ): Flow<Login> = flow {
+        val response = authRemoteDataSource.login(email, password)
+        emit(response.mapToDomain())
+    }.flowOn(ioDispatcher)
 
 }
