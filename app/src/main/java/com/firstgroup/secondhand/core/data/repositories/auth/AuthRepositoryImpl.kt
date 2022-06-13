@@ -18,9 +18,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun login(email: String, password: String): Flow<Login> {
         return flow {
             val response = authRemoteDataSource.login(email, password)
-            emit(
-                Login(token = response.accessToken)
-            )
+            emit(response.mapToDomain())
         }.flowOn(ioDispatcher)
     }
 
