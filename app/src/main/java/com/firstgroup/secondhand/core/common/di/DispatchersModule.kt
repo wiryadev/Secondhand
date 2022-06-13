@@ -1,5 +1,7 @@
-package com.firstgroup.secondhand.core.common.dispatchers
+package com.firstgroup.secondhand.core.common.di
 
+import com.firstgroup.secondhand.core.common.dispatchers.AppDispatcher
+import com.firstgroup.secondhand.core.common.dispatchers.SecondhandDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -7,8 +9,8 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object DispatchersModule {
 
     @Provides
