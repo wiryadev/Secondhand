@@ -1,9 +1,9 @@
 package com.firstgroup.secondhand.core.model
 
 /**
- * External data layer representation of a Login
+ * External data layer representation of Authentication
  */
-data class Login(
+data class Authentication(
     val email: String,
     val name: String,
     val token: String,
