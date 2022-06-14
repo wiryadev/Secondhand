@@ -23,8 +23,24 @@ class AuthRemoteDataSourceImpl @Inject constructor(
     override suspend fun register(authUserRequest: AuthUserRequest): UserResponse {
         val formData = authUserRequest.toFormData()
         return authService.register(
-            formData.requestBody,
-            formData.multipart,
+            partMap = formData.requestBody,
+            image = formData.multipart,
+        )
+    }
+
+    override suspend fun getUser(token: String): UserResponse {
+        return authService.getUser(token)
+    }
+
+    override suspend fun updateUser(
+        token: String,
+        authUserRequest: AuthUserRequest,
+    ): UserResponse {
+        val formData = authUserRequest.toFormData()
+        return authService.updateUser(
+            token = token,
+            partMap = formData.requestBody,
+            image = formData.multipart,
         )
     }
 

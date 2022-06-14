@@ -34,6 +34,22 @@ class AuthRepositoryImpl @Inject constructor(
         emit(response.mapToDomain())
     }.flowOn(ioDispatcher)
 
+    override fun getUser(token: String): Flow<User> = flow {
+        val response = authRemoteDataSource.getUser(token)
+        emit(response.mapToDomain())
+    }.flowOn(ioDispatcher)
+
+    override fun updateUser(
+        token: String,
+        authUserRequest: AuthUserRequest,
+    ): Flow<User> = flow {
+        val response = authRemoteDataSource.updateUser(
+            token = token,
+            authUserRequest = authUserRequest,
+        )
+        emit(response.mapToDomain())
+    }.flowOn(ioDispatcher)
+
     override fun getUserSession(): Flow<Authentication> {
         return authPreferenceDataSource.getUserSession()
             .map { it.mapToDomain() }

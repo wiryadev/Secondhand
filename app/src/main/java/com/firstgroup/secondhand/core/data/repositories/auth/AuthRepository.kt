@@ -16,6 +16,15 @@ interface AuthRepository {
         authUserRequest: AuthUserRequest,
     ): Flow<User>
 
+    fun getUser(
+        token: String,
+    ): Flow<User>
+
+    fun updateUser(
+        token: String,
+        authUserRequest: AuthUserRequest,
+    ): Flow<User>
+
     fun getUserSession(): Flow<Authentication>
 
     suspend fun saveUserSession(user: Authentication)
