@@ -1,6 +1,6 @@
 package com.firstgroup.secondhand.core.network.di
 
-import com.firstgroup.secondhand.core.network.auth.retrofit.AuthApiService
+import com.firstgroup.secondhand.core.network.auth.retrofit.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ object ServiceModule {
 
     @Singleton
     @Provides
-    fun provideMovieService(retrofit: Retrofit): AuthApiService {
+    fun provideAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create()
     }
 
