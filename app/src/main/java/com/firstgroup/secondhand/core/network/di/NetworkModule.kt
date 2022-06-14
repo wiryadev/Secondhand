@@ -19,8 +19,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideChuckerInterceptor(@ApplicationContext context: Context): ChuckerInterceptor {
         return ChuckerInterceptor.Builder(context)
             .collector(ChuckerCollector(context))
@@ -30,8 +30,8 @@ object NetworkModule {
             .build()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideOkHttpClient(chuckerInterceptor: ChuckerInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(
             if (BuildConfig.DEBUG) {
@@ -46,8 +46,8 @@ object NetworkModule {
             .build()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)

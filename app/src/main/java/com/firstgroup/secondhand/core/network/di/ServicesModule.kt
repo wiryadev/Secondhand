@@ -12,10 +12,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ServiceModule {
+object ServicesModule {
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create()
     }
