@@ -29,7 +29,7 @@ interface AuthService {
     suspend fun updateUser(
         @Header("access_token") token: String,
         @PartMap partMap: HashMap<String, RequestBody>,
-        @Part image: MultipartBody.Part,
+        @Part image: MultipartBody.Part? = null,
     ): UserResponse
 
 }
