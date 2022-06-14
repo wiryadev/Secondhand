@@ -1,6 +1,6 @@
 package com.firstgroup.secondhand.core.network.auth.model
 
-import com.firstgroup.secondhand.core.model.Login
+import com.firstgroup.secondhand.core.model.Authentication
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -16,7 +16,7 @@ data class LoginResponse(
     @Json(name = "name")
     val name: String
 ) {
-    fun mapToDomain() = Login(
+    fun mapToDomain() = Authentication(
         email = email,
         name = name,
         token = accessToken,
