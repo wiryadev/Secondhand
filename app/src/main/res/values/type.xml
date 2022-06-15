@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Body small regular. -->
+    <style name="TextAppearance.Material3.BodySmall" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+    <!-- Body small semi bold. -->
+    <style name="TextAppearance.Material3.BodySmall.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+    <!-- Body small bold. -->
+    <style name="TextAppearance.Material3.BodySmall.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Body medium regular. -->
+    <style name="TextAppearance.Material3.BodyMedium" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <!-- Body medium semi bold. -->
+    <style name="TextAppearance.Material3.BodyMedium.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <!-- Body medium bold. -->
+    <style name="TextAppearance.Material3.BodyMedium.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+    <!-- Body large regular. -->
+    <style name="TextAppearance.Material3.BodyLarge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <!-- Body large semi bold. -->
+    <style name="TextAppearance.Material3.BodyLarge.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <!-- Body large bold. -->
+    <style name="TextAppearance.Material3.BodyLarge.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Title regular. -->
+    <style name="TextAppearance.Material3.Title" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <!-- Title semi bold. -->
+    <style name="TextAppearance.Material3.Title.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <!-- Title bold. -->
+    <style name="TextAppearance.Material3.Title.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Title large regular. -->
+    <style name="TextAppearance.Material3.TitleLarge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <!-- Title large semi bold. -->
+    <style name="TextAppearance.Material3.TitleLarge.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <!-- Title large bold. -->
+    <style name="TextAppearance.Material3.TitleLarge.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Heading regular. -->
+    <style name="TextAppearance.Material3.Heading" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <!-- Heading semi bold. -->
+    <style name="TextAppearance.Material3.Heading.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <!-- Heading bold. -->
+    <style name="TextAppearance.Material3.Heading.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Heading large regular. -->
+    <style name="TextAppearance.Material3.HeadingLarge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <!-- Heading large semi bold. -->
+    <style name="TextAppearance.Material3.HeadingLarge.SemiBold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <!-- Heading large bold. -->
+    <style name="TextAppearance.Material3.HeadingLarge.Bold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>
