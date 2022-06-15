@@ -58,7 +58,7 @@ fun RegisterScreen(viewModel: RegisterViewModel) {
             viewModel.register(name, email, password, phoneNumber, address)
         },
         onSnackbarDismissed = {
-            viewModel.resetErrorMessage()
+            viewModel.resetState()
         }
     )
 }
@@ -265,6 +265,14 @@ fun RegisterScreen(
                 isError = true,
                 onDismissClick = onSnackbarDismissed,
                 modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+
+        if (uiState.isSuccess) {
+            TopSnackBar(
+                message = stringResource(id = R.string.register_succes),
+                isError = false,
+                onDismissClick = onSnackbarDismissed,
             )
         }
 
