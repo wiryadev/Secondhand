@@ -1,27 +1,26 @@
 package com.firstgroup.secondhand.ui.auth.register
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.common.result.asResult
-import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepository
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.domain.auth.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<RegisterUiState> = MutableStateFlow(RegisterUiState())
-    val uiState: LiveData<RegisterUiState> get() = _uiState.asLiveData()
+    val uiState: StateFlow<RegisterUiState> get() = _uiState.asStateFlow()
 
     fun register(
         name: String,
@@ -30,20 +29,16 @@ class RegisterViewModel @Inject constructor(
         phoneNumber: String,
         address: String
     ) {
-        _uiState.update {
-            it.copy(isLoading = true)
-        }
+        val userRequest = AuthUserRequest(
+            fullName = name,
+            email = email,
+            password = password,
+            phoneNo = phoneNumber,
+            address = address,
+            image = null
+        )
         viewModelScope.launch {
-            authRepository.register(
-                AuthUserRequest(
-                    fullName = name,
-                    email = email,
-                    password = password,
-                    phoneNo = phoneNumber,
-                    address = address,
-                    image = null
-                )
-            ).asResult().collect { result ->
+            registerUseCase(userRequest).collect { result ->
                 when (result) {
                     is Result.Success -> {
                         _uiState.update { uiState ->
@@ -51,23 +46,42 @@ class RegisterViewModel @Inject constructor(
                         }
                     }
                     is Result.Error -> {
+                        val exceptionMessage = result.exception?.message.toString()
+                        val error = when {
+                            exceptionMessage.contains("400") -> {
+                                R.string.email_exist_error
+                            }
+                            exceptionMessage.contains("500") -> {
+                                R.string.fill_all_field_error
+                            }
+                            else -> {
+                                R.string.unknown_error
+                            }
+                        }
                         _uiState.update { uiState ->
                             uiState.copy(
-                                isLoading = false, errorMessage = result.toString()
+                                isLoading = false,
+                                errorMessage = error,
                             )
                         }
                     }
-                    else -> {
-//                        Log.d("errorregister", "register: $result")
+                    is Result.Loading -> {
+                        _uiState.update { uiState ->
+                            uiState.copy(isLoading = true)
+                        }
                     }
                 }
             }
         }
+    }
+
+    fun resetErrorMessage() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }
 
 data class RegisterUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: Int? = null,
 )
