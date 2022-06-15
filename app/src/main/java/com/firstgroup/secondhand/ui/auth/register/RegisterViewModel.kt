@@ -71,8 +71,13 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun resetErrorMessage() {
-        _uiState.update { it.copy(errorMessage = null) }
+    fun resetState() {
+        _uiState.update {
+            it.copy(
+                errorMessage = null,
+                isSuccess = false,
+            )
+        }
     }
 }
 
