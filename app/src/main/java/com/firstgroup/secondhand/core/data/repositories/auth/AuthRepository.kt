@@ -1,31 +1,32 @@
 package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
-import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
-import kotlinx.coroutines.flow.Flow
+import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
+import com.firstgroup.secondhand.core.network.auth.model.UserResponse
+import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 
 interface AuthRepository {
 
-    fun login(
+    suspend fun login(
         email: String,
         password: String,
-    ): Flow<Authentication>
+    ): LoginResponse
 
-    fun register(
+    suspend fun register(
         authUserRequest: AuthUserRequest,
-    ): Flow<User>
+    ): UserResponse
 
-    fun getUser(
+    suspend fun getUser(
         token: String,
-    ): Flow<User>
+    ): UserResponse
 
-    fun updateUser(
+    suspend fun updateUser(
         token: String,
         authUserRequest: AuthUserRequest,
-    ): Flow<User>
+    ): UserResponse
 
-    fun getUserSession(): Flow<Authentication>
+    suspend fun getUserSession(): AuthSessionModel
 
     suspend fun saveUserSession(user: Authentication)
 

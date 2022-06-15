@@ -29,6 +29,9 @@ class RegisterViewModel @Inject constructor(
         phoneNumber: String,
         address: String
     ) {
+        _uiState.update { uiState ->
+            uiState.copy(isLoading = true)
+        }
         val userRequest = AuthUserRequest(
             fullName = name,
             email = email,
@@ -38,37 +41,30 @@ class RegisterViewModel @Inject constructor(
             image = null
         )
         viewModelScope.launch {
-            registerUseCase(userRequest).collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update { uiState ->
-                            uiState.copy(isLoading = false, isSuccess = true)
+            when (val result = registerUseCase(userRequest)) {
+                is Result.Success -> {
+                    _uiState.update { uiState ->
+                        uiState.copy(isLoading = false, isSuccess = true)
+                    }
+                }
+                is Result.Error -> {
+                    val exceptionMessage = result.exception?.message.toString()
+                    val error = when {
+                        exceptionMessage.contains("400") -> {
+                            R.string.email_exist_error
+                        }
+                        exceptionMessage.contains("500") -> {
+                            R.string.fill_all_field_error
+                        }
+                        else -> {
+                            R.string.unknown_error
                         }
                     }
-                    is Result.Error -> {
-                        val exceptionMessage = result.exception?.message.toString()
-                        val error = when {
-                            exceptionMessage.contains("400") -> {
-                                R.string.email_exist_error
-                            }
-                            exceptionMessage.contains("500") -> {
-                                R.string.fill_all_field_error
-                            }
-                            else -> {
-                                R.string.unknown_error
-                            }
-                        }
-                        _uiState.update { uiState ->
-                            uiState.copy(
-                                isLoading = false,
-                                errorMessage = error,
-                            )
-                        }
-                    }
-                    is Result.Loading -> {
-                        _uiState.update { uiState ->
-                            uiState.copy(isLoading = true)
-                        }
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            isLoading = false,
+                            errorMessage = error,
+                        )
                     }
                 }
             }
