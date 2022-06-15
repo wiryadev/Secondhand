@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.TopSnackBar
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -41,7 +42,9 @@ class RegisterFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
-                    RegisterScreen(viewModel)
+                    RegisterScreen(
+                        viewModel = viewModel,
+                        toLogin = { findNavController().navigate(R.id.action_registerFragment_to_loginFragment) })
                 }
             }
         }
@@ -49,25 +52,27 @@ class RegisterFragment : Fragment() {
 }
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel) {
+fun RegisterScreen(viewModel: RegisterViewModel, toLogin: () -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
 
     RegisterScreen(
         uiState = uiState,
-        onLoginClick = { name, email, password, phoneNumber, address ->
+        onRegisterClick = { name, email, password, phoneNumber, address ->
             viewModel.register(name, email, password, phoneNumber, address)
         },
         onSnackbarDismissed = {
             viewModel.resetState()
-        }
+        },
+        toLogin = toLogin
     )
 }
 
 @Composable
 fun RegisterScreen(
     uiState: RegisterUiState,
-    onLoginClick: (String, String, String, String, String) -> Unit,
+    onRegisterClick: (String, String, String, String, String) -> Unit,
     onSnackbarDismissed: () -> Unit,
+    toLogin: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -245,7 +250,7 @@ fun RegisterScreen(
             )
             Button(
                 onClick = {
-                    onLoginClick(name, email, password, phoneNumber, address)
+                    onRegisterClick(name, email, password, phoneNumber, address)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -272,7 +277,10 @@ fun RegisterScreen(
             TopSnackBar(
                 message = stringResource(id = R.string.register_succes),
                 isError = false,
-                onDismissClick = onSnackbarDismissed,
+                onDismissClick = {
+                    onSnackbarDismissed()
+                    toLogin()
+                }
             )
         }
 
