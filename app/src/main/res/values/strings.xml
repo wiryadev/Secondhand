@@ -10,5 +10,9 @@
     <string name="email_exist_error">Email already exists</string>
     <string name="fill_all_field_error">Please fill all necessary field</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="register_succes">Account Created Successfully</string>
+    <string name="invalid_email_password">Email or Password Are Wrong</string>
+    <string name="internal_service_error">Internal Service Error</string>
+    <string name="login_success">Login Success</string>
 
 </resources>
