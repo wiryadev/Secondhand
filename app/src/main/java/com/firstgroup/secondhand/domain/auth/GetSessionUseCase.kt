@@ -1,4 +1,4 @@
-package com.firstgroup.secondhand.core.network.auth.model
+package com.firstgroup.secondhand.domain.auth
 
 import com.firstgroup.secondhand.core.common.dispatchers.AppDispatcher
 import com.firstgroup.secondhand.core.common.dispatchers.SecondhandDispatchers
