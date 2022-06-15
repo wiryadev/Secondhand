@@ -10,6 +10,17 @@
         <item name="colorSecondaryVariant">@color/dark_blue_01</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Typography. -->
-        <item name="android:textAppearance">@font/poppins_semi_bold</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Secondhand.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Secondhand.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Secondhand.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Secondhand.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Secondhand.Headline6</item>
+<!--        <item name="textAppearanceSubtitle1">@style/TextAppearance.Secondhand.Subtitle1</item>-->
+<!--        <item name="textAppearanceSubtitle2">@style/TextAppearance.Secondhand.Subtitle2</item>-->
+        <item name="textAppearanceBody1">@style/TextAppearance.Secondhand.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Secondhand.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Secondhand.Button</item>
+<!--        <item name="textAppearanceCaption">@style/TextAppearance.Secondhand.Caption</item>-->
+<!--        <item name="textAppearanceOverline">@style/TextAppearance.Secondhand.Overline</item>-->
     </style>
 </resources>
