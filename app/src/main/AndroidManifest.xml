@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.firstgroup.secondhand">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".SecondhandApp"
         android:allowBackup="true"
@@ -14,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Secondhand"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.auth.AuthActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
