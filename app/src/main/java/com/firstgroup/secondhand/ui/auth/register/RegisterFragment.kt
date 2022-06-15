@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,87 +72,199 @@ fun RegisterScreen(onLoginClick: (String, String, String, String, String) -> Uni
     ) {
         Text(
             text = "Daftar",
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold)),
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 106.dp, bottom = 12.dp),
+                .padding(top = 53.dp, bottom = 12.dp),
         )
-        Text(text = "Name", modifier = Modifier.padding(bottom = 4.dp, top = 12.dp))
+        // Name Field
+        Text(
+            text = "Name",
+            modifier = Modifier.padding(bottom = 4.dp, top = 12.dp),
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+        )
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
+            textStyle = TextStyle(
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium_SemiBold)
+                    )
+                )
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .border(1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             maxLines = 1,
-            placeholder = { Text(text = "Your Name") },
+            placeholder = {
+                Text(
+                    text = "Your Name",
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = R.font.poppins_regular,
+                            style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                        )
+                    )
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02)
             )
         )
-        Text(text = "Email", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp))
+        // Email Field
+        Text(
+            text = "Email", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+        )
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
+            textStyle = TextStyle(
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium_SemiBold)
+                    )
+                )
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .border(1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             maxLines = 1,
-            placeholder = { Text(text = "Your Email") },
+            placeholder = {
+                Text(
+                    text = "Your Email",
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = R.font.poppins_regular,
+                            style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                        )
+                    )
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02)
             ),
-        ) // email
-        Text(text = "Phone Number", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp))
+        )
+        // Phone Number Field
+        Text(
+            text = "Phone Number", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+        )
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
+            textStyle = TextStyle(
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium_SemiBold)
+                    )
+                )
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .border(1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             maxLines = 1,
-            placeholder = { Text(text = "Your Number") },
+            placeholder = {
+                Text(
+                    text = "Your Number",
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = R.font.poppins_regular,
+                            style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                        )
+                    )
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02)
             )
-        ) // phone number
-        Text(text = "Address", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp))
+        )
+        // Address Field
+        Text(
+            text = "Address", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+        )
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
+            textStyle = TextStyle(
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium_SemiBold)
+                    )
+                )
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .border(1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             maxLines = 1,
-            placeholder = { Text(text = "Your Address") },
+            placeholder = {
+                Text(
+                    text = "Your Address",
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = R.font.poppins_regular,
+                            style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                        )
+                    )
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02)
             )
-        ) // address
-        Text(text = "Password", modifier = Modifier.padding(bottom = 12.dp, top = 4.dp))
+        )
+        // Password Field
+        Text(
+            text = "Password", modifier = Modifier.padding(bottom = 12.dp, top = 4.dp),
+            fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+        )
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
+            textStyle = TextStyle(
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium_SemiBold)
+                    )
+                )
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp)
                 .border(1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             maxLines = 1,
-            placeholder = { Text(text = "Your Password") },
+            placeholder = {
+                Text(
+                    text = "Your Password",
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = R.font.poppins_regular,
+                            style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                        )
+                    )
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02)
@@ -165,7 +280,15 @@ fun RegisterScreen(onLoginClick: (String, String, String, String, String) -> Uni
                 .padding(top = 12.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text(text = "Daftar")
+            Text(
+                text = "Daftar", fontSize = 14.sp,
+                fontFamily = FontFamily(
+                    Font(
+                        resId = R.font.poppins_regular,
+                        style = FontStyle(R.style.TextAppearance_Material3_BodyMedium)
+                    )
+                )
+            )
         }
     }
 }
