@@ -12,12 +12,12 @@ interface ProductService {
      * Buyer
      */
     @GET("buyer/product")
-    fun getProductsAsBuyer(
+    suspend fun getProductsAsBuyer(
         @Header("access_token") token: String,
     ): List<ProductResponse>
 
     @GET("buyer/product/{id}")
-    fun getProductByIdAsBuyer(
+    suspend fun getProductByIdAsBuyer(
         @Header("access_token") token: String,
         @Path("id") productId: String,
     ): ProductResponse
@@ -27,20 +27,19 @@ interface ProductService {
      * Seller
      */
     @GET("seller/product")
-    fun getProductsAsSeller(
+    suspend fun getProductsAsSeller(
         @Header("access_token") token: String,
     ): List<ProductResponse>
 
     @GET("seller/product/{id}")
-    fun getProductByIdAsSeller(
+    suspend fun getProductByIdAsSeller(
         @Header("access_token") token: String,
         @Path("id") productId: String,
     ): ProductResponse
 
     @GET("seller/category")
-    fun getCategories(
+    suspend fun getCategories(
         @Header("access_token") token: String,
-        @Path("id") productId: String,
     ): List<CategoryResponse>
 
 }
