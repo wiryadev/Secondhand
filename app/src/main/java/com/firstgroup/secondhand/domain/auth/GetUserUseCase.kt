@@ -11,10 +11,10 @@ import javax.inject.Inject
 class GetUserUseCase @Inject constructor(
     private val repository: AuthRepository,
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<String, User>(ioDispatcher) {
+) : UseCase<Any, User>(ioDispatcher) {
 
-    override suspend fun execute(param: String): User {
-        return repository.getUser(param).mapToDomain()
+    override suspend fun execute(param: Any): User {
+        return repository.getUser()
     }
 
 }

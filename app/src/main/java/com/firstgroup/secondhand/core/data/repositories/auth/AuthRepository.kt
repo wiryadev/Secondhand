@@ -1,32 +1,27 @@
 package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
+import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
-import com.firstgroup.secondhand.core.network.auth.model.UserResponse
-import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 
 interface AuthRepository {
 
     suspend fun login(
         email: String,
         password: String,
-    ): LoginResponse
+    ): Authentication
 
     suspend fun register(
         authUserRequest: AuthUserRequest,
-    ): UserResponse
+    ): User
 
-    suspend fun getUser(
-        token: String,
-    ): UserResponse
+    suspend fun getUser(): User
 
     suspend fun updateUser(
-        token: String,
         authUserRequest: AuthUserRequest,
-    ): UserResponse
+    ): User
 
-    suspend fun getUserSession(): AuthSessionModel
+    suspend fun getUserSession(): Authentication
 
     suspend fun saveUserSession(user: Authentication)
 

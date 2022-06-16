@@ -12,12 +12,10 @@ import javax.inject.Inject
 class UpdateUserUseCase @Inject constructor(
     private val repository: AuthRepository,
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<Pair<String, AuthUserRequest>, User>(ioDispatcher) {
+) : UseCase<AuthUserRequest, User>(ioDispatcher) {
 
-    override suspend fun execute(param: Pair<String, AuthUserRequest>): User {
-        val token = param.first
-        val userRequest = param.second
-        return repository.updateUser(token, userRequest).mapToDomain()
+    override suspend fun execute(param: AuthUserRequest): User {
+        return repository.updateUser(param)
     }
 
 }
