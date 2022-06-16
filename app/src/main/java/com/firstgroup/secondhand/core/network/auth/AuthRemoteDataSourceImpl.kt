@@ -28,8 +28,8 @@ class AuthRemoteDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun getUser(token: String): UserResponse {
-        return authService.getUser(token)
+    override suspend fun getUser(): UserResponse {
+        return authService.getUser()
     }
 
     override suspend fun updateUser(

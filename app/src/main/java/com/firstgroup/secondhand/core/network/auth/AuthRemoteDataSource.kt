@@ -15,9 +15,7 @@ interface AuthRemoteDataSource {
         authUserRequest: AuthUserRequest
     ): UserResponse
 
-    suspend fun getUser(
-        token: String
-    ): UserResponse
+    suspend fun getUser(): UserResponse
 
     suspend fun updateUser(
         token: String,

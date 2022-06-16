@@ -4,6 +4,7 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.firstgroup.secondhand.BuildConfig
+import com.firstgroup.secondhand.core.network.utils.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +33,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(chuckerInterceptor: ChuckerInterceptor): OkHttpClient {
+    fun provideAuthInterceptor(): AuthInterceptor {
+        return AuthInterceptor()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        chuckerInterceptor: ChuckerInterceptor,
+        authInterceptor: AuthInterceptor,
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(
             if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -43,6 +53,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(chuckerInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
