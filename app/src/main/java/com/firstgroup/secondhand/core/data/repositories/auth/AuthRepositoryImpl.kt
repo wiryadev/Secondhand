@@ -28,10 +28,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getUser(): UserResponse = authRemoteDataSource.getUser()
 
     override suspend fun updateUser(
-        token: String,
         authUserRequest: AuthUserRequest,
     ): UserResponse = authRemoteDataSource.updateUser(
-        token = token,
         authUserRequest = authUserRequest,
     )
 
