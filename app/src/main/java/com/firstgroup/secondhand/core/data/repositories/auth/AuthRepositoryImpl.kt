@@ -1,10 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
+import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
-import com.firstgroup.secondhand.core.network.auth.model.UserResponse
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 import kotlinx.coroutines.flow.first
@@ -18,23 +17,25 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(
         email: String,
         password: String
-    ): LoginResponse = authRemoteDataSource.login(email, password)
+    ): Authentication = authRemoteDataSource.login(email, password).mapToDomain()
 
     override suspend fun register(
         authUserRequest: AuthUserRequest
-    ): UserResponse = authRemoteDataSource.register(authUserRequest)
+    ): User = authRemoteDataSource.register(authUserRequest).mapToDomain()
 
 
-    override suspend fun getUser(): UserResponse = authRemoteDataSource.getUser()
+    override suspend fun getUser(): User = authRemoteDataSource.getUser().mapToDomain()
 
     override suspend fun updateUser(
         authUserRequest: AuthUserRequest,
-    ): UserResponse = authRemoteDataSource.updateUser(
+    ): User = authRemoteDataSource.updateUser(
         authUserRequest = authUserRequest,
-    )
+    ).mapToDomain()
 
-    override suspend fun getUserSession(): AuthSessionModel {
-        return authPreferenceDataSource.getUserSession().first()
+    override suspend fun getUserSession(): Authentication {
+        return authPreferenceDataSource.getUserSession()
+            .first()
+            .mapToDomain()
     }
 
     override suspend fun saveUserSession(user: Authentication) {

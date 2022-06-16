@@ -15,7 +15,7 @@ class UpdateUserUseCase @Inject constructor(
 ) : UseCase<AuthUserRequest, User>(ioDispatcher) {
 
     override suspend fun execute(param: AuthUserRequest): User {
-        return repository.updateUser(param).mapToDomain()
+        return repository.updateUser(param)
     }
 
 }

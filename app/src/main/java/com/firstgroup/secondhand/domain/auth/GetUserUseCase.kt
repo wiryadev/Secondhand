@@ -14,7 +14,7 @@ class GetUserUseCase @Inject constructor(
 ) : UseCase<Any, User>(ioDispatcher) {
 
     override suspend fun execute(param: Any): User {
-        return repository.getUser().mapToDomain()
+        return repository.getUser()
     }
 
 }

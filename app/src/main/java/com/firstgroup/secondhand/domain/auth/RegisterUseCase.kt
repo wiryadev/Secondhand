@@ -15,7 +15,7 @@ class RegisterUseCase @Inject constructor(
 ) : UseCase<AuthUserRequest, User>(ioDispatcher) {
 
     override suspend fun execute(param: AuthUserRequest): User {
-        return repository.register(param).mapToDomain()
+        return repository.register(param)
     }
 
 }
