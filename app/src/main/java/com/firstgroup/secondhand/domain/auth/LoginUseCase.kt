@@ -15,7 +15,7 @@ class LoginUseCase @Inject constructor(
 ) : UseCase<LoginRequest, Authentication>(ioDispatcher) {
 
     override suspend fun execute(param: LoginRequest): Authentication {
-        val login = repository.login(param.email, param.password).mapToDomain()
+        val login = repository.login(param.email, param.password)
         repository.saveUserSession(login)
         return login
     }

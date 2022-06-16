@@ -14,7 +14,7 @@ class GetSessionUseCase @Inject constructor(
 ) : UseCase<Any, Authentication>(ioDispatcher) {
 
     override suspend fun execute(param: Any): Authentication {
-        return repository.getUserSession().mapToDomain()
+        return repository.getUserSession()
     }
 
 }
