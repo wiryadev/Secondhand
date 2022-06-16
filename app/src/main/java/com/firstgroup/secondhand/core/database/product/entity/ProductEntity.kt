@@ -32,8 +32,8 @@ data class ProductEntity(
     @ColumnInfo(name = "status")
     val status: String,
 
-    @ColumnInfo(name = "categories")
-    val categories: List<CategoryEntity>,
+    @ColumnInfo(name = "category")
+    val category: String,
 ) {
     fun mapToDomainModel() = Product(
         id = id,
@@ -44,6 +44,6 @@ data class ProductEntity(
         location = location,
         userId = userId,
         status = status,
-        categories = categories.map { it.mapToDomainModel() }
+        category = category,
     )
 }

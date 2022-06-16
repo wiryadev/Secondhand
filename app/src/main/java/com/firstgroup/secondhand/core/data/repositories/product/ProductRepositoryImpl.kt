@@ -1,7 +1,6 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
-import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
@@ -52,12 +51,7 @@ class ProductRepositoryImpl(
                     location = product.location,
                     userId = product.userId,
                     status = product.status,
-                    categories = product.categories.map { category ->
-                        CategoryEntity(
-                            id = category.id,
-                            name = category.name
-                        )
-                    }
+                    category = product.categories[0].name,
                 )
             }
         )

@@ -9,5 +9,5 @@ data class Product(
     val location: String,
     val userId: Int,
     val status: String,
-    val categories: List<Category>,
+    val category: String,
 )
