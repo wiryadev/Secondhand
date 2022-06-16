@@ -15,7 +15,7 @@ import com.firstgroup.secondhand.core.database.product.entity.WishlistEntity
         CategoryEntity::class,
         WishlistEntity::class,
     ],
-    version = 1,
+    version = 1, exportSchema = false
 )
 abstract class SecondhandDatabase : RoomDatabase() {
     abstract fun productCacheDao(): ProductCacheDao
