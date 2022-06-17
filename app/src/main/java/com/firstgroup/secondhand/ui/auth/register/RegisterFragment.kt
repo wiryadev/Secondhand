@@ -64,9 +64,7 @@ fun RegisterScreen(viewModel: RegisterViewModel, toLogin: () -> Unit) {
 
     RegisterScreen(
         uiState = uiState,
-        onRegisterClick = { name, email, password, phoneNumber, address ->
-            viewModel.register(name, email, password, phoneNumber, address)
-        },
+        onRegisterClick = viewModel::register,
         onSnackbarDismissed = {
             viewModel.resetState()
         },
@@ -311,8 +309,12 @@ fun RegisterScreen(
             ) {
                 Text(
                     text =
-                    if (uiState.isLoading) stringResource(id = R.string.loading)
-                    else stringResource(id = R.string.register),
+                    if (uiState.isLoading) {
+                        stringResource(id = R.string.loading)
+                    }
+                    else {
+                        stringResource(id = R.string.register)
+                    },
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
