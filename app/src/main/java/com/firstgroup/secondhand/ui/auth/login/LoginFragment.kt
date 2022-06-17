@@ -175,14 +175,27 @@ fun LoginScreen(
                 )
             }
         }
-        uiState.errorMessage?.let {
+
+        uiState.errorMessage?.let { errorMessage ->
+            val message = when {
+                errorMessage.contains("401") -> {
+                    R.string.invalid_email_password
+                }
+                errorMessage.contains("500") -> {
+                    R.string.internal_service_error
+                }
+                else -> {
+                    R.string.unknown_error
+                }
+            }
             TopSnackBar(
-                message = stringResource(id = it),
+                message = stringResource(id = message),
                 isError = true,
                 onDismissClick = onSnackbarDismissed,
                 modifier = Modifier.align(Alignment.TopCenter)
             )
         }
+
         if (uiState.isSuccess) {
             TopSnackBar(
                 message = stringResource(id = R.string.login_success),
