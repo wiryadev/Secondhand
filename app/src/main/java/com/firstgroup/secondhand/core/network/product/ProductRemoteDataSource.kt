@@ -1,28 +1,31 @@
 package com.firstgroup.secondhand.core.network.product
 
-import com.firstgroup.secondhand.core.network.product.model.CategoryResponse
-import com.firstgroup.secondhand.core.network.product.model.ProductResponse
+import com.firstgroup.secondhand.core.network.product.model.BannerDto
+import com.firstgroup.secondhand.core.network.product.model.CategoryDto
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 
 interface ProductRemoteDataSource {
 
     /**
      * Buyer
      */
-    suspend fun getProductsAsBuyer(): List<ProductResponse>
+    suspend fun getProductsAsBuyer(): List<ProductDto>
 
     suspend fun getProductByIdAsBuyer(
         productId: String,
-    ): ProductResponse
+    ): ProductDto
 
 
     /**
      * Seller
      */
-    suspend fun getProductsAsSeller(): List<ProductResponse>
+    suspend fun getProductsAsSeller(): List<ProductDto>
 
     suspend fun getProductByIdAsSeller(
         productId: String,
-    ): ProductResponse
+    ): ProductDto
 
-    suspend fun getCategories(): List<CategoryResponse>
+    suspend fun getCategories(): List<CategoryDto>
+
+    suspend fun getBanners(): List<BannerDto>
 }
