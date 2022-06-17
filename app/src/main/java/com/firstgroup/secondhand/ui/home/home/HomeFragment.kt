@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -46,7 +47,7 @@ class HomeFragment: Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
-
+                    HomeScreen()
                 }
             }
         }
@@ -111,7 +112,9 @@ fun HomeScreen() {
                 }
             }
         }
-        ListProduct(result = List(4) { dummyProduct })
+        ListProduct(result = List(4) { dummyProduct }){
+
+        }
     }
 }
 
@@ -162,25 +165,26 @@ fun ListCategory(category: List<Category>, onCategoryClick :() -> Unit){
 }
 
 @Composable
-fun ListProduct (result: List<Product>) {
+fun ListProduct (result: List<Product>, onProductClick :() -> Unit) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         modifier = Modifier
             .padding(horizontal = 8.dp)
             .fillMaxWidth()) {
         items(result.size) {
-            ProductItem(product = result[it])
+            ProductItem(product = result[it], itemOnClick = onProductClick)
         }
     }
 
 }
 
 @Composable
-fun ProductItem(product: Product){
+fun ProductItem(product: Product, itemOnClick :() -> Unit){
     Card(modifier = Modifier
         .padding(horizontal = 8.dp, vertical = 8.dp)
-        .size(width = 156.dp, height = 206.dp),
+        .size(width = 156.dp, height = 206.dp)
+        .clickable(true, onClick = itemOnClick),
         shape = RoundedCornerShape(4.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
     ) {
         Column(
             modifier = Modifier
