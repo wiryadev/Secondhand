@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -80,14 +81,23 @@ fun HomeScreen() {
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
                     placeholder = {
-                        Text(
-                            text = "Cari di Second Chance",
-                            style = MaterialTheme.typography.body1,
-                        )
+                        Row (modifier = Modifier.fillMaxWidth()){
+                            Text(
+                                text = "Cari di Second Chance",
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier.fillMaxWidth(0.9f)
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_search),
+                                contentDescription = null
+                            )
+                        }
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.White,
-                        placeholderColor = colorResource(id = R.color.neutral_02)
+                        placeholderColor = colorResource(id = R.color.neutral_02),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
                     ),
                 )
                 Spacer(modifier = Modifier.height(200.dp))
@@ -119,6 +129,12 @@ fun ListCategory(category: List<Category>, onCategoryClick :() -> Unit){
                         .padding(horizontal = 8.dp),
                     shape = RoundedCornerShape(16.dp),
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                     Text(text = it.name, style = MaterialTheme.typography.button)
                 }
             }
@@ -133,6 +149,11 @@ fun ListCategory(category: List<Category>, onCategoryClick :() -> Unit){
                         id = R.color.dark_blue_01
                     ))
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                     Text(text = it.name, style = MaterialTheme.typography.button)
                 }
             }
