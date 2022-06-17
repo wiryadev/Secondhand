@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.core.network.product.model.ProductResponse
 import com.google.android.material.composethemeadapter.MdcTheme
 import kotlinx.coroutines.runBlocking
 
