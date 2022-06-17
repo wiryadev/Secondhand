@@ -8,12 +8,9 @@ interface ProductRemoteDataSource {
     /**
      * Buyer
      */
-    suspend fun getProductsAsBuyer(
-        token: String,
-    ): List<ProductResponse>
+    suspend fun getProductsAsBuyer(): List<ProductResponse>
 
     suspend fun getProductByIdAsBuyer(
-        token: String,
         productId: String,
     ): ProductResponse
 
@@ -21,16 +18,11 @@ interface ProductRemoteDataSource {
     /**
      * Seller
      */
-    suspend fun getProductsAsSeller(
-        token: String,
-    ): List<ProductResponse>
+    suspend fun getProductsAsSeller(): List<ProductResponse>
 
     suspend fun getProductByIdAsSeller(
-        token: String,
         productId: String,
     ): ProductResponse
 
-    suspend fun getCategories(
-        token: String,
-    ): List<CategoryResponse>
+    suspend fun getCategories(): List<CategoryResponse>
 }

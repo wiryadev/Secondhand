@@ -9,26 +9,20 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     private val service: ProductService,
 ) : ProductRemoteDataSource {
 
-    override suspend fun getProductsAsBuyer(
-        token: String
-    ): List<ProductResponse> = service.getProductsAsBuyer(token)
+    override suspend fun getProductsAsBuyer(): List<ProductResponse> =
+        service.getProductsAsBuyer()
 
     override suspend fun getProductByIdAsBuyer(
-        token: String,
         productId: String,
-    ): ProductResponse = service.getProductByIdAsBuyer(token, productId)
+    ): ProductResponse = service.getProductByIdAsBuyer(productId)
 
-    override suspend fun getProductsAsSeller(
-        token: String
-    ): List<ProductResponse> = service.getProductsAsSeller(token)
+    override suspend fun getProductsAsSeller(): List<ProductResponse> = service.getProductsAsSeller()
 
     override suspend fun getProductByIdAsSeller(
-        token: String,
         productId: String,
-    ): ProductResponse = service.getProductByIdAsSeller(token, productId)
+    ): ProductResponse = service.getProductByIdAsSeller(productId)
 
     override suspend fun getCategories(
-        token: String
-    ): List<CategoryResponse> = service.getCategories(token)
+    ): List<CategoryResponse> = service.getCategories()
 
 }

@@ -4,6 +4,9 @@ import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.UnknownHostException
@@ -13,22 +16,21 @@ class ProductRepositoryImpl(
     private val localDataSource: ProductLocalDataSource,
 ) : ProductRepository {
 
-    override suspend fun getProductsAsBuyer(token: String): List<Product> {
-        loadBuyerProducts(token)
-        return localDataSource.getCachedProducts().map {
-            it.mapToDomainModel()
+    override fun getProductsAsBuyer(): Flow<List<Product>> {
+        return localDataSource.getCachedProducts().map { products ->
+            products.map { it.mapToDomainModel() }
         }
     }
 
-    private suspend fun loadBuyerProducts(token: String) {
+    override suspend fun loadBuyerProducts() {
         try {
-            refreshCache(token)
+            refreshProductCache()
         } catch (e: Exception) {
             when (e) {
                 is UnknownHostException,
                 is ConnectException,
                 is HttpException -> {
-                    if (localDataSource.getCachedProducts().isEmpty())
+                    if (localDataSource.getCachedProducts().first().isEmpty())
                         throw Exception(
                             "Something went wrong. No Data Available"
                         )
@@ -38,8 +40,11 @@ class ProductRepositoryImpl(
         }
     }
 
-    private suspend fun refreshCache(token: String) {
-        val remoteData = remoteDataSource.getProductsAsBuyer(token)
+    /**
+     * Only buyer side of products that needs to be cached
+     */
+    private suspend fun refreshProductCache() {
+        val remoteData = remoteDataSource.getProductsAsBuyer()
         localDataSource.cacheAllProducts(
             remoteData.map { product ->
                 ProductEntity(
