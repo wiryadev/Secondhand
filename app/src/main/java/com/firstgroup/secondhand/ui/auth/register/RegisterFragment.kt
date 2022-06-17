@@ -5,22 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -85,28 +92,32 @@ fun RegisterScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .padding(horizontal = 16.dp)
+                .padding(top = 48.dp)
         ) {
+            val focusManager = LocalFocusManager.current
+            // Register Title
             Text(
-                text = "Daftar",
-                fontFamily = FontFamily(Font(R.font.poppins_semi_bold)),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold,
+                text = stringResource(id = R.string.register),
+                style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 53.dp, bottom = 12.dp),
+                    .padding(top = 24.dp, bottom = 12.dp)
             )
+
             // Name Field
             Text(
-                text = "Name",
-                modifier = Modifier.padding(bottom = 4.dp, top = 12.dp),
-                fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+                text = stringResource(R.string.name),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 12.dp)
             )
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
                 textStyle = MaterialTheme.typography.body1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -116,10 +127,10 @@ fun RegisterScreen(
                         RoundedCornerShape(16.dp)
                     ),
                 shape = RoundedCornerShape(16.dp),
-                maxLines = 1,
+                singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Name",
+                        text = stringResource(R.string.placeholder_name),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -130,13 +141,16 @@ fun RegisterScreen(
             )
             // Email Field
             Text(
-                text = "Email", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
-                fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+                text = stringResource(R.string.email),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
             )
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 textStyle = MaterialTheme.typography.body1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -146,10 +160,10 @@ fun RegisterScreen(
                         RoundedCornerShape(16.dp)
                     ),
                 shape = RoundedCornerShape(16.dp),
-                maxLines = 1,
+                singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Email",
+                        text = stringResource(R.string.placeholder_email),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -160,13 +174,17 @@ fun RegisterScreen(
             )
             // Phone Number Field
             Text(
-                text = "Phone Number", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
-                style = MaterialTheme.typography.body1
+                text = stringResource(R.string.phone_number),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+
             )
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
                 textStyle = MaterialTheme.typography.body1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -176,10 +194,10 @@ fun RegisterScreen(
                         RoundedCornerShape(16.dp)
                     ),
                 shape = RoundedCornerShape(16.dp),
-                maxLines = 1,
+                singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Number",
+                        text = stringResource(R.string.placeholder_phone_number),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -190,13 +208,16 @@ fun RegisterScreen(
             )
             // Address Field
             Text(
-                text = "Address", modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+                text = stringResource(R.string.address),
                 style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
             )
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
                 textStyle = MaterialTheme.typography.body1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -206,10 +227,10 @@ fun RegisterScreen(
                         RoundedCornerShape(16.dp)
                     ),
                 shape = RoundedCornerShape(16.dp),
-                maxLines = 1,
+                singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Address",
+                        text = stringResource(R.string.placeholder_address),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -219,9 +240,11 @@ fun RegisterScreen(
                 )
             )
             // Password Field
+            var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
-                text = "Password", modifier = Modifier.padding(bottom = 12.dp, top = 4.dp),
-                fontFamily = FontFamily(Font(R.font.poppins_semi_bold))
+                text = stringResource(R.string.password),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 4.dp)
             )
             OutlinedTextField(
                 value = password,
@@ -235,11 +258,37 @@ fun RegisterScreen(
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
                     ),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                trailingIcon = {
+                    val description =
+                        if (passwordVisible) {
+                            stringResource(R.string.desc_hide_password)
+                        } else {
+                            stringResource(R.string.desc_show_password)
+                        }
+                    if (passwordVisible) {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_show_password),
+                                description
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_hide_password),
+                                description
+                            )
+                        }
+                    }
+                },
                 shape = RoundedCornerShape(16.dp),
-                maxLines = 1,
+                singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Password",
+                        text = stringResource(R.string.placeholder_password),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -248,20 +297,53 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            //Register Button
             Button(
                 onClick = {
                     onRegisterClick(name, email, password, phoneNumber, address)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp),
+                    .padding(top = 12.dp)
+                    .size(height = 48.dp, width = 0.dp),
                 shape = RoundedCornerShape(16.dp),
                 enabled = !uiState.isLoading
             ) {
                 Text(
-                    text = if (uiState.isLoading) "Loading" else "Register",
+                    text =
+                    if (uiState.isLoading) stringResource(id = R.string.loading)
+                    else stringResource(id = R.string.register),
                 )
             }
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.account_question),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.have_account),
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.dark_blue_04),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable { toLogin() }
+                )
+            }
+        }
+
+        IconButton(onClick = { toLogin() }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_left),
+                stringResource(R.string.description_backTo_login)
+            )
         }
 
         uiState.errorMessage?.let {
@@ -283,15 +365,14 @@ fun RegisterScreen(
                 }
             )
         }
-
     }
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RegisterPreview() {
-    MdcTheme {
-//        RegisterScreen(onLoginClick = { _, _, _, _, _ -> })
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun RegisterPreview() {
+//    MdcTheme {
+////        RegisterScreen(onLoginClick = { _, _, _, _, _ -> })
+//    }
+//}

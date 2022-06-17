@@ -3,16 +3,41 @@
 
     <!-- Common -->
     <string name="loading">Loading</string>
+    <string name="name">Name</string>
 
-    <!-- Authentication -->
+    <!-- Authentication Screen -->
     <string name="register">Register</string>
     <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="address">Address</string>
+    <string name="password">Password</string>
+    <string name="account_question">Sudah punya akun?</string>
+    <string name="have_account">Masuk di sini!</string>
+
+    <!-- Content Description -->
+    <string name="desc_hide_password">Hide password</string>
+    <string name="desc_show_password">Show password</string>
+    <string name="description_backTo_login">Back to Login Screen</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_name">Your Name</string>
+    <string name="placeholder_email">Your Email</string>
+    <string name="placeholder_phone_number">Your Number</string>
+    <string name="placeholder_address">Your Address</string>
+    <string name="placeholder_password">Your Password</string>
+
+    <!-- Success Message -->
+    <string name="register_succes">Account Created Successfully</string>
+    <string name="login_success">Login Success</string>
+
+    <!-- Error Message -->
     <string name="email_exist_error">Email already exists</string>
     <string name="fill_all_field_error">Please fill all necessary field</string>
     <string name="unknown_error">Unknown Error</string>
-    <string name="register_succes">Account Created Successfully</string>
     <string name="invalid_email_password">Email or Password Are Wrong</string>
     <string name="internal_service_error">Internal Service Error</string>
-    <string name="login_success">Login Success</string>
+
+
 
 </resources>
