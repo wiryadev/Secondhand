@@ -1,7 +1,8 @@
 package com.firstgroup.secondhand.core.network.product
 
-import com.firstgroup.secondhand.core.network.product.model.CategoryResponse
-import com.firstgroup.secondhand.core.network.product.model.ProductResponse
+import com.firstgroup.secondhand.core.network.product.model.BannerDto
+import com.firstgroup.secondhand.core.network.product.model.CategoryDto
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.retrofit.ProductService
 import javax.inject.Inject
 
@@ -9,26 +10,21 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     private val service: ProductService,
 ) : ProductRemoteDataSource {
 
-    override suspend fun getProductsAsBuyer(
-        token: String
-    ): List<ProductResponse> = service.getProductsAsBuyer(token)
+    override suspend fun getProductsAsBuyer(): List<ProductDto> =
+        service.getProductsAsBuyer()
 
     override suspend fun getProductByIdAsBuyer(
-        token: String,
         productId: String,
-    ): ProductResponse = service.getProductByIdAsBuyer(token, productId)
+    ): ProductDto = service.getProductByIdAsBuyer(productId)
 
-    override suspend fun getProductsAsSeller(
-        token: String
-    ): List<ProductResponse> = service.getProductsAsSeller(token)
+    override suspend fun getProductsAsSeller(): List<ProductDto> = service.getProductsAsSeller()
 
     override suspend fun getProductByIdAsSeller(
-        token: String,
         productId: String,
-    ): ProductResponse = service.getProductByIdAsSeller(token, productId)
+    ): ProductDto = service.getProductByIdAsSeller(productId)
 
-    override suspend fun getCategories(
-        token: String
-    ): List<CategoryResponse> = service.getCategories(token)
+    override suspend fun getCategories(): List<CategoryDto> = service.getCategories()
+
+    override suspend fun getBanners(): List<BannerDto> = service.getBanners()
 
 }

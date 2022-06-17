@@ -67,9 +67,7 @@ class LoginUseCaseTest {
         verify(repository).login("", "")
         assertNotNull(actual)
         assertTrue(actual is Result.Error)
-        if (actual is Result.Error) {
-            assertEquals(expected.exception!!.message, actual.exception!!.message)
-        }
+        assertEquals(expected.toString(), actual.toString())
     }
 
 }
