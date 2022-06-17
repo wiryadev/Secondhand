@@ -5,11 +5,11 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class ProductResponse(
+data class ProductDto(
     @Json(name = "base_price")
     val basePrice: Int,
     @Json(name = "Categories")
-    val categories: List<CategoryResponse>,
+    val categories: List<CategoryDto>,
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "description")
