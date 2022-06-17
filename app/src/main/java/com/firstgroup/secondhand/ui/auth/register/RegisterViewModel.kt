@@ -2,7 +2,6 @@ package com.firstgroup.secondhand.ui.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
 import com.firstgroup.secondhand.domain.auth.RegisterUseCase
@@ -49,21 +48,10 @@ class RegisterViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     val exceptionMessage = result.exception?.message.toString()
-                    val error = when {
-                        exceptionMessage.contains("400") -> {
-                            R.string.email_exist_error
-                        }
-                        exceptionMessage.contains("500") -> {
-                            R.string.fill_all_field_error
-                        }
-                        else -> {
-                            R.string.unknown_error
-                        }
-                    }
                     _uiState.update { uiState ->
                         uiState.copy(
                             isLoading = false,
-                            errorMessage = error,
+                            errorMessage = exceptionMessage,
                         )
                     }
                 }
@@ -84,5 +72,5 @@ class RegisterViewModel @Inject constructor(
 data class RegisterUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val errorMessage: Int? = null,
+    val errorMessage: String? = null,
 )

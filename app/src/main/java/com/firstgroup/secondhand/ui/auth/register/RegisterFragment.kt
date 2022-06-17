@@ -348,9 +348,20 @@ fun RegisterScreen(
             )
         }
 
-        uiState.errorMessage?.let {
+        uiState.errorMessage?.let { errorMessage ->
+            val message = when {
+                errorMessage.contains("400") -> {
+                    R.string.email_exist_error
+                }
+                errorMessage.contains("500") -> {
+                    R.string.fill_all_field_error
+                }
+                else -> {
+                    R.string.unknown_error
+                }
+            }
             TopSnackBar(
-                message = stringResource(id = it),
+                message = stringResource(id = message),
                 isError = true,
                 onDismissClick = onSnackbarDismissed,
                 modifier = Modifier.align(Alignment.TopCenter)
