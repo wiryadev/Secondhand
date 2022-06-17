@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-class ProductRepositoryImpl(
+class ProductRepositoryImpl @Inject constructor(
     private val remoteDataSource: ProductRemoteDataSource,
     private val localDataSource: ProductLocalDataSource,
 ) : ProductRepository {
