@@ -1,7 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
+import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
+import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import kotlinx.coroutines.flow.Flow
@@ -41,6 +43,30 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getCategories(): Flow<List<Category>> {
+        return localDataSource.getCachedCategories().map { categories ->
+            categories.map { it.mapToDomainModel() }
+        }
+    }
+
+    override suspend fun loadCategories() {
+        try {
+            refreshCategoryCache()
+        } catch (e: Exception) {
+            when (e) {
+                is UnknownHostException,
+                is ConnectException,
+                is HttpException -> {
+                    if (localDataSource.getCachedCategories().first().isEmpty())
+                        throw Exception(
+                            "Something went wrong. No Data Available"
+                        )
+                }
+                else -> throw e
+            }
+        }
+    }
+
     /**
      * Only buyer side of products that needs to be cached
      */
@@ -58,6 +84,18 @@ class ProductRepositoryImpl @Inject constructor(
                     userId = product.userId,
                     status = product.status,
                     category = product.categories[0].name,
+                )
+            }
+        )
+    }
+
+    private suspend fun refreshCategoryCache() {
+        val remoteData = remoteDataSource.getCategories()
+        localDataSource.cacheAllCategories(
+            remoteData.map { category ->
+                CategoryEntity(
+                    id = category.id,
+                    name = category.name,
                 )
             }
         )

@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.Flow
 interface ProductCacheDao {
 
     @Query("SELECT * FROM product_cache")
-    fun getAll(): Flow<List<ProductEntity>>
+    fun getCachedProducts(): Flow<List<ProductEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addAll(products: List<ProductEntity>)
+    suspend fun insertOrReplace(products: List<ProductEntity>)
+
+    @Query("DELETE FROM product_cache")
+    suspend fun deleteAll()
 
 }

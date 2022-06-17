@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface CategoryDao {
 
     @Query("SELECT * FROM product_categories")
-    fun getCategoriesStream(): Flow<List<CategoryEntity>>
+    fun getCachedCategories(): Flow<List<CategoryEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAndReplace(categories: List<CategoryEntity>): List<Long>
+    suspend fun insertOrReplace(categories: List<CategoryEntity>)
 
     @Query("DELETE FROM product_categories")
     suspend fun deleteAll()
