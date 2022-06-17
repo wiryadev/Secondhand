@@ -48,15 +48,16 @@ class LoginFragment : Fragment() {
 }
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, toHome: () -> Unit) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    toHome: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     LoginScreen(
         uiState = uiState,
         onSnackbarDismissed = {},
-        onLoginClick = { email, password ->
-            viewModel.login(email = email, password = password)
-        },
+        onLoginClick = viewModel::login,
         toHome = toHome
     )
 }
@@ -80,7 +81,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "Masuk",
+                text = stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
@@ -89,7 +90,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Email",
+                text = stringResource(id = R.string.email),
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +112,7 @@ fun LoginScreen(
                 singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Email",
+                        text = stringResource(R.string.placeholder_email),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -122,7 +123,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Password",
+                text = stringResource(R.string.password),
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,7 +145,7 @@ fun LoginScreen(
                 singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Your Password",
+                        text = stringResource(R.string.placeholder_password),
                         style = MaterialTheme.typography.body1,
                     )
                 },
@@ -166,7 +167,11 @@ fun LoginScreen(
                 enabled = !uiState.isLoading
             ) {
                 Text(
-                    text = if (uiState.isLoading) "Loading" else "Register",
+                    text = if (uiState.isLoading) {
+                        stringResource(id = R.string.loading)
+                    } else {
+                        stringResource(id = R.string.login)
+                    },
                 )
             }
         }
