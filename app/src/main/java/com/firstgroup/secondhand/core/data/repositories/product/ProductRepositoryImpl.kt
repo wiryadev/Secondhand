@@ -44,6 +44,10 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteCachedProducts() {
+        localDataSource.deleteCachedProducts()
+    }
+
     override fun getCategories(): Flow<List<Category>> {
         return localDataSource.getCachedCategories().map { categories ->
             categories.map { it.mapToDomainModel() }
@@ -66,6 +70,14 @@ class ProductRepositoryImpl @Inject constructor(
                 else -> throw e
             }
         }
+    }
+
+    override suspend fun deleteCachedCategories() {
+        localDataSource.deleteCachedCategories()
+    }
+
+    override suspend fun deleteWishlist() {
+        localDataSource.deleteWishlist()
     }
 
     override suspend fun getBanner(): List<Banner> =

@@ -2,6 +2,7 @@ package com.firstgroup.secondhand.core.database.product
 
 import com.firstgroup.secondhand.core.database.product.dao.CategoryDao
 import com.firstgroup.secondhand.core.database.product.dao.ProductCacheDao
+import com.firstgroup.secondhand.core.database.product.dao.WishlistDao
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ import javax.inject.Inject
 class ProductLocalDataSourceImpl @Inject constructor(
     private val productCacheDao: ProductCacheDao,
     private val categoryDao: CategoryDao,
+    private val wishlistDao: WishlistDao,
 ) : ProductLocalDataSource {
 
     override fun getCachedProducts(): Flow<List<ProductEntity>> {
@@ -34,6 +36,10 @@ class ProductLocalDataSourceImpl @Inject constructor(
 
     override suspend fun deleteCachedCategories() {
         categoryDao.deleteAll()
+    }
+
+    override suspend fun deleteWishlist() {
+        wishlistDao.deleteAll()
     }
 
 }

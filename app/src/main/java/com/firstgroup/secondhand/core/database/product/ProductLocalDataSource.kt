@@ -18,4 +18,6 @@ interface ProductLocalDataSource {
 
     suspend fun deleteCachedCategories()
 
+    suspend fun deleteWishlist()
+
 }
