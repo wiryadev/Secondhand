@@ -22,6 +22,6 @@ interface ProductRepository {
 
     fun getCategories(): Flow<List<Category>>
 
-    fun getBanner(): Flow<List<Banner>>
+    suspend fun getBanner(): List<Banner>
 
 }
