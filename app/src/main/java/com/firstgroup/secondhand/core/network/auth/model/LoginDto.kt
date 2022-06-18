@@ -8,7 +8,7 @@ import com.squareup.moshi.JsonClass
  * Network representation of Login
  */
 @JsonClass(generateAdapter = true)
-data class LoginResponse(
+data class LoginDto(
     @Json(name = "access_token")
     val accessToken: String,
     @Json(name = "email")
