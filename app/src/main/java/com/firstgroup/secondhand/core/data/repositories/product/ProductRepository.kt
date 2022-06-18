@@ -15,6 +15,10 @@ interface ProductRepository {
 
     fun getProductsAsBuyer(): Flow<List<Product>>
 
+    suspend fun deleteCachedProducts()
+
+    suspend fun deleteWishlist()
+
     /**
      * Seller
      */
@@ -23,5 +27,7 @@ interface ProductRepository {
     fun getCategories(): Flow<List<Category>>
 
     suspend fun getBanner(): List<Banner>
+
+    suspend fun deleteCachedCategories()
 
 }
