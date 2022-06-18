@@ -1,7 +1,7 @@
 package com.firstgroup.secondhand.core.network.auth.retrofit
 
-import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
-import com.firstgroup.secondhand.core.network.auth.model.UserResponse
+import com.firstgroup.secondhand.core.network.auth.model.LoginDto
+import com.firstgroup.secondhand.core.network.auth.model.UserDto
 import com.firstgroup.secondhand.core.network.utils.AuthInterceptor.Companion.NO_AUTH_HEADER_KEY
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -13,7 +13,7 @@ interface AuthService {
     @Headers("$NO_AUTH_HEADER_KEY: true")
     suspend fun login(
         @Body loginData: RequestBody
-    ): LoginResponse
+    ): LoginDto
 
     @Multipart
     @POST("auth/register")
@@ -21,15 +21,15 @@ interface AuthService {
     suspend fun register(
         @PartMap partMap: HashMap<String, RequestBody>,
         @Part image: MultipartBody.Part? = null,
-    ): UserResponse
+    ): UserDto
 
     @GET("auth/user/{id}")
-    suspend fun getUser(): UserResponse
+    suspend fun getUser(): UserDto
 
     @PUT("auth/user/{id}")
     suspend fun updateUser(
         @PartMap partMap: HashMap<String, RequestBody>,
         @Part image: MultipartBody.Part? = null,
-    ): UserResponse
+    ): UserDto
 
 }

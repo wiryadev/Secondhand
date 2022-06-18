@@ -3,7 +3,7 @@ package com.firstgroup.secondhand.core.data.repositories.auth
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
+import com.firstgroup.secondhand.core.network.auth.model.LoginDto
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.utils.TestDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ class AuthRepositoryTest {
 
     @Test
     fun login_whenAllInputValid_thenReturnAuthenticationModel() = runTest {
-        val response = LoginResponse(
+        val response = LoginDto(
             accessToken = "token",
             email = "email",
             name = "name",
