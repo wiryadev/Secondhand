@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.product.model
 
 
+import com.firstgroup.secondhand.core.model.Product
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -30,4 +31,16 @@ data class ProductDto(
     val updatedAt: String,
     @Json(name = "user_id")
     val userId: Int,
-)
+) {
+    fun mapToDomainModel() = Product(
+        id = id,
+        name = name,
+        description = description,
+        price = basePrice,
+        imageUrl = imageUrl,
+        location = location,
+        userId = userId,
+        status = status,
+        category = categories[0].name,
+    )
+}

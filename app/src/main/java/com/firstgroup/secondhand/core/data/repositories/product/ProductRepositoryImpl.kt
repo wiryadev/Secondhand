@@ -48,41 +48,6 @@ class ProductRepositoryImpl @Inject constructor(
         localDataSource.deleteCachedProducts()
     }
 
-    override fun getCategories(): Flow<List<Category>> {
-        return localDataSource.getCachedCategories().map { categories ->
-            categories.map { it.mapToDomainModel() }
-        }
-    }
-
-    override suspend fun loadCategories() {
-        try {
-            refreshCategoryCache()
-        } catch (e: Exception) {
-            when (e) {
-                is UnknownHostException,
-                is ConnectException,
-                is HttpException -> {
-                    if (localDataSource.getCachedCategories().first().isEmpty())
-                        throw Exception(
-                            "Something went wrong. No Data Available"
-                        )
-                }
-                else -> throw e
-            }
-        }
-    }
-
-    override suspend fun deleteCachedCategories() {
-        localDataSource.deleteCachedCategories()
-    }
-
-    override suspend fun deleteWishlist() {
-        localDataSource.deleteWishlist()
-    }
-
-    override suspend fun getBanner(): List<Banner> =
-        remoteDataSource.getBanners().map { it.mapToDomainModel() }
-
     /**
      * Only buyer side of products that needs to be cached
      */
@@ -115,5 +80,50 @@ class ProductRepositoryImpl @Inject constructor(
                 )
             }
         )
+    }
+
+    /**
+     * Seller
+     */
+    override suspend fun getProductsAsSeller(): List<Product> {
+        return remoteDataSource.getProductsAsSeller().map {
+            it.mapToDomainModel()
+        }
+    }
+
+    override fun getCategories(): Flow<List<Category>> {
+        return localDataSource.getCachedCategories().map { categories ->
+            categories.map { it.mapToDomainModel() }
+        }
+    }
+
+    override suspend fun loadCategories() {
+        try {
+            refreshCategoryCache()
+        } catch (e: Exception) {
+            when (e) {
+                is UnknownHostException,
+                is ConnectException,
+                is HttpException -> {
+                    if (localDataSource.getCachedCategories().first().isEmpty())
+                        throw Exception(
+                            "Something went wrong. No Data Available"
+                        )
+                }
+                else -> throw e
+            }
+        }
+    }
+
+    override suspend fun deleteCachedCategories() {
+        localDataSource.deleteCachedCategories()
+    }
+
+    override suspend fun deleteWishlist() {
+        localDataSource.deleteWishlist()
+    }
+
+    override suspend fun getBanner(): List<Banner> = remoteDataSource.getBanners().map {
+        it.mapToDomainModel()
     }
 }

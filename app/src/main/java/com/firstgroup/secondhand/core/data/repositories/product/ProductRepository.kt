@@ -22,6 +22,8 @@ interface ProductRepository {
     /**
      * Seller
      */
+    suspend fun getProductsAsSeller(): List<Product>
+
     suspend fun loadCategories()
 
     fun getCategories(): Flow<List<Category>>
