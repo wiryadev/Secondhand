@@ -1,9 +1,11 @@
 package com.firstgroup.secondhand.core.network.product.retrofit
 
+import com.firstgroup.secondhand.core.network.product.model.AddProductDto
 import com.firstgroup.secondhand.core.network.product.model.BannerDto
 import com.firstgroup.secondhand.core.network.product.model.CategoryDto
 import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ProductService {
@@ -30,6 +32,9 @@ interface ProductService {
     suspend fun getProductByIdAsSeller(
         @Path("id") productId: String,
     ): ProductDto
+
+    @POST("seller/product")
+    suspend fun addNewProduct(): AddProductDto
 
     @GET("seller/category")
     suspend fun getCategories(): List<CategoryDto>
