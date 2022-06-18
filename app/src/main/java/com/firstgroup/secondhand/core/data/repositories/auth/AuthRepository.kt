@@ -4,6 +4,7 @@ import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
 
@@ -21,7 +22,7 @@ interface AuthRepository {
         authUserRequest: AuthUserRequest,
     ): User
 
-    suspend fun getUserSession(): Authentication
+    suspend fun getUserSession(): Flow<Authentication>
 
     suspend fun saveUserSession(user: Authentication)
 
