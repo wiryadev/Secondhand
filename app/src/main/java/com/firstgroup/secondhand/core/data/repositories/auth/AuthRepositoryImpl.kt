@@ -7,7 +7,8 @@ import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -32,10 +33,10 @@ class AuthRepositoryImpl @Inject constructor(
         authUserRequest = authUserRequest,
     ).mapToDomain()
 
-    override suspend fun getUserSession(): Authentication {
-        return authPreferenceDataSource.getUserSession()
-            .first()
-            .mapToDomain()
+    override suspend fun getUserSession(): Flow<Authentication> {
+        return authPreferenceDataSource.getUserSession().map {
+            it.mapToDomain()
+        }
     }
 
     override suspend fun saveUserSession(user: Authentication) {
