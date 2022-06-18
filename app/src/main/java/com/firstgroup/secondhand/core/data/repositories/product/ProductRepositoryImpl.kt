@@ -9,7 +9,6 @@ import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -69,9 +68,8 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getBanner(): Flow<List<Banner>> = flow {
-        emit(remoteDataSource.getBanners().map { it.mapToDomainModel() })
-    }
+    override suspend fun getBanner(): List<Banner> =
+        remoteDataSource.getBanners().map { it.mapToDomainModel() }
 
     /**
      * Only buyer side of products that needs to be cached
