@@ -2,6 +2,7 @@ package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
+import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.utils.TestDispatcherRule
@@ -44,13 +45,17 @@ class AuthRepositoryTest {
             email = "email",
             name = "name",
         )
+        val loginRequest = LoginRequest(
+            email = "email",
+            password = "password"
+        )
 
-        whenever(remoteDataSource.login("email", "password"))
+        whenever(remoteDataSource.login(loginRequest))
             .thenReturn(response)
 
-        val actual = repository.login("email", "password")
+        val actual = repository.login(loginRequest)
 
-        verify(remoteDataSource).login("email", "password")
+        verify(remoteDataSource).login(loginRequest)
         assertEquals(expected, actual)
     }
 }

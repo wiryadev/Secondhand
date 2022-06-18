@@ -4,6 +4,7 @@ import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 import kotlinx.coroutines.flow.first
@@ -15,9 +16,8 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun login(
-        email: String,
-        password: String
-    ): Authentication = authRemoteDataSource.login(email, password).mapToDomain()
+        loginRequest: LoginRequest
+    ): Authentication = authRemoteDataSource.login(loginRequest).mapToDomain()
 
     override suspend fun register(
         authUserRequest: AuthUserRequest
