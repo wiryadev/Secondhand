@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.auth
 
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
 import com.firstgroup.secondhand.core.network.auth.model.UserResponse
 import com.firstgroup.secondhand.core.network.auth.retrofit.AuthService
@@ -11,12 +12,9 @@ class AuthRemoteDataSourceImpl @Inject constructor(
     private val authService: AuthService,
 ) : AuthRemoteDataSource {
 
-    override suspend fun login(email: String, password: String): LoginResponse {
+    override suspend fun login(loginRequest: LoginRequest): LoginResponse {
         return authService.login(
-            loginData = RequestUtil.createJsonRequestBody(
-                "email" to email,
-                "password" to password,
-            )
+            loginData = RequestUtil.createJsonRequestBody(loginRequest)
         )
     }
 

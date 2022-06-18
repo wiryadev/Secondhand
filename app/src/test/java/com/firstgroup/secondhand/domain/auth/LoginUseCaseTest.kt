@@ -43,13 +43,13 @@ class LoginUseCaseTest {
             password = "password"
         )
 
-        whenever(repository.login(loginRequest.email, loginRequest.password))
+        whenever(repository.login(loginRequest))
             .thenReturn(authentication)
 
         val expected = Result.Success(data = authentication)
         val actual = loginUseCase(loginRequest)
 
-        verify(repository).login(loginRequest.email, loginRequest.password)
+        verify(repository).login(loginRequest)
         assertNotNull(actual)
         assertTrue(actual is Result.Success)
         assertEquals(expected, actual)
@@ -57,14 +57,19 @@ class LoginUseCaseTest {
 
     @Test
     fun login_whenInputInvalid_thenReturnError() = runTest {
+        val loginRequest = LoginRequest(
+            email = "",
+            password = ""
+        )
+
         val exception = RuntimeException("HTTP Error")
-        whenever(repository.login("", ""))
+        whenever(repository.login(loginRequest))
             .thenThrow(exception)
 
         val expected = Result.Error(exception = exception)
-        val actual = loginUseCase(LoginRequest("", ""))
+        val actual = loginUseCase(loginRequest)
 
-        verify(repository).login("", "")
+        verify(repository).login(loginRequest)
         assertNotNull(actual)
         assertTrue(actual is Result.Error)
         assertEquals(expected.toString(), actual.toString())

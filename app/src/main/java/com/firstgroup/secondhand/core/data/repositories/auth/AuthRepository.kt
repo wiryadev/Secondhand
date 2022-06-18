@@ -3,12 +3,12 @@ package com.firstgroup.secondhand.core.data.repositories.auth
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 
 interface AuthRepository {
 
     suspend fun login(
-        email: String,
-        password: String,
+        loginRequest: LoginRequest,
     ): Authentication
 
     suspend fun register(

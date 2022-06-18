@@ -1,14 +1,14 @@
 package com.firstgroup.secondhand.core.network.auth
 
 import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginResponse
 import com.firstgroup.secondhand.core.network.auth.model.UserResponse
 
 interface AuthRemoteDataSource {
 
     suspend fun login(
-        email: String,
-        password: String,
+        loginRequest: LoginRequest,
     ): LoginResponse
 
     suspend fun register(
