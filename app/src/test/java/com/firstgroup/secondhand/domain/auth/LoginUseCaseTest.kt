@@ -4,6 +4,7 @@ import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepository
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import com.firstgroup.secondhand.core.network.utils.AuthInterceptor
 import com.firstgroup.secondhand.utils.TestDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -12,6 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -22,12 +24,14 @@ class LoginUseCaseTest {
     val dispatcherRule = TestDispatcherRule()
 
     private lateinit var repository: AuthRepository
+    private lateinit var authInterceptor: AuthInterceptor
     private lateinit var loginUseCase: LoginUseCase
 
     @Before
     fun setUp() {
         repository = mock()
-        loginUseCase = LoginUseCase(repository, dispatcherRule.dispatcher)
+        authInterceptor = mock()
+        loginUseCase = LoginUseCase(repository, authInterceptor, dispatcherRule.dispatcher)
     }
 
     @Test
@@ -50,6 +54,7 @@ class LoginUseCaseTest {
         val actual = loginUseCase(loginRequest)
 
         verify(repository).login(loginRequest)
+        verify(authInterceptor).setToken(authentication.token)
         assertNotNull(actual)
         assertTrue(actual is Result.Success)
         assertEquals(expected, actual)
@@ -70,6 +75,7 @@ class LoginUseCaseTest {
         val actual = loginUseCase(loginRequest)
 
         verify(repository).login(loginRequest)
+        verify(authInterceptor, never()).setToken("")
         assertNotNull(actual)
         assertTrue(actual is Result.Error)
         assertEquals(expected.toString(), actual.toString())
