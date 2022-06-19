@@ -94,7 +94,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
     // Networking
-    def okhttp_version = "5.0.0-alpha.7"
+    def okhttp_version = "5.0.0-alpha.9"
     def chucker_version = "3.5.2"
     def retrofit_version = "2.9.0"
     def moshi_version = "1.13.0"
