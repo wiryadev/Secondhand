@@ -51,7 +51,12 @@ class RegisterFragment : Fragment() {
                 MdcTheme {
                     RegisterScreen(
                         viewModel = viewModel,
-                        toLogin = { findNavController().navigate(R.id.action_registerFragment_to_loginFragment) })
+                        toLogin = {
+                            findNavController().navigate(
+                                R.id.action_registerFragment_to_loginFragment
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -59,15 +64,16 @@ class RegisterFragment : Fragment() {
 }
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, toLogin: () -> Unit) {
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
+    toLogin: () -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     RegisterScreen(
         uiState = uiState,
         onRegisterClick = viewModel::register,
-        onSnackbarDismissed = {
-            viewModel.resetState()
-        },
+        onSnackbarDismissed = viewModel::resetState,
         toLogin = toLogin
     )
 }
@@ -115,7 +121,9 @@ fun RegisterScreen(
                 onValueChange = { name = it },
                 textStyle = MaterialTheme.typography.body1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -148,7 +156,9 @@ fun RegisterScreen(
                 onValueChange = { email = it },
                 textStyle = MaterialTheme.typography.body1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -182,7 +192,9 @@ fun RegisterScreen(
                 onValueChange = { phoneNumber = it },
                 textStyle = MaterialTheme.typography.body1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -215,7 +227,9 @@ fun RegisterScreen(
                 onValueChange = { address = it },
                 textStyle = MaterialTheme.typography.body1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
@@ -256,7 +270,11 @@ fun RegisterScreen(
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
                     ),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 trailingIcon = {
@@ -269,14 +287,18 @@ fun RegisterScreen(
                     if (passwordVisible) {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_show_password),
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_show_password
+                                ),
                                 description
                             )
                         }
                     } else {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_hide_password),
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_hide_password
+                                ),
                                 description
                             )
                         }
@@ -311,8 +333,7 @@ fun RegisterScreen(
                     text =
                     if (uiState.isLoading) {
                         stringResource(id = R.string.loading)
-                    }
-                    else {
+                    } else {
                         stringResource(id = R.string.register)
                     },
                 )
