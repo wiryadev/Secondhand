@@ -20,6 +20,9 @@
             android:name=".ui.auth.AuthActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.home.MainActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
