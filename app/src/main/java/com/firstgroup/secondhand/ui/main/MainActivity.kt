@@ -1,4 +1,4 @@
-package com.firstgroup.secondhand.ui.home
+package com.firstgroup.secondhand.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
