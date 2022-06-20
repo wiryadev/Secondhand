@@ -5,17 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -40,7 +51,7 @@ class LoginFragment : Fragment() {
                 MdcTheme {
                     LoginScreen(
                         viewModel = viewModel,
-                        toHome = { findNavController().navigate(R.id.action_loginFragment_to_registerFragment) })
+                        toRegister = { findNavController().navigate(R.id.action_loginFragment_to_registerFragment) })
                 }
             }
         }
@@ -50,7 +61,7 @@ class LoginFragment : Fragment() {
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    toHome: () -> Unit
+    toRegister: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -58,7 +69,7 @@ fun LoginScreen(
         uiState = uiState,
         onSnackbarDismissed = {},
         onLoginClick = viewModel::login,
-        toHome = toHome
+        toRegister = toRegister
     )
 }
 
@@ -67,7 +78,7 @@ fun LoginScreen(
     uiState: LoginUiState,
     onLoginClick: (String, String) -> Unit,
     onSnackbarDismissed: () -> Unit,
-    toHome: () -> Unit
+    toRegister: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -76,19 +87,19 @@ fun LoginScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .padding(horizontal = 16.dp)
         ) {
-
+            val focusManager = LocalFocusManager.current
+            // Login Title
             Text(
                 text = stringResource(id = R.string.login),
-                style = MaterialTheme.typography.h5,
-                fontWeight = FontWeight.ExtraBold,
+                style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 53.dp, bottom = 12.dp)
+                    .padding(top = 72.dp, bottom = 12.dp)
             )
-
+            // Login Email Field
             Text(
                 text = stringResource(id = R.string.email),
                 style = MaterialTheme.typography.body1,
@@ -108,6 +119,10 @@ fun LoginScreen(
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
                     ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 placeholder = {
@@ -121,7 +136,8 @@ fun LoginScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
-
+            // Login Password Field
+            var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
                 text = stringResource(R.string.password),
                 style = MaterialTheme.typography.body1,
@@ -141,6 +157,40 @@ fun LoginScreen(
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
                     ),
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                trailingIcon = {
+                    val description =
+                        if (passwordVisible) {
+                            stringResource(R.string.desc_hide_password)
+                        } else {
+                            stringResource(R.string.desc_show_password)
+                        }
+                    if (passwordVisible) {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_show_password
+                                ),
+                                description
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_hide_password
+                                ),
+                                description
+                            )
+                        }
+                    }
+                },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 placeholder = {
@@ -154,7 +204,7 @@ fun LoginScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
-
+            // Login Button
             Button(
                 onClick = {
                     onLoginClick(email, password)
@@ -172,6 +222,29 @@ fun LoginScreen(
                     } else {
                         stringResource(id = R.string.login)
                     },
+                )
+            }
+            // Login Bottom Clickable Text
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.account_question1),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.not_have_account),
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.dark_blue_04),
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable { toRegister() }
                 )
             }
         }
@@ -202,7 +275,7 @@ fun LoginScreen(
                 isError = false,
                 onDismissClick = {
                     onSnackbarDismissed()
-                    toHome()
+                    toRegister()
                 }
             )
         }
