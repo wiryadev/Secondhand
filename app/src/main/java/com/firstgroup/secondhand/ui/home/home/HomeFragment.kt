@@ -4,23 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
@@ -43,7 +41,7 @@ class HomeFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
@@ -64,12 +62,24 @@ fun HomeScreen() {
                 .fillMaxWidth()
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = dummyProduct.imageUrl),
+                painter = rememberAsyncImagePainter(model = R.drawable.img_banner),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .height(398.dp)
                     .fillMaxWidth()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.White
+                            ), startY = 500f
+                        )
+                    )
             )
             Column(modifier = Modifier.fillMaxHeight()) {
                 TextField(
@@ -90,7 +100,10 @@ fun HomeScreen() {
                             )
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_search),
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.clickable(onClick = {
+
+                                })
                             )
                         }
                     },
@@ -106,10 +119,8 @@ fun HomeScreen() {
                     text = "Telusuri Kategori",
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
-                val category = listOf(Category(1, "Semua"), dummyCategory, dummyCategory, dummyCategory)
-                ListCategory(category = category) {
-
-                }
+                val category = listOf(Category(-1, "Semua"), dummyCategory, dummyCategory, dummyCategory)
+                ListCategory(category = category)
             }
         }
         ListProduct(result = List(4) { dummyProduct }){
@@ -119,53 +130,41 @@ fun HomeScreen() {
 }
 
 @Composable
-fun ListCategory(category: List<Category>, onCategoryClick :() -> Unit){
+fun ListCategory(category: List<Category>){
+    var selectedIndex by remember{mutableStateOf(-1)}
     LazyRow(modifier = Modifier
         .padding(start = 8.dp)
         .height(44.dp)) {
         items(items = category) {
-            if(it.name == ("Semua")) {
-                Button(
-                    onClick = onCategoryClick,
-                    modifier = Modifier
-                        .height(44.dp)
-                        .padding(horizontal = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = it.name, style = MaterialTheme.typography.button)
-                }
-            }
-            else {
-                Button(
-                    onClick = onCategoryClick,
-                    modifier = Modifier
-                        .height(44.dp)
-                        .padding(horizontal = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(contentColor = Color.Black, backgroundColor = colorResource(
-                        id = R.color.dark_blue_01
-                    ))
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = it.name, style = MaterialTheme.typography.button)
-                }
+            Button(
+                onClick = {
+                    selectedIndex = if (selectedIndex != it.id)
+                        it.id else -1
+                },
+                modifier = Modifier
+                    .height(44.dp)
+                    .padding(horizontal = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = if (it.id != selectedIndex)
+                    buttonColors(contentColor = Color.Black, backgroundColor = colorResource(id = R.color.dark_blue_01)) else
+                    buttonColors(contentColor = Color.White, backgroundColor = colorResource(id = R.color.dark_blue_04))
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_search),
+                    contentDescription = null,
+                    tint = if (it.id != selectedIndex)
+                        Color.Black else Color.White
+                    ,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = it.name, style = MaterialTheme.typography.button)
             }
         }
     }
 }
 
 @Composable
-fun ListProduct (result: List<Product>, onProductClick :() -> Unit) {
+fun ListProduct (result: List<Product>, onProductClick :(Int) -> Unit) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         modifier = Modifier
             .padding(horizontal = 8.dp)
@@ -178,30 +177,28 @@ fun ListProduct (result: List<Product>, onProductClick :() -> Unit) {
 }
 
 @Composable
-fun ProductItem(product: Product, itemOnClick :() -> Unit){
+fun ProductItem(product: Product, itemOnClick :(Int) -> Unit){
     Card(modifier = Modifier
-        .padding(horizontal = 8.dp, vertical = 8.dp)
         .size(width = 156.dp, height = 206.dp)
-        .clickable(true, onClick = itemOnClick),
+        .padding(horizontal = 8.dp, vertical = 8.dp)
+        .background(color = Color.White)
+        .clickable(true, onClick = { itemOnClick(product.id) }),
         shape = RoundedCornerShape(4.dp),
         elevation = 4.dp,
     ) {
         Column(
             modifier = Modifier
-                .background(color = Color.White)
-                .padding(4.dp)
                 .fillMaxSize()
+                .padding(4.dp)
         ) {
             Image(painter = rememberAsyncImagePainter(model = product.imageUrl),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .size(
-                        width = 140.dp,
-                        height = 100.dp
-                    )
+                    .height(height = 100.dp)
+                    .fillMaxWidth()
+                    .padding(all = 4.dp)
                     .clip(shape = RoundedCornerShape(4.dp))
-                    .padding(all = 8.dp)
             )
             Text(text = product.name,
                 modifier = Modifier.padding(horizontal = 8.dp),
