@@ -23,10 +23,10 @@ interface AuthService {
         @Part image: MultipartBody.Part? = null,
     ): UserDto
 
-    @GET("auth/user/{id}")
+    @GET("auth/user")
     suspend fun getUser(): UserDto
 
-    @PUT("auth/user/{id}")
+    @PUT("auth/user")
     suspend fun updateUser(
         @PartMap partMap: HashMap<String, RequestBody>,
         @Part image: MultipartBody.Part? = null,

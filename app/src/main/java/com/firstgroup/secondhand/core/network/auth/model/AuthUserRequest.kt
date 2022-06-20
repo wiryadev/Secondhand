@@ -11,6 +11,7 @@ data class AuthUserRequest(
     val password: String,
     val phoneNo: String,
     val address: String,
+    val city: String,
     val image: File? = null
 ) {
     data class FormData(
@@ -25,6 +26,7 @@ data class AuthUserRequest(
             "password" to RequestUtil.createPartFromString(password),
             "phone_number" to RequestUtil.createPartFromString(phoneNo),
             "address" to RequestUtil.createPartFromString(address),
+            "city" to RequestUtil.createPartFromString(city),
         )
 
         val body = image?.let {
