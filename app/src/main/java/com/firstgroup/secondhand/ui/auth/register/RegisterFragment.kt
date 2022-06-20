@@ -114,7 +114,7 @@ fun RegisterScreen(
                     .padding(top = 24.dp, bottom = 12.dp)
             )
 
-            // Name Field
+            // Register Name Field
             Text(
                 text = stringResource(R.string.name),
                 style = MaterialTheme.typography.body1,
@@ -149,7 +149,7 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
-            // Email Field
+            // Register Email Field
             Text(
                 text = stringResource(R.string.email),
                 style = MaterialTheme.typography.body1,
@@ -184,7 +184,7 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
-            // Phone Number Field
+            // Register Phone Number Field
             Text(
                 text = stringResource(R.string.phone_number),
                 style = MaterialTheme.typography.body1,
@@ -220,7 +220,7 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
-            // Address Field
+            // Register Address Field
             Text(
                 text = stringResource(R.string.address),
                 style = MaterialTheme.typography.body1,
@@ -290,7 +290,7 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
-            // Password Field
+            // Register Password Field
             var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
                 text = stringResource(R.string.password),
@@ -377,6 +377,8 @@ fun RegisterScreen(
                     },
                 )
             }
+
+            // Register Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
@@ -385,7 +387,7 @@ fun RegisterScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.account_question),
+                    text = stringResource(R.string.account_question2),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(end = 4.dp)
                 )
@@ -400,7 +402,7 @@ fun RegisterScreen(
                 )
             }
         }
-
+        // Register Top Back Button
         IconButton(onClick = { toLogin() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_left),
