@@ -37,6 +37,7 @@ class RegisterViewModel @Inject constructor(
             password = password,
             phoneNo = phoneNumber,
             address = address,
+            city = "Atltantis", // waiting for screen to be updated
             image = null
         )
         viewModelScope.launch {
