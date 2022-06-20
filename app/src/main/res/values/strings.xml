@@ -12,9 +12,11 @@
     <string name="phone_number">Phone Number</string>
     <string name="address">Address</string>
     <string name="password">Password</string>
-    <string name="account_question">Sudah punya akun?</string>
+    <string name="account_question1">Belum punya akun?</string>
+    <string name="account_question2">Sudah punya akun?</string>
     <string name="have_account">Masuk di sini!</string>
     <string name="city">City</string>
+    <string name="not_have_account">Daftar di sini!</string>
 
     <!-- Content Description -->
     <string name="desc_hide_password">Hide password</string>
@@ -39,7 +41,5 @@
     <string name="unknown_error">Unknown Error</string>
     <string name="invalid_email_password">Email or Password Are Wrong</string>
     <string name="internal_service_error">Internal Service Error</string>
-
-
 
 </resources>
