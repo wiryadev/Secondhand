@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -81,7 +83,7 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreen(
     uiState: RegisterUiState,
-    onRegisterClick: (String, String, String, String, String) -> Unit,
+    onRegisterClick: (String, String, String, String, String, String) -> Unit,
     onSnackbarDismissed: () -> Unit,
     toLogin: () -> Unit
 ) {
@@ -90,6 +92,7 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -97,6 +100,7 @@ fun RegisterScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
                 .padding(top = 48.dp)
         ) {
@@ -251,6 +255,41 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            // City Field
+            Text(
+                text = stringResource(R.string.city),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+            )
+            OutlinedTextField(
+                value = city,
+                onValueChange = { city = it },
+                textStyle = MaterialTheme.typography.body1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .border(
+                        1.dp,
+                        colorResource(id = R.color.neutral_02),
+                        RoundedCornerShape(16.dp)
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.placeholder_city),
+                        style = MaterialTheme.typography.body1,
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    placeholderColor = colorResource(id = R.color.neutral_02)
+                )
+            )
             // Password Field
             var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
@@ -320,7 +359,7 @@ fun RegisterScreen(
             //Register Button
             Button(
                 onClick = {
-                    onRegisterClick(name, email, password, phoneNumber, address)
+                    onRegisterClick(name, email, password, phoneNumber, address, city)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -14,6 +14,7 @@
     <string name="password">Password</string>
     <string name="account_question">Sudah punya akun?</string>
     <string name="have_account">Masuk di sini!</string>
+    <string name="city">City</string>
 
     <!-- Content Description -->
     <string name="desc_hide_password">Hide password</string>
@@ -26,6 +27,7 @@
     <string name="placeholder_phone_number">Your Number</string>
     <string name="placeholder_address">Your Address</string>
     <string name="placeholder_password">Your Password</string>
+    <string name="placeholder_city">Your City</string>
 
     <!-- Success Message -->
     <string name="register_succes">Account Created Successfully</string>
