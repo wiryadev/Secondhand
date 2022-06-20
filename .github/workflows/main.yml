@@ -33,7 +33,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         
-      - name: Decode API Key
+      - name: Decode BASE URL
         env:
          BASE_URL: ${{ secrets.BASE_URL }}
         run: echo BASE_URL="$BASE_URL" > local.properties
