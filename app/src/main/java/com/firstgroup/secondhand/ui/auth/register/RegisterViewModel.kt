@@ -26,7 +26,8 @@ class RegisterViewModel @Inject constructor(
         email: String,
         password: String,
         phoneNumber: String,
-        address: String
+        address: String,
+        city: String,
     ) {
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
@@ -37,7 +38,7 @@ class RegisterViewModel @Inject constructor(
             password = password,
             phoneNo = phoneNumber,
             address = address,
-            city = "Atltantis", // waiting for screen to be updated
+            city = city,
             image = null
         )
         viewModelScope.launch {
