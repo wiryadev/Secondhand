@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.ui.auth.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.TopSnackBar
+import com.firstgroup.secondhand.ui.main.MainActivity
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,7 +53,14 @@ class LoginFragment : Fragment() {
                 MdcTheme {
                     LoginScreen(
                         viewModel = viewModel,
-                        toRegister = { findNavController().navigate(R.id.action_loginFragment_to_registerFragment) })
+                        toRegister = {
+                            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+                        },
+                        onLoginSuccess = {
+                            startActivity(Intent(activity, MainActivity::class.java))
+                            activity?.finish()
+                        }
+                    )
                 }
             }
         }
@@ -61,14 +70,16 @@ class LoginFragment : Fragment() {
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    toRegister: () -> Unit
+    toRegister: () -> Unit,
+    onLoginSuccess: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     LoginScreen(
         uiState = uiState,
-        onSnackbarDismissed = {},
+        onSnackbarDismissed = viewModel::resetState,
         onLoginClick = viewModel::login,
+        onLoginSuccess = onLoginSuccess,
         toRegister = toRegister
     )
 }
@@ -77,8 +88,9 @@ fun LoginScreen(
 fun LoginScreen(
     uiState: LoginUiState,
     onLoginClick: (String, String) -> Unit,
+    onLoginSuccess: () -> Unit,
     onSnackbarDismissed: () -> Unit,
-    toRegister: () -> Unit
+    toRegister: () -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -275,7 +287,7 @@ fun LoginScreen(
                 isError = false,
                 onDismissClick = {
                     onSnackbarDismissed()
-                    toRegister()
+                    onLoginSuccess()
                 }
             )
         }

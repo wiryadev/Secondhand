@@ -1,4 +1,4 @@
-package com.firstgroup.secondhand.ui.home.home
+package com.firstgroup.secondhand.ui.main.home
 
 import android.os.Bundle
 import android.view.LayoutInflater

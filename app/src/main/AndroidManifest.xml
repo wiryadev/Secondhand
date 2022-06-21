@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.firstgroup.secondhand">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".SecondhandApp"
@@ -20,12 +20,13 @@
             android:name=".ui.auth.AuthActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.MainActivity"
-            android:exported="false"/>
+            android:name=".ui.main.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Splash">
+            android:noHistory="true"
+            android:theme="@style/Theme.AppSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

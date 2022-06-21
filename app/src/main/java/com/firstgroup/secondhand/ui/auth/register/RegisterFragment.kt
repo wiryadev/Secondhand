@@ -99,10 +99,10 @@ fun RegisterScreen(
     ) {
         Column(
             modifier = Modifier
+                .padding(top = 48.dp)
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(top = 48.dp)
         ) {
             val focusManager = LocalFocusManager.current
             // Register Title
@@ -379,7 +379,7 @@ fun RegisterScreen(
             }
 
             // Register Bottom Clickable Text
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.heightIn(min = 16.dp, max = 32.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
