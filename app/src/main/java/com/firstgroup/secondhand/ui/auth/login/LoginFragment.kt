@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.TopSnackBar
 import com.firstgroup.secondhand.ui.main.MainActivity
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -163,7 +164,7 @@ fun LoginScreen(
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp, top = 2.dp)
+                    .padding( top = 2.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -216,26 +217,40 @@ fun LoginScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
+            Spacer(modifier = Modifier.height(24.dp))
             // Login Button
-            Button(
-                onClick = {
-                    onLoginClick(email, password)
+            PrimaryButton(
+                onClick = { onLoginClick(email, password) },
+                content = {
+                    Text(
+                        text = if (uiState.isLoading) {
+                            stringResource(id = R.string.loading)
+                        } else {
+                            stringResource(id = R.string.login)
+                        },
+                    )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-                    .size(height = 48.dp, width = 0.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !uiState.isLoading
-            ) {
-                Text(
-                    text = if (uiState.isLoading) {
-                        stringResource(id = R.string.loading)
-                    } else {
-                        stringResource(id = R.string.login)
-                    },
-                )
-            }
+                enabled = !uiState.isLoading,
+            )
+//            Button(
+//                onClick = {
+//                    onLoginClick(email, password)
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 12.dp)
+//                    .size(height = 48.dp, width = 0.dp),
+//                shape = RoundedCornerShape(16.dp),
+//                enabled = !uiState.isLoading
+//            ) {
+//                Text(
+//                    text = if (uiState.isLoading) {
+//                        stringResource(id = R.string.loading)
+//                    } else {
+//                        stringResource(id = R.string.login)
+//                    },
+//                )
+//            }
             // Login Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
             Row(
