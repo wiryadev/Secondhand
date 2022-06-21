@@ -14,7 +14,7 @@ class GetCategoriesUseCase @Inject constructor(
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Any, List<Category>>(ioDispatcher) {
 
-    override suspend fun execute(param: Any): Flow<List<Category>> {
+    override fun execute(param: Any): Flow<List<Category>> {
         return productRepository.getCategories()
     }
 
