@@ -18,8 +18,7 @@ class SplashViewModel @Inject constructor(
     private val getSessionUseCase: GetSessionUseCase
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<MainUiState> =
-        MutableStateFlow(MainUiState.Initial)
+    private val _uiState: MutableStateFlow<MainUiState> = MutableStateFlow(MainUiState.Initial)
     val uiState: StateFlow<MainUiState> get() = _uiState.asStateFlow()
 
     fun checkSession() {
@@ -29,12 +28,14 @@ class SplashViewModel @Inject constructor(
                     is Result.Error -> {
                         Log.d("Authentication", "getUser: ${result.exception}")
                         _uiState.value = MainUiState.Loaded(
-                            isLoggedIn = false
+                            isLoggedIn = false,
+                            token = ""
                         )
                     }
                     is Result.Success -> {
                         _uiState.value = MainUiState.Loaded(
-                            isLoggedIn = result.data.token.isNotEmpty()
+                            isLoggedIn = result.data.token.isNotEmpty(),
+                            token = result.data.token,
                         )
                     }
                 }
@@ -45,5 +46,8 @@ class SplashViewModel @Inject constructor(
 
 sealed class MainUiState {
     object Initial : MainUiState()
-    data class Loaded(val isLoggedIn: Boolean) : MainUiState()
+    data class Loaded(
+        val isLoggedIn: Boolean,
+        val token: String,
+    ) : MainUiState()
 }
