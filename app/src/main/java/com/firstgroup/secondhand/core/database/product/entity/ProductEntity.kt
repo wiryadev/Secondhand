@@ -15,16 +15,16 @@ data class ProductEntity(
     val name: String,
 
     @ColumnInfo(name = "description")
-    val description: String,
+    val description: String?,
 
     @ColumnInfo(name = "price")
     val price: Int,
 
     @ColumnInfo(name = "image_url")
-    val imageUrl: String,
+    val imageUrl: String?,
 
     @ColumnInfo(name = "location")
-    val location: String,
+    val location: String?,
 
     @ColumnInfo(name = "user_id")
     val userId: Int,

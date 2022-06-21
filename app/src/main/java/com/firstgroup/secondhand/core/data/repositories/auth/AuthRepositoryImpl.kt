@@ -33,7 +33,7 @@ class AuthRepositoryImpl @Inject constructor(
         authUserRequest = authUserRequest,
     ).mapToDomain()
 
-    override suspend fun getUserSession(): Flow<Authentication> {
+    override fun getUserSession(): Flow<Authentication> {
         return authPreferenceDataSource.getUserSession().map {
             it.mapToDomain()
         }

@@ -8,25 +8,25 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class ProductDto(
     @Json(name = "base_price")
-    val basePrice: Int,
+    val basePrice: Int?,
     @Json(name = "Categories")
     val categories: List<CategoryDto>,
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "description")
-    val description: String,
+    val description: String?,
     @Json(name = "id")
     val id: Int,
     @Json(name = "image_name")
-    val imageName: String,
+    val imageName: String?,
     @Json(name = "image_url")
-    val imageUrl: String,
+    val imageUrl: String?,
     @Json(name = "location")
-    val location: String,
+    val location: String?,
     @Json(name = "name")
-    val name: String,
+    val name: String?,
     @Json(name = "status")
-    val status: String,
+    val status: String?,
     @Json(name = "updatedAt")
     val updatedAt: String,
     @Json(name = "user_id")
@@ -34,9 +34,9 @@ data class ProductDto(
 ) {
     fun mapToDomainModel() = Product(
         id = id,
-        name = name,
+        name = name ?: "",
         description = description,
-        price = basePrice,
+        price = basePrice ?: 0,
         imageUrl = imageUrl,
         location = location,
         userId = userId,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -24,9 +25,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
@@ -35,17 +36,19 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment: Fragment() {
+class HomeFragment : Fragment() {
+
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
+                val uiState by viewModel.uiState.collectAsState()
+
                 MdcTheme {
-                    HomeScreen()
+                    HomeScreen(uiState)
                 }
             }
         }
@@ -53,8 +56,10 @@ class HomeFragment: Fragment() {
 }
 
 @Composable
-fun HomeScreen() {
-    var search by remember{ mutableStateOf("") }
+fun HomeScreen(
+    homeUiState: HomeUiState
+) {
+    var search by remember { mutableStateOf("") }
     Column {
         Box(
             modifier = Modifier
@@ -75,8 +80,7 @@ fun HomeScreen() {
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                Color.Transparent,
-                                Color.White
+                                Color.Transparent, Color.White
                             ), startY = 500f
                         )
                     )
@@ -92,7 +96,7 @@ fun HomeScreen() {
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
                     placeholder = {
-                        Row (modifier = Modifier.fillMaxWidth()){
+                        Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = "Cari di Second Chance",
                                 style = MaterialTheme.typography.body1,
@@ -119,42 +123,48 @@ fun HomeScreen() {
                     text = "Telusuri Kategori",
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
-                val category = listOf(Category(-1, "Semua"), dummyCategory, dummyCategory, dummyCategory)
-                ListCategory(category = category)
+                val categories = mutableListOf(Category(-1, "Semua"))
+                if (homeUiState.categoryState is CategoriesUiState.Success) {
+                    categories.addAll(homeUiState.categoryState.categories)
+                    ListCategory(category = categories)
+                }
             }
         }
-        ListProduct(result = List(4) { dummyProduct }){
-
+        if (homeUiState.productState is BuyerProductsUiState.Success) {
+            ListProduct(products = homeUiState.productState.products, onProductClick = {})
         }
     }
 }
 
 @Composable
-fun ListCategory(category: List<Category>){
-    var selectedIndex by remember{mutableStateOf(-1)}
-    LazyRow(modifier = Modifier
-        .padding(start = 8.dp)
-        .height(44.dp)) {
+fun ListCategory(category: List<Category>) {
+    var selectedIndex by remember { mutableStateOf(-1) }
+    LazyRow(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .height(44.dp)
+    ) {
         items(items = category) {
             Button(
                 onClick = {
-                    selectedIndex = if (selectedIndex != it.id)
-                        it.id else -1
+                    selectedIndex = if (selectedIndex != it.id) it.id else -1
                 },
                 modifier = Modifier
                     .height(44.dp)
                     .padding(horizontal = 8.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = if (it.id != selectedIndex)
-                    buttonColors(contentColor = Color.Black, backgroundColor = colorResource(id = R.color.dark_blue_01)) else
-                    buttonColors(contentColor = Color.White, backgroundColor = colorResource(id = R.color.dark_blue_04))
+                colors = if (it.id != selectedIndex) buttonColors(
+                    contentColor = Color.Black,
+                    backgroundColor = colorResource(id = R.color.dark_blue_01)
+                ) else buttonColors(
+                    contentColor = Color.White,
+                    backgroundColor = colorResource(id = R.color.dark_blue_04)
+                )
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = null,
-                    tint = if (it.id != selectedIndex)
-                        Color.Black else Color.White
-                    ,
+                    tint = if (it.id != selectedIndex) Color.Black else Color.White,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(text = it.name, style = MaterialTheme.typography.button)
@@ -164,26 +174,33 @@ fun ListCategory(category: List<Category>){
 }
 
 @Composable
-fun ListProduct (result: List<Product>, onProductClick :(Int) -> Unit) {
-    LazyVerticalGrid(columns = GridCells.Fixed(2),
+fun ListProduct(
+    products: List<Product>, onProductClick: (Int) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = Modifier
             .padding(horizontal = 8.dp)
-            .fillMaxWidth()) {
-        items(result.size) {
-            ProductItem(product = result[it], itemOnClick = onProductClick)
+            .fillMaxWidth(),
+    ) {
+        items(products, key = { it.id }) { product ->
+            ProductItem(product = product, onClick = onProductClick)
         }
     }
 
 }
 
 @Composable
-fun ProductItem(product: Product, itemOnClick :(Int) -> Unit){
-    Card(modifier = Modifier
-        .size(width = 156.dp, height = 206.dp)
-        .padding(horizontal = 8.dp, vertical = 8.dp)
-        .background(color = Color.White)
-        .clickable(true, onClick = { itemOnClick(product.id) }),
-        shape = RoundedCornerShape(4.dp),
+fun ProductItem(
+    product: Product, onClick: (Int) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .size(width = 156.dp, height = 206.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .background(color = Color.White)
+            .clickable(true, onClick = { onClick(product.id) }),
+        shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
     ) {
         Column(
@@ -191,7 +208,8 @@ fun ProductItem(product: Product, itemOnClick :(Int) -> Unit){
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(model = product.imageUrl),
+            Image(
+                painter = rememberAsyncImagePainter(model = product.imageUrl ?: dummyProduct.imageUrl),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -200,15 +218,18 @@ fun ProductItem(product: Product, itemOnClick :(Int) -> Unit){
                     .padding(all = 4.dp)
                     .clip(shape = RoundedCornerShape(4.dp))
             )
-            Text(text = product.name,
+            Text(
+                text = product.name,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 style = MaterialTheme.typography.body1
             )
-            Text(text = product.category,
+            Text(
+                text = product.category,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 style = MaterialTheme.typography.body2
             )
-            Text(text = "Rp. ${product.price}",
+            Text(
+                text = "Rp. ${product.price}",
                 modifier = Modifier.padding(all = 8.dp),
                 style = MaterialTheme.typography.body1
             )
@@ -216,15 +237,16 @@ fun ProductItem(product: Product, itemOnClick :(Int) -> Unit){
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomePreview() {
-    MdcTheme {
-        HomeScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun HomePreview() {
+//    MdcTheme {
+//        HomeScreen()
+//    }
+//}
 
-val dummyProduct = Product(1,
+val dummyProduct = Product(
+    1,
     "lenovo",
     "ww",
     50000,

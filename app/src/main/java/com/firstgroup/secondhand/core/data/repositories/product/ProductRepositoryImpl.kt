@@ -57,14 +57,19 @@ class ProductRepositoryImpl @Inject constructor(
             remoteData.map { product ->
                 ProductEntity(
                     id = product.id,
-                    name = product.name,
+                    name = product.name ?: "",
                     description = product.description,
-                    price = product.basePrice,
+                    price = product.basePrice ?: 0,
                     imageUrl = product.imageUrl,
                     location = product.location,
                     userId = product.userId,
-                    status = product.status,
-                    category = product.categories[0].name,
+                    status = product.status ?: "available",
+                    category = try {
+                        val categories = product.categories.map { it.name }
+                        categories.joinToString(separator = ", ")
+                    } catch (e: Exception) {
+                        "No Categories"
+                    },
                 )
             }
         )
