@@ -7,6 +7,7 @@ import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
+import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -95,6 +96,10 @@ class ProductRepositoryImpl @Inject constructor(
             it.mapToDomainModel()
         }
     }
+
+    override suspend fun addNewProduct(
+        productRequest: ProductRequest
+    ): Product = remoteDataSource.addNewProduct(productRequest).mapToDomainModel()
 
     override fun getCategories(): Flow<List<Category>> {
         return localDataSource.getCachedCategories().map { categories ->

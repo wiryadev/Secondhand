@@ -4,9 +4,9 @@ import com.firstgroup.secondhand.core.network.product.model.AddProductDto
 import com.firstgroup.secondhand.core.network.product.model.BannerDto
 import com.firstgroup.secondhand.core.network.product.model.CategoryDto
 import com.firstgroup.secondhand.core.network.product.model.ProductDto
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.*
 
 interface ProductService {
 
@@ -34,7 +34,11 @@ interface ProductService {
     ): ProductDto
 
     @POST("seller/product")
-    suspend fun addNewProduct(): AddProductDto
+    suspend fun addNewProduct(
+        @PartMap partMap: HashMap<String, RequestBody>,
+        @Part image: MultipartBody.Part,
+        @Part("category_ids[]") categoryIds: List<Int>,
+    ): AddProductDto
 
     @GET("seller/category")
     suspend fun getCategories(): List<CategoryDto>

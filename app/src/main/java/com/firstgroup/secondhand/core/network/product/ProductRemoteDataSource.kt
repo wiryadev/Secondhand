@@ -1,8 +1,6 @@
 package com.firstgroup.secondhand.core.network.product
 
-import com.firstgroup.secondhand.core.network.product.model.BannerDto
-import com.firstgroup.secondhand.core.network.product.model.CategoryDto
-import com.firstgroup.secondhand.core.network.product.model.ProductDto
+import com.firstgroup.secondhand.core.network.product.model.*
 
 interface ProductRemoteDataSource {
 
@@ -24,6 +22,10 @@ interface ProductRemoteDataSource {
     suspend fun getProductByIdAsSeller(
         productId: String,
     ): ProductDto
+
+    suspend fun addNewProduct(
+        productRequest: ProductRequest
+    ): AddProductDto
 
     suspend fun getCategories(): List<CategoryDto>
 
