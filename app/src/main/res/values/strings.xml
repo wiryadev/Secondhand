@@ -42,4 +42,11 @@
     <string name="invalid_email_password">Email or Password Are Wrong</string>
     <string name="internal_service_error">Internal Service Error</string>
 
+    <!-- Bottom Navigation -->
+    <string name="home">Home</string>
+    <string name="notification">Notification</string>
+    <string name="sell">Sell</string>
+    <string name="sell_list">Sell List</string>
+    <string name="account">Account</string>
+
 </resources>

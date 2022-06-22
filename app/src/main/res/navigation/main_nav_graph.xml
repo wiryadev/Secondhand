@@ -2,11 +2,27 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/main_navigation_home">
 
     <fragment
-        android:id="@+id/homeFragment"
+        android:id="@+id/main_navigation_home"
         android:name="com.firstgroup.secondhand.ui.main.home.HomeFragment"
         android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/main_navigation_notification"
+        android:name="com.firstgroup.secondhand.ui.main.notification.NotificationFragment"
+        android:label="NotificationFragment" />
+    <fragment
+        android:id="@+id/main_navigation_sell"
+        android:name="com.firstgroup.secondhand.ui.main.sell.SellFragment"
+        android:label="SellFragment" />
+    <fragment
+        android:id="@+id/main_navigation_sell_list"
+        android:name="com.firstgroup.secondhand.ui.main.sell_list.SellListFragment"
+        android:label="SellListFragment" />
+    <fragment
+        android:id="@+id/main_navigation_account"
+        android:name="com.firstgroup.secondhand.ui.main.account.AccountFragment"
+        android:label="AccountFragment" />
 
 </navigation>
