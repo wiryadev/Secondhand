@@ -28,10 +28,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -124,34 +128,76 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
                 val categories = mutableListOf(Category(-1, "Semua"))
-                if (homeUiState.categoryState is CategoriesUiState.Success) {
-                    categories.addAll(homeUiState.categoryState.categories)
-                    ListCategory(category = categories)
+//                if (homeUiState.categoryState is CategoriesUiState.Success) {
+//                    ListCategory(category = categories)
+//                }
+                when (homeUiState.categoryState) {
+                    is CategoriesUiState.Error -> {
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(text = "Error")
+                        }
+                    }
+                    is CategoriesUiState.Loading -> {
+                        ListCategory(category = dummyCategories, isLoading = true)
+                    }
+                    is CategoriesUiState.Success -> {
+                        categories.addAll(homeUiState.categoryState.categories)
+                        ListCategory(category = categories, isLoading = false)
+                    }
                 }
             }
         }
-        if (homeUiState.productState is BuyerProductsUiState.Success) {
-            ListProduct(products = homeUiState.productState.products, onProductClick = {})
+
+        when (homeUiState.productState) {
+            is BuyerProductsUiState.Error -> {
+                Box(Modifier.fillMaxWidth()) {
+                    Text(text = "Error")
+                }
+            }
+            is BuyerProductsUiState.Loading -> {
+                ListProduct(
+                    products = dummyProducts,
+                    isLoading = true,
+                    onProductClick = {}
+                )
+            }
+            is BuyerProductsUiState.Success -> {
+                ListProduct(
+                    products = homeUiState.productState.products,
+                    isLoading = false,
+                    onProductClick = {}
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ListCategory(category: List<Category>) {
+fun ListCategory(
+    category: List<Category>,
+    isLoading: Boolean,
+) {
     var selectedIndex by remember { mutableStateOf(-1) }
     LazyRow(
         modifier = Modifier
             .padding(start = 8.dp)
             .height(44.dp)
     ) {
-        items(items = category) {
+        items(
+            items = category,
+            key = { it.id }
+        ) {
             Button(
                 onClick = {
                     selectedIndex = if (selectedIndex != it.id) it.id else -1
                 },
                 modifier = Modifier
                     .height(44.dp)
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
                 shape = RoundedCornerShape(16.dp),
                 colors = if (it.id != selectedIndex) buttonColors(
                     contentColor = Color.Black,
@@ -175,7 +221,9 @@ fun ListCategory(category: List<Category>) {
 
 @Composable
 fun ListProduct(
-    products: List<Product>, onProductClick: (Int) -> Unit
+    products: List<Product>,
+    isLoading: Boolean,
+    onProductClick: (Int) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -184,23 +232,30 @@ fun ListProduct(
             .fillMaxWidth(),
     ) {
         items(products, key = { it.id }) { product ->
-            ProductItem(product = product, onClick = onProductClick)
+            ProductItem(
+                product = product,
+                isLoading = isLoading,
+                onClick = onProductClick,
+            )
         }
     }
-
 }
 
 @Composable
 fun ProductItem(
-    product: Product, onClick: (Int) -> Unit
+    product: Product,
+    isLoading: Boolean,
+    onClick: (Int) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .size(width = 156.dp, height = 206.dp)
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .background(color = Color.White)
-            .clickable(true, onClick = { onClick(product.id) }),
-        shape = RoundedCornerShape(8.dp),
+            .clickable {
+                onClick(product.id)
+            },
+        shape = RoundedCornerShape(16.dp),
         elevation = 4.dp,
     ) {
         Column(
@@ -208,20 +263,34 @@ fun ProductItem(
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
+            val painter = rememberAsyncImagePainter(
+                model = product.imageUrl ?: dummyProduct.imageUrl
+            )
+            val isImageLoading = painter.state is AsyncImagePainter.State.Loading
+
             Image(
-                painter = rememberAsyncImagePainter(model = product.imageUrl ?: dummyProduct.imageUrl),
+                painter = painter,
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .height(height = 100.dp)
                     .fillMaxWidth()
                     .padding(all = 4.dp)
-                    .clip(shape = RoundedCornerShape(4.dp))
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .placeholder(
+                        visible = isLoading || isImageLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
             )
             Text(
                 text = product.name,
-                modifier = Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    ),
             )
             Text(
                 text = product.category,
@@ -257,4 +326,20 @@ val dummyProduct = Product(
     "elektronik"
 )
 
-val dummyCategory = Category(1, "elektronik")
+val dummyProducts: List<Product> = List(10) {
+    Product(
+        it,
+        "lenovo",
+        "ww",
+        50000,
+        "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
+        "bekasi",
+        2,
+        "new",
+        "elektronik"
+    )
+}
+
+val dummyCategories: List<Category> = List(10) {
+    Category(it, "elektronik")
+}
