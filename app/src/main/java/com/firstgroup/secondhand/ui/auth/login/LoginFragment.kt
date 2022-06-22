@@ -104,29 +104,29 @@ fun LoginScreen(
                 .padding(horizontal = 16.dp)
         ) {
             val focusManager = LocalFocusManager.current
+            Spacer(modifier = Modifier.height(72.dp))
             // Login Title
             Text(
                 text = stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 72.dp, bottom = 12.dp)
             )
+            Spacer(modifier = Modifier.height(24.dp))
             // Login Email Field
             Text(
                 text = stringResource(id = R.string.email),
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 2.dp)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp, top = 2.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -149,6 +149,7 @@ fun LoginScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // Login Password Field
             var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
@@ -156,15 +157,14 @@ fun LoginScreen(
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 2.dp)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding( top = 2.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -232,48 +232,28 @@ fun LoginScreen(
                 },
                 enabled = !uiState.isLoading,
             )
-//            Button(
-//                onClick = {
-//                    onLoginClick(email, password)
-//                },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 12.dp)
-//                    .size(height = 48.dp, width = 0.dp),
-//                shape = RoundedCornerShape(16.dp),
-//                enabled = !uiState.isLoading
-//            ) {
-//                Text(
-//                    text = if (uiState.isLoading) {
-//                        stringResource(id = R.string.loading)
-//                    } else {
-//                        stringResource(id = R.string.login)
-//                    },
-//                )
-//            }
             // Login Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = stringResource(R.string.account_question1),
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(end = 4.dp)
+                    style = MaterialTheme.typography.body1
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.not_have_account),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.dark_blue_04),
                     modifier = Modifier
-                        .padding(start = 4.dp)
                         .clickable { toRegister() }
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
         uiState.errorMessage?.let { errorMessage ->
