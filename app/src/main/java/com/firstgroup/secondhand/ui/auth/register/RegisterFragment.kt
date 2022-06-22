@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.TopSnackBar
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -99,11 +100,11 @@ fun RegisterScreen(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 48.dp)
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
         ) {
+            Spacer(modifier = Modifier.height(72.dp))
             val focusManager = LocalFocusManager.current
             // Register Title
             Text(
@@ -111,15 +112,14 @@ fun RegisterScreen(
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 12.dp)
             )
-
+            Spacer(modifier = Modifier.height(24.dp))
             // Register Name Field
             Text(
                 text = stringResource(R.string.name),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 12.dp)
+                style = MaterialTheme.typography.body1
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -130,7 +130,6 @@ fun RegisterScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -149,12 +148,13 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // Register Email Field
             Text(
                 text = stringResource(R.string.email),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -165,7 +165,6 @@ fun RegisterScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -184,13 +183,13 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 ),
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // Register Phone Number Field
             Text(
                 text = stringResource(R.string.phone_number),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
-
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
@@ -201,7 +200,6 @@ fun RegisterScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -220,12 +218,13 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // Register Address Field
             Text(
                 text = stringResource(R.string.address),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+                style = MaterialTheme.typography.body1
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
@@ -236,7 +235,6 @@ fun RegisterScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -255,12 +253,13 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // City Field
             Text(
                 text = stringResource(R.string.city),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+                style = MaterialTheme.typography.body1
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = city,
                 onValueChange = { city = it },
@@ -271,7 +270,6 @@ fun RegisterScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -290,20 +288,20 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(16.dp))
             // Register Password Field
             var passwordVisible by rememberSaveable { mutableStateOf(false) }
             Text(
                 text = stringResource(R.string.password),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 4.dp, top = 4.dp)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -356,51 +354,45 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(24.dp))
             //Register Button
-            Button(
+            PrimaryButton(
                 onClick = {
                     onRegisterClick(name, email, password, phoneNumber, address, city)
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-                    .size(height = 48.dp, width = 0.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !uiState.isLoading
-            ) {
-                Text(
-                    text =
-                    if (uiState.isLoading) {
-                        stringResource(id = R.string.loading)
-                    } else {
-                        stringResource(id = R.string.register)
-                    },
-                )
-            }
-
+                content = {
+                    Text(
+                        text =
+                        if (uiState.isLoading) {
+                            stringResource(id = R.string.loading)
+                        } else {
+                            stringResource(id = R.string.register)
+                        },
+                    )
+                }, enabled = !uiState.isLoading
+            )
             // Register Bottom Clickable Text
             Spacer(modifier = Modifier.heightIn(min = 16.dp, max = 32.dp))
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = stringResource(R.string.account_question2),
                     style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(end = 4.dp)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.have_account),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.dark_blue_04),
                     modifier = Modifier
-                        .padding(start = 4.dp)
                         .clickable { toLogin() }
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
         // Register Top Back Button
         IconButton(onClick = { toLogin() }) {
