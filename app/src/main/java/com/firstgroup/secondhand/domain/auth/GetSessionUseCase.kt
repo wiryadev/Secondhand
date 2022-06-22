@@ -14,7 +14,7 @@ class GetSessionUseCase @Inject constructor(
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Any, Authentication>(ioDispatcher) {
 
-    override suspend fun execute(param: Any): Flow<Authentication> {
+    override fun execute(param: Any): Flow<Authentication> {
         return repository.getUserSession()
     }
 

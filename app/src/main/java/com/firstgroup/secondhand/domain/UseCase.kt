@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlin.jvm.Throws
 
 /**
  * Executes business logic synchronously or asynchronously using Coroutines.
@@ -54,7 +53,7 @@ abstract class FlowUseCase<in P, out R> constructor(
      * Override this to set the code to be executed.
      */
     @Throws(RuntimeException::class)
-    abstract suspend fun execute(param: P): Flow<R>
+    abstract fun execute(param: P): Flow<R>
 
     /** Executes the use case asynchronously and returns a [Result].
      *
@@ -62,15 +61,13 @@ abstract class FlowUseCase<in P, out R> constructor(
      *
      * @param param the input parameters to run the use case with
      */
-    suspend operator fun invoke(param: P): Flow<Result<R>> {
-        return withContext(coroutineDispatcher) {
-            execute(param)
-                .map<R, Result<R>> {
-                    Result.Success(it)
-                }
-                .catch {
-                    emit(Result.Error(it))
-                }
-        }
+    operator fun invoke(param: P): Flow<Result<R>> {
+        return execute(param)
+            .map<R, Result<R>> {
+                Result.Success(it)
+            }
+            .catch {
+                emit(Result.Error(it))
+            }
     }
 }

@@ -22,7 +22,7 @@ interface AuthRepository {
         authUserRequest: AuthUserRequest,
     ): User
 
-    suspend fun getUserSession(): Flow<Authentication>
+    fun getUserSession(): Flow<Authentication>
 
     suspend fun saveUserSession(user: Authentication)
 

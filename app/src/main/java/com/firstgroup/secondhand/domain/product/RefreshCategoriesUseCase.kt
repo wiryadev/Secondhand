@@ -3,19 +3,17 @@ package com.firstgroup.secondhand.domain.product
 import com.firstgroup.secondhand.core.common.dispatchers.AppDispatcher
 import com.firstgroup.secondhand.core.common.dispatchers.SecondhandDispatchers.IO
 import com.firstgroup.secondhand.core.data.repositories.product.ProductRepository
-import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.domain.FlowUseCase
+import com.firstgroup.secondhand.domain.UseCase
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetProductsAsBuyerUseCase @Inject constructor(
-    private val productRepository: ProductRepository,
+class RefreshCategoriesUseCase @Inject constructor(
+    private val repository: ProductRepository,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-) : FlowUseCase<Any, List<Product>>(ioDispatcher) {
+) : UseCase<Any, Unit>(ioDispatcher) {
 
-    override fun execute(param: Any): Flow<List<Product>> {
-        return productRepository.getProductsAsBuyer()
+    override suspend fun execute(param: Any) {
+        repository.loadCategories()
     }
-
+    
 }
