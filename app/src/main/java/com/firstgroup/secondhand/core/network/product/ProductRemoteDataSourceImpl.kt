@@ -1,8 +1,6 @@
 package com.firstgroup.secondhand.core.network.product
 
-import com.firstgroup.secondhand.core.network.product.model.BannerDto
-import com.firstgroup.secondhand.core.network.product.model.CategoryDto
-import com.firstgroup.secondhand.core.network.product.model.ProductDto
+import com.firstgroup.secondhand.core.network.product.model.*
 import com.firstgroup.secondhand.core.network.product.retrofit.ProductService
 import javax.inject.Inject
 
@@ -22,6 +20,15 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     override suspend fun getProductByIdAsSeller(
         productId: String,
     ): ProductDto = service.getProductByIdAsSeller(productId)
+
+    override suspend fun addNewProduct(productRequest: ProductRequest): AddProductDto {
+        val formData = productRequest.toFormData()
+        return service.addNewProduct(
+            partMap = formData.requestBody,
+            image = formData.multipart,
+            categoryIds = formData.categoryIds
+        )
+    }
 
     override suspend fun getCategories(): List<CategoryDto> = service.getCategories()
 
