@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -27,13 +29,13 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailFragment: Fragment() {
+class DetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply{
+        return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
 
@@ -44,7 +46,7 @@ class DetailFragment: Fragment() {
 }
 
 @Composable
-fun DetailScreen(){
+fun DetailScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -61,8 +63,9 @@ fun DetailScreen(){
                 .height(height = 300.dp)
                 .fillMaxWidth()
         )
-        Column (modifier = Modifier
-            .verticalScroll(rememberScrollState())
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
         ) {
             // spacer from top of parent
             Spacer(modifier = Modifier.height(265.dp))
@@ -81,7 +84,9 @@ fun DetailScreen(){
                     // text product name
                     Text(
                         text = dummyProduct.name,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
                         modifier = Modifier
                             .padding(
                                 top = 16.dp,
@@ -90,7 +95,9 @@ fun DetailScreen(){
                     // text product category
                     Text(
                         text = dummyProduct.category,
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.body2.copy(
+                            color = Color.Gray
+                        ),
                         modifier = Modifier
                             .padding(
                                 top = 4.dp,
@@ -99,7 +106,9 @@ fun DetailScreen(){
                     // text product price
                     Text(
                         text = "Rp ${dummyProduct.price}",
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
                         modifier = Modifier
                             .padding(
                                 top = 8.dp,
@@ -120,30 +129,39 @@ fun DetailScreen(){
                 shape = RoundedCornerShape(16.dp),
                 elevation = 4.dp,
             ) {
-                Row(modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-                    .fillMaxWidth(),
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val painterSellerImage = rememberAsyncImagePainter(
                         model = dummyUser.profilePicture
                     )
                     // seller profile image
-                    Image(painter = painterSellerImage,
+                    Image(
+                        painter = painterSellerImage,
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
                     )
-                    Column(modifier = Modifier
-                        .padding(start = 16.dp)
-                    ){
+                    Column(
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    ) {
                         // text seller full name
-                        Text(text = dummyUser.fullName,
-                            style = MaterialTheme.typography.body1,
+                        Text(
+                            text = dummyUser.fullName,
+                            style = MaterialTheme.typography.body1.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
                         )
                         // text seller address
-                        Text(text = dummyUser.address,
-                            style = MaterialTheme.typography.body2,
+                        Text(
+                            text = dummyUser.address,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color.Gray
+                            ),
                             modifier = Modifier
                                 .padding(top = 4.dp)
                         )
@@ -152,35 +170,44 @@ fun DetailScreen(){
             }
             // third card, contain product description
             // check if its description available
-            if (dummyProduct.description != null) {
-                Card(
+            val textDescription =
+                dummyProduct.description ?: stringResource(R.string.no_description)
+
+            Card(
+                modifier = Modifier
+                    .padding(
+                        top = 19.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    )
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = 4.dp,
+            ) {
+                Column(
                     modifier = Modifier
-                        .padding(
-                            top = 19.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        )
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = 4.dp,
+                        .padding(all = 16.dp)
                 ) {
-                    Column(
+                    Text(
+                        text = stringResource(R.string.description),
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Text(
                         modifier = Modifier
-                            .padding(all = 16.dp)
-                    ) {
-                        Text(
-                            text = "Deskripsi",
-                            style = MaterialTheme.typography.body1
+                            .padding(top = 16.dp),
+                        text = textDescription,
+                        style = MaterialTheme.typography.body1.copy(
+                            color = Color.Gray
                         )
-                        Text(text = dummyProduct.description,
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
+                    )
                 }
-                // add spacer so all description text is readable
-                Spacer(modifier = Modifier.height(88.dp))
             }
+            // add spacer so all description text is readable
+            Spacer(modifier = Modifier.height(88.dp))
         }
+
         // floating back button
         Card(
             modifier = Modifier
@@ -200,20 +227,23 @@ fun DetailScreen(){
         }
     }
     // box for button 'terbitkan'
-    Box(modifier = Modifier
-        .padding(
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 24.dp
-        )
-        .fillMaxSize(),
+    Box(
+        modifier = Modifier
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 24.dp
+            )
+            .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
-    ){
-        PrimaryButton(onClick = {
+    ) {
+        PrimaryButton(
+            onClick = {
 
             },
             content = {
-                Text(text = "Terbitkan",
+                Text(
+                    text = stringResource(R.string.publish),
                     style = MaterialTheme.typography.button
                 )
             }
@@ -223,7 +253,7 @@ fun DetailScreen(){
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun DetailPreview(){
+fun DetailPreview() {
     MdcTheme {
         DetailScreen()
     }
