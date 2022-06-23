@@ -9,6 +9,8 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class LoginDto(
+    @Json(name = "id")
+    val id: Int,
     @Json(name = "access_token")
     val accessToken: String,
     @Json(name = "email")
@@ -17,6 +19,7 @@ data class LoginDto(
     val name: String
 ) {
     fun mapToDomain() = Authentication(
+        id = id,
         email = email,
         name = name,
         token = accessToken,

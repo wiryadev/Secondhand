@@ -12,13 +12,13 @@ class ProductRemoteDataSourceImpl @Inject constructor(
         service.getProductsAsBuyer()
 
     override suspend fun getProductByIdAsBuyer(
-        productId: String,
+        productId: Int,
     ): ProductDto = service.getProductByIdAsBuyer(productId)
 
     override suspend fun getProductsAsSeller(): List<ProductDto> = service.getProductsAsSeller()
 
     override suspend fun getProductByIdAsSeller(
-        productId: String,
+        productId: Int,
     ): ProductDto = service.getProductByIdAsSeller(productId)
 
     override suspend fun addNewProduct(productRequest: ProductRequest): AddProductDto {

@@ -27,6 +27,9 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProductByIdAsBuyer(id: Int): Product =
+        remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
+
     override suspend fun loadBuyerProducts() {
         try {
             refreshProductCache()

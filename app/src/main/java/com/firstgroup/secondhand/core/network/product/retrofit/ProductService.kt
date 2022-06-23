@@ -18,7 +18,7 @@ interface ProductService {
 
     @GET("buyer/product/{id}")
     suspend fun getProductByIdAsBuyer(
-        @Path("id") productId: String,
+        @Path("id") productId: Int,
     ): ProductDto
 
 
@@ -30,7 +30,7 @@ interface ProductService {
 
     @GET("seller/product/{id}")
     suspend fun getProductByIdAsSeller(
-        @Path("id") productId: String,
+        @Path("id") productId: Int,
     ): ProductDto
 
     @POST("seller/product")

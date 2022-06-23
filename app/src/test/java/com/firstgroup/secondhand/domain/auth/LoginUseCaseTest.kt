@@ -37,6 +37,7 @@ class LoginUseCaseTest {
     @Test
     fun login_whenInputValid_thenReturnSuccessWithData() = runTest {
         val authentication = Authentication(
+            id = 1,
             token = "token",
             email = "email",
             name = "name",
