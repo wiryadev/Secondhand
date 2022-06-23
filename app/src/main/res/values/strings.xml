@@ -22,6 +22,7 @@
     <string name="desc_hide_password">Hide password</string>
     <string name="desc_show_password">Show password</string>
     <string name="description_backTo_login">Back to Login Screen</string>
+    <string name="no_description">No Description.</string>
 
     <!-- Placeholder -->
     <string name="placeholder_name">Your Name</string>
@@ -48,5 +49,8 @@
     <string name="sell">Sell</string>
     <string name="sell_list">Sell List</string>
     <string name="account">Account</string>
+    <string name="description">Deskripsi</string>
+    <string name="publish">Terbitkan</string>
+    <string name="bid">Saya Tertarik dan ingin Nego</string>
 
 </resources>
