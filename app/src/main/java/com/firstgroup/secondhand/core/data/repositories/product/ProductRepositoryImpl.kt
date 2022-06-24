@@ -100,6 +100,9 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProductByIdAsSeller(id: Int): Product =
+        remoteDataSource.getProductByIdAsSeller(id).mapToDomainModel()
+
     override suspend fun addNewProduct(
         productRequest: ProductRequest
     ): Product = remoteDataSource.addNewProduct(productRequest).mapToDomainModel()
