@@ -17,26 +17,26 @@ interface OrderService {
      */
 
     @POST("buyer/order")
-    fun createOrder(
+    suspend fun createOrder(
         @Body orderData: RequestBody
     ): CreateOrderDto
 
     // for seller will be named "respondOrder" or smth like that
     @PUT("buyer/order/{id}")
-    fun updateOrder(
+    suspend fun updateOrder(
         @Path("id") id: Int
     ): CreateOrderDto
 
     @DELETE("buyer/order/{id}")
-    fun deleteOrder(
+    suspend fun deleteOrder(
         @Path("id") id: Int
     )
 
     @GET("buyer/order")
-    fun getOrdersAsBuyer(): List<GetOrderDto>
+    suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
     @GET("buyer/order/{id}")
-    fun getOrderByIdAsBuyer(
+    suspend fun getOrderByIdAsBuyer(
         @Path("id") id: Int
     ): List<GetOrderDto>
 
