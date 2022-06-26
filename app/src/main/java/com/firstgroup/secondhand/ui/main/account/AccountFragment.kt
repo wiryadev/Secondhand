@@ -169,10 +169,10 @@ fun AccountScreen() {
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun AccountScreenPreview() {
-    MdcTheme {
-        AccountScreen()
-    }
-}
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun AccountScreenPreview() {
+//    MdcTheme {
+//        AccountScreen()
+//    }
+//}
