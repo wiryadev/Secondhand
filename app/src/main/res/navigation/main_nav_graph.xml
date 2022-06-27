@@ -23,6 +23,17 @@
     <fragment
         android:id="@+id/main_navigation_account"
         android:name="com.firstgroup.secondhand.ui.main.account.AccountFragment"
-        android:label="AccountFragment" />
+        android:label="AccountFragment" >
+        <action
+            android:id="@+id/action_main_navigation_account_to_editAccountFragment"
+            app:destination="@id/editAccountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAccountFragment"
+        android:name="com.firstgroup.secondhand.ui.main.account.EditAccountFragment"
+        android:label="EditAccountFragment" >
+        <argument android:name="recentUserData"
+            app:argType="com.firstgroup.secondhand.core.model.User" />
+    </fragment>
 
 </navigation>

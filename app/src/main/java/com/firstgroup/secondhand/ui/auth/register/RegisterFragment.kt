@@ -94,7 +94,6 @@ fun RegisterScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -399,7 +398,7 @@ fun RegisterScreen(
         IconButton(onClick = { toLogin() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_left),
-                stringResource(R.string.description_backTo_login)
+                stringResource(R.string.description_back_button)
             )
         }
 

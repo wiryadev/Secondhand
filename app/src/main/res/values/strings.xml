@@ -3,25 +3,37 @@
 
     <!-- Common -->
     <string name="loading">Loading</string>
-    <string name="name">Name</string>
-
-    <!-- Authentication Screen -->
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
     <string name="register">Register</string>
     <string name="login">Login</string>
+    <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="phone_number">Phone Number</string>
     <string name="address">Address</string>
     <string name="password">Password</string>
-    <string name="account_question1">Belum punya akun?</string>
-    <string name="account_question2">Sudah punya akun?</string>
-    <string name="have_account">Masuk di sini!</string>
+    <string name="account_question1">Don\'t have an account yet?</string>
+    <string name="account_question2">Already have an account?</string>
+    <string name="have_account">Sign in here!</string>
+    <string name="not_have_account">Sign up here!</string>
     <string name="city">City</string>
-    <string name="not_have_account">Daftar di sini!</string>
+    <string name="edit_account">Edit Account</string>
+    <string name="name_required">Name <font color='red'>*</font></string>
+    <string name="phone_number_required">Phone Number <font color='red'>*</font></string>
+    <string name="city_required">City <font color='red'>*</font></string>
+    <string name="address_required">Address <font color='red'>*</font></string>
+    <string name="account_setting">Account Settings</string>
+    <string name="logout">Logout</string>
+    <string name="version">Version 1.2.3</string>
+
 
     <!-- Content Description -->
     <string name="desc_hide_password">Hide password</string>
     <string name="desc_show_password">Show password</string>
-    <string name="description_backTo_login">Back to Login Screen</string>
+    <string name="description_back_button">Back Button</string>
+    <string name="description_profile_image">Profile Image Button</string>
+    <string name="description_account_setting_button">Account Settings, Coming soon</string>
+    <string name="description_logout_button">Logout Button</string>
     <string name="no_description">No Description.</string>
 
     <!-- Placeholder -->
