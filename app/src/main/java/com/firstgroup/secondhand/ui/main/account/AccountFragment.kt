@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -16,15 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.noRippleClickable
@@ -45,7 +45,7 @@ class AccountFragment : Fragment() {
             setContent {
                 MdcTheme {
                     AccountScreen(
-//                        viewModel = viewModel,
+                        viewModel = viewModel,
                         toEditScreen = {
                             toEditWithData()
                         }
@@ -67,7 +67,8 @@ class AccountFragment : Fragment() {
             phoneNo = viewModel.uiState.value.recentUser?.phoneNo ?: "",
             password = viewModel.uiState.value.recentUser?.password ?: "",
             address = viewModel.uiState.value.recentUser?.address ?: "",
-            profilePicture = viewModel.uiState.value.recentUser?.profilePicture
+            profilePicture = viewModel.uiState.value.recentUser?.profilePicture,
+            city = viewModel.uiState.value.recentUser?.city ?: ""
         )
         findNavController().navigate(
             AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(
@@ -93,6 +94,7 @@ class AccountFragment : Fragment() {
 
 @Composable
 fun AccountScreen(
+    viewModel: AccountViewModel,
     toEditScreen: () -> Unit
 ) {
     Box(
@@ -115,7 +117,12 @@ fun AccountScreen(
             Spacer(modifier = Modifier.height(24.dp))
             // Account profile picture
             Image(
-                painter = painterResource(id = R.drawable.img_profile_placeholder),
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                    .data(viewModel.uiState.value.recentUser?.profilePicture)
+                    .crossfade(true)
+                    .build()
+                ),
                 contentDescription = stringResource(id = R.string.description_profile_image),
                 modifier = Modifier
                     .size(96.dp)
@@ -218,10 +225,10 @@ fun AccountScreen(
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun AccountScreenPreview() {
-    MdcTheme {
-        AccountScreen { }
-    }
-}
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun AccountScreenPreview() {
+//    MdcTheme {
+//        AccountScreen { }
+//    }
+//}
