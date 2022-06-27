@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/main_navigation_home"
         android:name="com.firstgroup.secondhand.ui.main.home.HomeFragment"
-        android:label="HomeFragment" />
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_main_navigation_home_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/main_navigation_notification"
         android:name="com.firstgroup.secondhand.ui.main.notification.NotificationFragment"
@@ -28,12 +32,21 @@
             android:id="@+id/action_main_navigation_account_to_editAccountFragment"
             app:destination="@id/editAccountFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/editAccountFragment"
         android:name="com.firstgroup.secondhand.ui.main.account.EditAccountFragment"
         android:label="EditAccountFragment" >
         <argument android:name="recentUserData"
             app:argType="com.firstgroup.secondhand.core.model.User" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.firstgroup.secondhand.ui.detail.DetailFragment"
+        android:label="DetailFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
     </fragment>
 
 </navigation>
