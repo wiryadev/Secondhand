@@ -34,7 +34,7 @@
     <string name="description_profile_image">Profile Image Button</string>
     <string name="description_account_setting_button">Account Settings, Coming soon</string>
     <string name="description_logout_button">Logout Button</string>
-    <string name="no_description">No Description.</string
+    <string name="no_description">No Description.</string>
 
     <!-- Placeholder -->
     <string name="placeholder_name">Your Name</string>
