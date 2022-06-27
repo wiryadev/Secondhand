@@ -2,6 +2,8 @@ package com.firstgroup.secondhand.core.network.di
 
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSourceImpl
+import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
+import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSourceImpl
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSourceImpl
 import dagger.Binds
@@ -25,5 +27,11 @@ interface RemoteDataSourceModule {
     fun bindsProductRemoteDataSource(
         productRemoteDataSourceImpl: ProductRemoteDataSourceImpl
     ): ProductRemoteDataSource
+
+    @Binds
+    @Singleton
+    fun bindsOrderRemoteDataSource(
+        orderRemoteDataSourceImpl: OrderRemoteDataSourceImpl
+    ): OrderRemoteDataSource
 
 }

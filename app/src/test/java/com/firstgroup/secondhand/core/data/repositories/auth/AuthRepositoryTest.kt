@@ -36,11 +36,13 @@ class AuthRepositoryTest {
     @Test
     fun login_whenAllInputValid_thenReturnAuthenticationModel() = runTest {
         val response = LoginDto(
+            id = 1,
             accessToken = "token",
             email = "email",
             name = "name",
         )
         val expected = Authentication(
+            id = 1,
             token = "token",
             email = "email",
             name = "name",

@@ -3,6 +3,7 @@ package com.firstgroup.secondhand.core.preference.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class AuthPreference @Inject constructor(
 
     fun getUserSession(): Flow<AuthSessionModel> = dataStore.data.map { pref ->
         AuthSessionModel(
+            id = pref[ID_KEY] ?: -1,
             name = pref[NAME_KEY] ?: "",
             email = pref[EMAIL_KEY] ?: "",
             token = pref[TOKEN_KEY] ?: "",
@@ -23,6 +25,7 @@ class AuthPreference @Inject constructor(
 
     suspend fun saveUserSession(user: AuthSessionModel) {
         dataStore.edit { pref ->
+            pref[ID_KEY] = user.id
             pref[NAME_KEY] = user.name
             pref[EMAIL_KEY] = user.email
             pref[TOKEN_KEY] = user.token
@@ -31,6 +34,7 @@ class AuthPreference @Inject constructor(
 
     suspend fun deleteUserSession() {
         dataStore.edit { pref ->
+            pref[ID_KEY] = -1
             pref[NAME_KEY] = ""
             pref[EMAIL_KEY] = ""
             pref[TOKEN_KEY] = ""
@@ -38,6 +42,7 @@ class AuthPreference @Inject constructor(
     }
 }
 
+private val ID_KEY = intPreferencesKey("id")
 private val NAME_KEY = stringPreferencesKey("name")
 private val EMAIL_KEY = stringPreferencesKey("email")
 private val TOKEN_KEY = stringPreferencesKey("token")

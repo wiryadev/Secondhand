@@ -16,6 +16,8 @@ interface ProductRepository {
 
     fun getProductsAsBuyer(): Flow<List<Product>>
 
+    suspend fun getProductByIdAsBuyer(id: Int): Product
+
     suspend fun deleteCachedProducts()
 
     suspend fun deleteWishlist()
@@ -24,6 +26,8 @@ interface ProductRepository {
      * Seller
      */
     suspend fun getProductsAsSeller(): List<Product>
+
+    suspend fun getProductByIdAsSeller(id: Int): Product
 
     suspend fun addNewProduct(
         productRequest: ProductRequest
