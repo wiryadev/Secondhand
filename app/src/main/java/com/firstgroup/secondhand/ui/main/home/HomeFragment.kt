@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
@@ -52,7 +53,14 @@ class HomeFragment : Fragment() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 MdcTheme {
-                    HomeScreen(uiState)
+                    HomeScreen(
+                        uiState = uiState,
+                        onProductClick = {
+                            findNavController().navigate(
+                                HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -61,7 +69,8 @@ class HomeFragment : Fragment() {
 
 @Composable
 fun HomeScreen(
-    homeUiState: HomeUiState
+    uiState: HomeUiState,
+    onProductClick: (Int) -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
     Column {
@@ -131,7 +140,7 @@ fun HomeScreen(
 //                if (homeUiState.categoryState is CategoriesUiState.Success) {
 //                    ListCategory(category = categories)
 //                }
-                when (homeUiState.categoryState) {
+                when (uiState.categoryState) {
                     is CategoriesUiState.Error -> {
                         Box(Modifier.fillMaxWidth()) {
                             Text(text = "Error")
@@ -141,14 +150,14 @@ fun HomeScreen(
                         ListCategory(category = dummyCategories, isLoading = true)
                     }
                     is CategoriesUiState.Success -> {
-                        categories.addAll(homeUiState.categoryState.categories)
+                        categories.addAll(uiState.categoryState.categories)
                         ListCategory(category = categories, isLoading = false)
                     }
                 }
             }
         }
 
-        when (homeUiState.productState) {
+        when (uiState.productState) {
             is BuyerProductsUiState.Error -> {
                 Box(Modifier.fillMaxWidth()) {
                     Text(text = "Error")
@@ -163,9 +172,9 @@ fun HomeScreen(
             }
             is BuyerProductsUiState.Success -> {
                 ListProduct(
-                    products = homeUiState.productState.products,
+                    products = uiState.productState.products,
                     isLoading = false,
-                    onProductClick = {}
+                    onProductClick = onProductClick
                 )
             }
         }
@@ -252,9 +261,7 @@ fun ProductItem(
             .size(width = 156.dp, height = 206.dp)
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .background(color = Color.White)
-            .clickable {
-                onClick(product.id)
-            },
+            .clickable { onClick(product.id) },
         shape = RoundedCornerShape(16.dp),
         elevation = 4.dp,
     ) {

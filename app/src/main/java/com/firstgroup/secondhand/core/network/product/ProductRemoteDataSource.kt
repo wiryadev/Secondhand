@@ -11,7 +11,7 @@ interface ProductRemoteDataSource {
 
     suspend fun getProductByIdAsBuyer(
         productId: Int,
-    ): ProductDto
+    ): ProductDetailDto
 
 
     /**

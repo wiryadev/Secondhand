@@ -10,4 +10,12 @@ data class Product(
     val userId: Int,
     val status: String?,
     val category: String,
-)
+    val seller: Seller? = null,
+) {
+    data class Seller(
+        val id: Int,
+        val name: String,
+        val imageUrl: String?,
+        val city: String,
+    )
+}
