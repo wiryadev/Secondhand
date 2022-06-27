@@ -34,6 +34,7 @@
     <string name="description_profile_image">Profile Image Button</string>
     <string name="description_account_setting_button">Account Settings, Coming soon</string>
     <string name="description_logout_button">Logout Button</string>
+    <string name="no_description">No Description.</string
 
     <!-- Placeholder -->
     <string name="placeholder_name">Your Name</string>
@@ -60,5 +61,8 @@
     <string name="sell">Sell</string>
     <string name="sell_list">Sell List</string>
     <string name="account">Account</string>
+    <string name="description">Deskripsi</string>
+    <string name="publish">Terbitkan</string>
+    <string name="bid">Saya Tertarik dan ingin Nego</string>
 
 </resources>

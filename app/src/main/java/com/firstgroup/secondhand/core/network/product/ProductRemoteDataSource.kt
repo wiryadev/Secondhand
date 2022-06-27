@@ -10,7 +10,7 @@ interface ProductRemoteDataSource {
     suspend fun getProductsAsBuyer(): List<ProductDto>
 
     suspend fun getProductByIdAsBuyer(
-        productId: String,
+        productId: Int,
     ): ProductDto
 
 
@@ -20,7 +20,7 @@ interface ProductRemoteDataSource {
     suspend fun getProductsAsSeller(): List<ProductDto>
 
     suspend fun getProductByIdAsSeller(
-        productId: String,
+        productId: Int,
     ): ProductDto
 
     suspend fun addNewProduct(

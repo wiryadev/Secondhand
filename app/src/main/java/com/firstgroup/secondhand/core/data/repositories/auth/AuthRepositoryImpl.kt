@@ -41,6 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun saveUserSession(user: Authentication) {
         val authSession = AuthSessionModel(
+            id = user.id,
             token = user.token,
             email = user.email,
             name = user.name
