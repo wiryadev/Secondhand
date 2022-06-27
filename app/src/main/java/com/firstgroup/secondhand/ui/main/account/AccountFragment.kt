@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -17,17 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.core.model.User
+import com.firstgroup.secondhand.ui.components.noRippleClickable
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AccountFragment : Fragment() {
+
+    private val viewModel: AccountViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,15 +44,57 @@ class AccountFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
-                    AccountScreen()
+                    AccountScreen(
+//                        viewModel = viewModel,
+                        toEditScreen = {
+                            toEditWithData()
+                        }
+                    )
                 }
             }
         }
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.getUser()
+    }
+
+    private fun toEditWithData() {
+        val userData = User(
+            fullName = viewModel.uiState.value.recentUser?.fullName ?: "",
+            email = viewModel.uiState.value.recentUser?.email ?: "",
+            phoneNo = viewModel.uiState.value.recentUser?.phoneNo ?: "",
+            password = viewModel.uiState.value.recentUser?.password ?: "",
+            address = viewModel.uiState.value.recentUser?.address ?: "",
+            profilePicture = viewModel.uiState.value.recentUser?.profilePicture
+        )
+        findNavController().navigate(
+            AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(
+                userData
+            )
+        )
+    }
+
 }
 
+//@Composable
+//fun AccountScreen(
+//    viewModel: AccountViewModel,
+//    toEditScreen: () -> Unit
+//) {
+////    val uiState by viewModel.uiState.collectAsState()
+//
+//    AccountScreen(
+//        toEditScreen = toEditScreen
+//    )
+//
+//}
+
 @Composable
-fun AccountScreen() {
+fun AccountScreen(
+    toEditScreen: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -58,7 +107,7 @@ fun AccountScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             // Account title
             Text(
-                text = "Account",
+                text = stringResource(id = R.string.account),
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -67,7 +116,7 @@ fun AccountScreen() {
             // Account profile picture
             Image(
                 painter = painterResource(id = R.drawable.img_profile_placeholder),
-                contentDescription = "image",
+                contentDescription = stringResource(id = R.string.description_profile_image),
                 modifier = Modifier
                     .size(96.dp)
                     .align(Alignment.CenterHorizontally)
@@ -78,20 +127,20 @@ fun AccountScreen() {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_edit),
-                    contentDescription = "Edit",
+                    contentDescription = stringResource(id = R.string.edit),
                     tint = MaterialTheme.colors.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "Edit Account",
+                    text = stringResource(R.string.edit_account),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
+                        .noRippleClickable {
+                            toEditScreen()
+                        }
                         .fillMaxWidth()
                         .height(24.dp)
-                        .padding(vertical = 4.dp)
-                        .clickable {
-
-                        },
+                        .padding(vertical = 4.dp),
                 )
             }
 
@@ -108,12 +157,12 @@ fun AccountScreen() {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_coming_soon),
-                    contentDescription = "Account Settings, Coming soon",
+                    contentDescription = stringResource(R.string.description_account_setting_button),
                     tint = MaterialTheme.colors.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "Account Settings",
+                    text = stringResource(R.string.account_setting),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -135,12 +184,12 @@ fun AccountScreen() {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_logout),
-                    contentDescription = "Edit",
+                    contentDescription = stringResource(R.string.description_logout_button),
                     tint = MaterialTheme.colors.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "Logout",
+                    text = stringResource(R.string.logout),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -160,7 +209,7 @@ fun AccountScreen() {
 
             // Account app version
             Text(
-                text = "Version 1.2.3",
+                text = stringResource(R.string.version),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.onPrimary
@@ -169,10 +218,10 @@ fun AccountScreen() {
     }
 }
 
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun AccountScreenPreview() {
-//    MdcTheme {
-//        AccountScreen()
-//    }
-//}
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun AccountScreenPreview() {
+    MdcTheme {
+        AccountScreen { }
+    }
+}

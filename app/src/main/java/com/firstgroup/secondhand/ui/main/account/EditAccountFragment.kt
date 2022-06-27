@@ -22,14 +22,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.google.android.material.composethemeadapter.MdcTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditAccountFragment : Fragment() {
+
+//    private val viewModel: AccountViewModel by viewModels()
+    private val args: EditAccountFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,20 +45,37 @@ class EditAccountFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
-                    EditAccountScreen()
+                    EditAccountScreen(
+//                        viewModel = viewModel
+                    userData = args.recentUserData
+                    )
                 }
             }
         }
     }
 }
 
+//@Composable
+//fun EditAccountScreen(
+//    viewModel: AccountViewModel
+//) {
+//    val uiState by viewModel.uiState.collectAsState()
+//
+//    EditAccountScreen(
+//        uiState = uiState
+//    )
+//}
+
+
 @Composable
-fun EditAccountScreen() {
-    var name by remember { mutableStateOf("") }
+fun EditAccountScreen(
+    userData : User
+) {
+    var name by remember { mutableStateOf(userData.fullName) }
 //    var password by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf(userData.phoneNo) }
+    var address by remember { mutableStateOf(userData.address) }
+    var city by remember { mutableStateOf("Dummy City") }
     Box {
         Column(
             modifier = Modifier
@@ -206,7 +229,7 @@ fun EditAccountScreen() {
             )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
-                onClick = {  },
+                onClick = { },
                 content = {
                     Text(text = stringResource(R.string.save))
                 }
@@ -223,10 +246,10 @@ fun EditAccountScreen() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun EditAccountPreview() {
-    MdcTheme {
-        EditAccountScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun EditAccountPreview() {
+//    MdcTheme {
+//        EditAccountScreen()
+//    }
+//}
