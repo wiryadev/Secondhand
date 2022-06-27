@@ -26,6 +26,7 @@ interface AuthService {
     @GET("auth/user")
     suspend fun getUser(): UserDto
 
+    @Multipart
     @PUT("auth/user")
     suspend fun updateUser(
         @PartMap partMap: HashMap<String, RequestBody>,

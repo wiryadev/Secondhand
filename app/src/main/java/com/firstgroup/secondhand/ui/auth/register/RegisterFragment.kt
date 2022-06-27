@@ -434,12 +434,3 @@ fun RegisterScreen(
         }
     }
 }
-
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun RegisterPreview() {
-//    MdcTheme {
-////        RegisterScreen(onLoginClick = { _, _, _, _, _ -> })
-//    }
-//}

@@ -20,6 +20,8 @@ data class UserDto(
     val address: String,
     @Json(name = "image_url")
     val imageUrl: String?,
+    @Json(name = "city")
+    val city: String,
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "updatedAt")
@@ -32,5 +34,6 @@ data class UserDto(
         phoneNo = phoneNumber,
         address = address,
         profilePicture = imageUrl,
+        city = city
     )
 }

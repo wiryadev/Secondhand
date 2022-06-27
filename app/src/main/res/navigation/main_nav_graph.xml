@@ -39,6 +39,9 @@
         android:label="EditAccountFragment" >
         <argument android:name="recentUserData"
             app:argType="com.firstgroup.secondhand.core.model.User" />
+        <action
+            android:id="@+id/action_editAccountFragment_to_main_navigation_account"
+            app:destination="@id/main_navigation_account" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"

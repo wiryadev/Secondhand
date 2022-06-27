@@ -1,9 +1,12 @@
 package com.firstgroup.secondhand.ui.main.account
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,24 +20,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.PrimaryButton
+import com.firstgroup.secondhand.ui.components.noRippleClickable
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class EditAccountFragment : Fragment() {
 
-//    private val viewModel: AccountViewModel by viewModels()
+    private val viewModel: AccountViewModel by viewModels()
     private val args: EditAccountFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -46,36 +54,82 @@ class EditAccountFragment : Fragment() {
             setContent {
                 MdcTheme {
                     EditAccountScreen(
-//                        viewModel = viewModel
-                    userData = args.recentUserData
+                        viewModel = viewModel,
+                        userData = args.recentUserData,
+                        imagePicker = {
+                            setProfilePicture()
+                        },
+                        backButtonAction = {
+                            findNavController().navigate(R.id.action_editAccountFragment_to_main_navigation_account)
+                        }
                     )
                 }
             }
         }
     }
+
+    private fun setProfilePicture() {
+        ImagePicker.with(requireActivity())
+            .crop()
+            .saveDir(File(activity?.externalCacheDir, "Profile Picture"))
+            .compress(2048)
+            .maxResultSize(1080, 1080)
+            .createIntent {
+                profilePicsResult.launch(it)
+            }
+    }
+
+    private val profilePicsResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val result = it.resultCode
+            val uri = it.data
+            when (result) {
+                Activity.RESULT_OK -> {
+                    val image = File(uri?.data?.path ?: "")
+                    viewModel.setImage(imageFile = image)
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), ImagePicker.getError(uri), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else -> {
+                    //nothing
+                }
+            }
+        }
 }
 
-//@Composable
-//fun EditAccountScreen(
-//    viewModel: AccountViewModel
-//) {
-//    val uiState by viewModel.uiState.collectAsState()
-//
-//    EditAccountScreen(
-//        uiState = uiState
-//    )
-//}
+@Composable
+fun EditAccountScreen(
+    viewModel: AccountViewModel,
+    userData: User,
+    imagePicker: () -> Unit,
+    backButtonAction: () -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    EditAccountScreen(
+        userData = userData,
+        imagePicker = imagePicker,
+        backToMainAccountPage = { backButtonAction() },
+        uiState = uiState,
+        onEditClick = viewModel::updateUser
+    )
+}
 
 
 @Composable
 fun EditAccountScreen(
-    userData : User
+    userData: User,
+    imagePicker: () -> Unit,
+    backToMainAccountPage: () -> Unit,
+    uiState: AccountUiState,
+    onEditClick: (String, String, String, String) -> Unit
 ) {
     var name by remember { mutableStateOf(userData.fullName) }
-//    var password by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf(userData.phoneNo) }
     var address by remember { mutableStateOf(userData.address) }
-    var city by remember { mutableStateOf("Dummy City") }
+    var city by remember { mutableStateOf(userData.city) }
     Box {
         Column(
             modifier = Modifier
@@ -93,11 +147,16 @@ fun EditAccountScreen(
             Spacer(modifier = Modifier.height(40.dp))
             // Image
             Image(
-                painter = painterResource(id = R.drawable.img_profile_placeholder),
+                painter = rememberAsyncImagePainter(
+                    model = uiState.image
+                ),
                 contentDescription = stringResource(R.string.description_profile_image),
                 modifier = Modifier
                     .size(96.dp)
                     .align(Alignment.CenterHorizontally)
+                    .noRippleClickable {
+                        imagePicker()
+                    }
             )
             Spacer(modifier = Modifier.height(24.dp))
             //Name
@@ -177,6 +236,7 @@ fun EditAccountScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(80.dp)
                     .border(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
@@ -229,14 +289,16 @@ fun EditAccountScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
-                onClick = { },
+                onClick = {
+                          onEditClick(name, phoneNumber, address, city)
+                },
                 content = {
                     Text(text = stringResource(R.string.save))
                 }
             )
         }
         IconButton(
-            onClick = { /* back to account page */ },
+            onClick = { backToMainAccountPage() },
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_left),
@@ -245,11 +307,3 @@ fun EditAccountScreen(
         }
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun EditAccountPreview() {
-//    MdcTheme {
-//        EditAccountScreen()
-//    }
-//}
