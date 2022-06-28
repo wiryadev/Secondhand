@@ -26,7 +26,6 @@
     <string name="logout">Logout</string>
     <string name="version">Version 1.2.3</string>
 
-
     <!-- Content Description -->
     <string name="desc_hide_password">Hide password</string>
     <string name="desc_show_password">Show password</string>
@@ -45,8 +44,9 @@
     <string name="placeholder_city">Your City</string>
 
     <!-- Success Message -->
-    <string name="register_succes">Account Created Successfully</string>
+    <string name="register_success">Account Created Successfully</string>
     <string name="login_success">Login Success</string>
+    <string name="update_profile_success">Account Updated Successfully</string>
 
     <!-- Error Message -->
     <string name="email_exist_error">Email already exists</string>

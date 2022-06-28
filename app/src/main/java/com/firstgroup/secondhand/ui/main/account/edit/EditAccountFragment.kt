@@ -1,4 +1,4 @@
-package com.firstgroup.secondhand.ui.main.account
+package com.firstgroup.secondhand.ui.main.account.edit
 
 import android.app.Activity
 import android.os.Bundle
@@ -36,6 +36,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.PrimaryButton
+import com.firstgroup.secondhand.ui.components.TopSnackBar
 import com.firstgroup.secondhand.ui.components.noRippleClickable
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -48,7 +49,7 @@ import java.io.File
 @AndroidEntryPoint
 class EditAccountFragment : Fragment() {
 
-    private val viewModel: AccountViewModel by viewModels()
+    private val viewModel: EditAccountViewModel by viewModels()
     private val args: EditAccountFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -62,9 +63,7 @@ class EditAccountFragment : Fragment() {
                     EditAccountScreen(
                         viewModel = viewModel,
                         userData = args.recentUserData,
-                        imagePicker = {
-                            setProfilePicture()
-                        },
+                        imagePicker = ::setProfilePicture,
                         backButtonAction = {
                             findNavController().navigate(R.id.action_editAccountFragment_to_main_navigation_account)
                         }
@@ -107,7 +106,7 @@ class EditAccountFragment : Fragment() {
 
 @Composable
 fun EditAccountScreen(
-    viewModel: AccountViewModel,
+    viewModel: EditAccountViewModel,
     userData: User,
     imagePicker: () -> Unit,
     backButtonAction: () -> Unit,
@@ -119,7 +118,8 @@ fun EditAccountScreen(
         onImagePickerClick = imagePicker,
         backToMainAccountPage = { backButtonAction() },
         uiState = uiState,
-        onEditClick = viewModel::updateUser
+        onEditClick = viewModel::updateUser,
+        onSnackbarDismissed = viewModel::resetState,
     )
 }
 
@@ -129,8 +129,9 @@ fun EditAccountScreen(
     userData: User,
     onImagePickerClick: () -> Unit,
     backToMainAccountPage: () -> Unit,
-    uiState: AccountUiState,
-    onEditClick: (String, String, String, String) -> Unit
+    uiState: EditAccountUiState,
+    onEditClick: (String, String, String, String) -> Unit,
+    onSnackbarDismissed: () -> Unit,
 ) {
     var name by remember { mutableStateOf(userData.fullName) }
     var phoneNumber by remember { mutableStateOf(userData.phoneNo) }
@@ -153,9 +154,9 @@ fun EditAccountScreen(
             Spacer(modifier = Modifier.height(40.dp))
             // Image
             val profilePainter = rememberAsyncImagePainter(
-                model = uiState.image
-                    ?: userData.profilePicture
-                    ?: R.drawable.img_profile_placeholder
+                model = uiState.image                         // P1: image picked by user
+                    ?: userData.profilePicture                // P2: user's profile picture from API
+                    ?: R.drawable.img_profile_placeholder     // P3: placeholder if both previous image non exist
             )
             Image(
                 painter = profilePainter,
@@ -316,6 +317,24 @@ fun EditAccountScreen(
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_left),
                 contentDescription = stringResource(id = R.string.description_back_button)
+            )
+        }
+
+        uiState.errorMessage?.let { errorMessage ->
+            TopSnackBar(
+                message = errorMessage,
+                isError = true,
+                onDismissClick = onSnackbarDismissed,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+
+        if (uiState.isSuccess) {
+            TopSnackBar(
+                message = stringResource(id = R.string.update_profile_success),
+                isError = false,
+                onDismissClick = onSnackbarDismissed
+
             )
         }
     }

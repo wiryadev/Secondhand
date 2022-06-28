@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.ui.main.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -137,9 +139,6 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
                 val categories = mutableListOf(Category(-1, "Semua"))
-//                if (homeUiState.categoryState is CategoriesUiState.Success) {
-//                    ListCategory(category = categories)
-//                }
                 when (uiState.categoryState) {
                     is CategoriesUiState.Error -> {
                         Box(Modifier.fillMaxWidth()) {
@@ -159,8 +158,9 @@ fun HomeScreen(
 
         when (uiState.productState) {
             is BuyerProductsUiState.Error -> {
+                Log.d("HomeState", "HomeScreen: error")
                 Box(Modifier.fillMaxWidth()) {
-                    Text(text = "Error")
+                    Text(text = "Error", modifier = Modifier.align(Alignment.Center))
                 }
             }
             is BuyerProductsUiState.Loading -> {
