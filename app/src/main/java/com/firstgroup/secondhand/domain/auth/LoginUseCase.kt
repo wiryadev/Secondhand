@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.domain.auth
 
+import android.util.Log
 import com.firstgroup.secondhand.core.common.dispatchers.AppDispatcher
 import com.firstgroup.secondhand.core.common.dispatchers.SecondhandDispatchers.IO
 import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepository
@@ -12,14 +13,15 @@ import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val repository: AuthRepository,
-    private val authInterceptor: AuthInterceptor,
+//    private val authInterceptor: AuthInterceptor,
+    private val setTokenUseCase: SetTokenUseCase,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
 ) : UseCase<LoginRequest, Authentication>(ioDispatcher) {
 
     override suspend fun execute(param: LoginRequest): Authentication {
         val login = repository.login(param)
         repository.saveUserSession(login)
-        authInterceptor.setToken(login.token)
+        setTokenUseCase(login.token)
         return login
     }
 

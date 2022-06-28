@@ -15,7 +15,6 @@ class AuthInterceptor : Interceptor {
 
         val needCredential = request.header(NO_AUTH_HEADER_KEY) == null
         if (needCredential) {
-            Log.d("TestViewModel", "intercept: $token")
             token?.let {
                 requestBuilder.addHeader("access_token", it)
             } ?: throw RuntimeException("Token should not be null")
@@ -25,7 +24,6 @@ class AuthInterceptor : Interceptor {
     }
 
     fun setToken(newToken: String) {
-        Log.d("TestViewModel", "setToken: $newToken")
         token = newToken
     }
 

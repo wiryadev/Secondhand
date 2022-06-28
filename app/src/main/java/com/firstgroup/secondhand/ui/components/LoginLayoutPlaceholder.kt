@@ -10,19 +10,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.firstgroup.secondhand.R
 
 @Composable
 fun LoginLayoutPlaceholder(
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.login_and_sign_up2))
         

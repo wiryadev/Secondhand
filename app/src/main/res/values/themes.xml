@@ -4,12 +4,12 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/dark_blue_04</item>
         <item name="colorPrimaryVariant">@color/dark_blue_01</item>
-        <item name="colorOnPrimary">@color/neutral_02</item>
+        <item name="colorOnPrimary">@color/neutral_01</item>
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/dark_blue_02</item>
         <item name="colorSecondaryVariant">@color/dark_blue_01</item>
-        <item name="colorOnSecondary">@color/neutrak_divider</item>
+        <item name="colorOnSecondary">@color/neutral_divider</item>
 
         <!-- Typography. -->
         <item name="textAppearanceHeadline1">@style/TextAppearance.Secondhand.Headline1</item>

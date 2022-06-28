@@ -1,22 +1,24 @@
 package com.firstgroup.secondhand.ui.main.account
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
@@ -32,6 +34,10 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
+import com.firstgroup.secondhand.ui.auth.AuthActivity
+import com.firstgroup.secondhand.ui.auth.LoginState
+import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
+import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
 import com.firstgroup.secondhand.ui.components.noRippleClickable
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -53,7 +59,9 @@ class AccountFragment : Fragment() {
                 MdcTheme {
                     AccountScreen(
                         uiState = uiState,
-                        onEditAccountClick = ::goToEditAccountScreen
+                        onEditAccountClick = ::goToEditAccountScreen,
+                        onLoginClick = ::goToLoginScreen,
+                        onUserLoggedIn = viewModel::getUser,
                     )
                 }
             }
@@ -62,36 +70,66 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getUser()
+        viewModel.getSession()
     }
 
-    private fun goToEditAccountScreen(user: User?) {
-        if (user != null) {
-            findNavController().navigate(
-                AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(user)
-            )
-        }
+    private fun goToEditAccountScreen(user: User) {
+        findNavController().navigate(
+            AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(user)
+        )
+    }
+
+    private fun goToLoginScreen() {
+        startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
 
 }
 
-//@Composable
-//fun AccountScreen(
-//    viewModel: AccountViewModel,
-//    toEditScreen: () -> Unit
-//) {
-////    val uiState by viewModel.uiState.collectAsState()
-//
-//    AccountScreen(
-//        toEditScreen = toEditScreen
-//    )
-//
-//}
-
 @Composable
 fun AccountScreen(
     uiState: AccountUiState,
-    onEditAccountClick: (User?) -> Unit
+    onEditAccountClick: (User) -> Unit,
+    onLoginClick: () -> Unit,
+    onUserLoggedIn: () -> Unit,
+) {
+    LaunchedEffect(key1 = uiState.loginState) {
+        if (uiState.loginState is LoginState.Loaded) {
+            if (uiState.loginState.isLoggedIn) {
+                onUserLoggedIn.invoke()
+            }
+        }
+    }
+
+    when (uiState.loginState) {
+        is LoginState.Idle -> {
+            GenericLoadingScreen()
+        }
+        is LoginState.Loaded -> {
+            if (uiState.loginState.isLoggedIn) {
+                if (uiState.recentUser != null) {
+                    AccountScreen(
+                        user = uiState.recentUser,
+                        onEditAccountClick = onEditAccountClick,
+                    )
+                } else {
+                    GenericLoadingScreen()
+            }
+        }
+        else {
+            LoginLayoutPlaceholder(
+                onButtonClick = onLoginClick
+            )
+        }
+    }
+}
+
+
+}
+
+@Composable
+fun AccountScreen(
+    user: User,
+    onEditAccountClick: (User) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -113,7 +151,7 @@ fun AccountScreen(
             Spacer(modifier = Modifier.height(24.dp))
             // Account profile picture
             val profilePainter = rememberAsyncImagePainter(
-                model = uiState.recentUser?.profilePicture ?: R.drawable.img_profile_placeholder
+                model = user.profilePicture ?: R.drawable.img_profile_placeholder
             )
 
             Image(
@@ -130,7 +168,7 @@ fun AccountScreen(
                     ),
             )
             Spacer(modifier = Modifier.height(12.dp))
-            uiState.recentUser?.email?.let {
+            user.email.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.h6,
@@ -154,9 +192,7 @@ fun AccountScreen(
                     text = stringResource(R.string.edit_account),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
-                        .noRippleClickable {
-                            onEditAccountClick(uiState.recentUser)
-                        }
+                        .noRippleClickable { onEditAccountClick(user) }
                         .fillMaxWidth()
                         .height(24.dp)
                         .padding(vertical = 4.dp),
