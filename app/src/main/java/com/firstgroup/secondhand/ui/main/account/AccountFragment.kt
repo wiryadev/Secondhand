@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -128,8 +129,19 @@ fun AccountScreen(
                         highlight = PlaceholderHighlight.shimmer()
                     ),
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            uiState.recentUser?.email?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
 
-            Spacer(modifier = Modifier.height(34.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             // Account Edit
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(

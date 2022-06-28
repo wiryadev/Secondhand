@@ -73,5 +73,6 @@
     <string name="placeholder_description">Contoh : Jalan Ikan Hiu 33</string>
     <string name="product_image">Foto Product</string>
     <string name="preview">Preview</string>
+    <string name="login_placeholder_commentary_text">Seems like you are not currently signed in!</string>
 
 </resources>
