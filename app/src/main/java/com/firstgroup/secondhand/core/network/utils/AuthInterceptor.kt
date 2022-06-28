@@ -23,7 +23,7 @@ class AuthInterceptor : Interceptor {
     }
 
     fun setToken(newToken: String) {
-        if (newToken.isNotEmpty()) {
+        if (token == null && newToken.isNotEmpty()) {
             token = newToken
         }
     }

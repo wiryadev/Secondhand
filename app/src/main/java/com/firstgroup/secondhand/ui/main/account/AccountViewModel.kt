@@ -6,7 +6,6 @@ import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.auth.GetUserUseCase
-import com.firstgroup.secondhand.domain.auth.SetTokenUseCase
 import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val getSessionUseCase: GetSessionUseCase,
-    private val setTokenUseCase: SetTokenUseCase,
     private val getUserUseCase: GetUserUseCase,
 ) : ViewModel() {
 
@@ -39,7 +37,6 @@ class AccountViewModel @Inject constructor(
                     }
                     is Result.Success -> {
                         val token = result.data.token
-                        setTokenUseCase(token)
                         _uiState.update {
                             it.copy(
                                 loginState = LoginState.Loaded(

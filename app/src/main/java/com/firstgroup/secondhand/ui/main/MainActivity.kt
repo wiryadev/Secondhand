@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.ui.main
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.fragment.NavHostFragment
@@ -12,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,5 +30,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         bottomNavView.setupWithNavController(navController)
+
+        viewModel.getSession()
     }
 }
