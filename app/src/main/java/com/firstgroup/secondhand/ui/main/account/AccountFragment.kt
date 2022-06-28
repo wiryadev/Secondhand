@@ -44,9 +44,7 @@ class AccountFragment : Fragment() {
     private val viewModel: AccountViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
@@ -54,9 +52,7 @@ class AccountFragment : Fragment() {
                 MdcTheme {
                     AccountScreen(
                         uiState = uiState,
-                        toEditScreen = {
-                            toEditWithData()
-                        }
+                        onEditAccountClick = ::goToEditAccountScreen
                     )
                 }
             }
@@ -68,21 +64,12 @@ class AccountFragment : Fragment() {
         viewModel.getUser()
     }
 
-    private fun toEditWithData() {
-        val userData = User(
-            fullName = viewModel.uiState.value.recentUser?.fullName ?: "",
-            email = viewModel.uiState.value.recentUser?.email ?: "",
-            phoneNo = viewModel.uiState.value.recentUser?.phoneNo ?: "",
-            password = viewModel.uiState.value.recentUser?.password ?: "",
-            address = viewModel.uiState.value.recentUser?.address ?: "",
-            profilePicture = viewModel.uiState.value.recentUser?.profilePicture,
-            city = viewModel.uiState.value.recentUser?.city ?: ""
-        )
-        findNavController().navigate(
-            AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(
-                userData
+    private fun goToEditAccountScreen(user: User?) {
+        if (user != null) {
+            findNavController().navigate(
+                AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(user)
             )
-        )
+        }
     }
 
 }
@@ -103,7 +90,7 @@ class AccountFragment : Fragment() {
 @Composable
 fun AccountScreen(
     uiState: AccountUiState,
-    toEditScreen: () -> Unit
+    onEditAccountClick: (User?) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -125,8 +112,7 @@ fun AccountScreen(
             Spacer(modifier = Modifier.height(24.dp))
             // Account profile picture
             val profilePainter = rememberAsyncImagePainter(
-                model = uiState.recentUser?.profilePicture
-                    ?: R.drawable.img_profile_placeholder
+                model = uiState.recentUser?.profilePicture ?: R.drawable.img_profile_placeholder
             )
 
             Image(
@@ -157,7 +143,7 @@ fun AccountScreen(
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .noRippleClickable {
-                            toEditScreen()
+                            onEditAccountClick(uiState.recentUser)
                         }
                         .fillMaxWidth()
                         .height(24.dp)
