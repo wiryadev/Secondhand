@@ -5,10 +5,8 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-data class AuthUserRequest(
+data class UpdateUserRequest(
     val fullName: String,
-    val email: String,
-    val password: String,
     val phoneNo: String,
     val address: String,
     val city: String,
@@ -22,8 +20,6 @@ data class AuthUserRequest(
     fun toFormData(): FormData {
         val map = hashMapOf(
             "full_name" to RequestUtil.createPartFromString(fullName),
-            "email" to RequestUtil.createPartFromString(email),
-            "password" to RequestUtil.createPartFromString(password),
             "phone_number" to RequestUtil.createPartFromString(phoneNo),
             "address" to RequestUtil.createPartFromString(address),
             "city" to RequestUtil.createPartFromString(city),

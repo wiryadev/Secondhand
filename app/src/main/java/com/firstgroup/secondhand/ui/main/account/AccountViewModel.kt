@@ -1,11 +1,10 @@
 package com.firstgroup.secondhand.ui.main.account
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.User
-import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
 import com.firstgroup.secondhand.domain.auth.GetUserUseCase
 import com.firstgroup.secondhand.domain.auth.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,26 +51,21 @@ class AccountViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
         }
-        val newUserData = AuthUserRequest(
+        val newUserData = UpdateUserRequest(
             fullName = fullName,
-            email = "husni18@mail.com",
-            password = "123456",
             phoneNo = phoneNo,
             address = address,
             city = city,
             image = uiState.value.image
         )
-        Log.d("updateuser", "executed")
         viewModelScope.launch {
             when (val result = updateUserUseCase(newUserData)) {
                 is Result.Success -> {
-                    Log.d("updateuser", result.data.profilePicture.toString())
                     _uiState.update {
                         it.copy(isSuccess = true)
                     }
                 }
                 is Result.Error -> {
-                    Log.d("updateuser", result.exception?.message.toString())
                     _uiState.update {
                         it.copy(error = result.exception?.message.toString())
                     }

@@ -1,9 +1,6 @@
 package com.firstgroup.secondhand.core.network.auth
 
-import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginDto
-import com.firstgroup.secondhand.core.network.auth.model.UserDto
+import com.firstgroup.secondhand.core.network.auth.model.*
 
 interface AuthRemoteDataSource {
 
@@ -12,13 +9,13 @@ interface AuthRemoteDataSource {
     ): LoginDto
 
     suspend fun register(
-        authUserRequest: AuthUserRequest
+        registerUserRequest: RegisterUserRequest
     ): UserDto
 
     suspend fun getUser(): UserDto
 
     suspend fun updateUser(
-        authUserRequest: AuthUserRequest
+        updateUserRequest: UpdateUserRequest
     ): UserDto
 
 }

@@ -3,8 +3,9 @@ package com.firstgroup.secondhand.core.data.repositories.auth
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
-import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
 import kotlinx.coroutines.flow.Flow
@@ -21,16 +22,15 @@ class AuthRepositoryImpl @Inject constructor(
     ): Authentication = authRemoteDataSource.login(loginRequest).mapToDomain()
 
     override suspend fun register(
-        authUserRequest: AuthUserRequest
-    ): User = authRemoteDataSource.register(authUserRequest).mapToDomain()
-
+        registerUserRequest: RegisterUserRequest
+    ): User = authRemoteDataSource.register(registerUserRequest).mapToDomain()
 
     override suspend fun getUser(): User = authRemoteDataSource.getUser().mapToDomain()
 
     override suspend fun updateUser(
-        authUserRequest: AuthUserRequest,
+        updateUserRequest: UpdateUserRequest,
     ): User = authRemoteDataSource.updateUser(
-        authUserRequest = authUserRequest,
+        updateUserRequest = updateUserRequest,
     ).mapToDomain()
 
     override fun getUserSession(): Flow<Authentication> {

@@ -3,7 +3,7 @@ package com.firstgroup.secondhand.ui.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.domain.auth.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ class RegisterViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
         }
-        val userRequest = AuthUserRequest(
+        val userRequest = RegisterUserRequest(
             fullName = name,
             email = email,
             password = password,

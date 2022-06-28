@@ -16,8 +16,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -29,12 +31,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.noRippleClickable
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -110,7 +116,7 @@ fun EditAccountScreen(
 
     EditAccountScreen(
         userData = userData,
-        imagePicker = imagePicker,
+        onImagePickerClick = imagePicker,
         backToMainAccountPage = { backButtonAction() },
         uiState = uiState,
         onEditClick = viewModel::updateUser
@@ -121,7 +127,7 @@ fun EditAccountScreen(
 @Composable
 fun EditAccountScreen(
     userData: User,
-    imagePicker: () -> Unit,
+    onImagePickerClick: () -> Unit,
     backToMainAccountPage: () -> Unit,
     uiState: AccountUiState,
     onEditClick: (String, String, String, String) -> Unit
@@ -146,17 +152,24 @@ fun EditAccountScreen(
             )
             Spacer(modifier = Modifier.height(40.dp))
             // Image
+            val profilePainter = rememberAsyncImagePainter(
+                model = uiState.image
+                    ?: userData.profilePicture
+                    ?: R.drawable.img_profile_placeholder
+            )
             Image(
-                painter = rememberAsyncImagePainter(
-                    model = uiState.image
-                ),
+                painter = profilePainter,
                 contentDescription = stringResource(R.string.description_profile_image),
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(96.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .align(Alignment.CenterHorizontally)
-                    .noRippleClickable {
-                        imagePicker()
-                    }
+                    .placeholder(
+                        visible = profilePainter.state is AsyncImagePainter.State.Loading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                    .noRippleClickable(onClick = onImagePickerClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             //Name
@@ -290,7 +303,7 @@ fun EditAccountScreen(
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
                 onClick = {
-                          onEditClick(name, phoneNumber, address, city)
+                    onEditClick(name, phoneNumber, address, city)
                 },
                 content = {
                     Text(text = stringResource(R.string.save))
