@@ -1,9 +1,6 @@
 package com.firstgroup.secondhand.core.network.auth
 
-import com.firstgroup.secondhand.core.network.auth.model.AuthUserRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
-import com.firstgroup.secondhand.core.network.auth.model.LoginDto
-import com.firstgroup.secondhand.core.network.auth.model.UserDto
+import com.firstgroup.secondhand.core.network.auth.model.*
 import com.firstgroup.secondhand.core.network.auth.retrofit.AuthService
 import com.firstgroup.secondhand.core.network.utils.RequestUtil
 import javax.inject.Inject
@@ -18,8 +15,8 @@ class AuthRemoteDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun register(authUserRequest: AuthUserRequest): UserDto {
-        val formData = authUserRequest.toFormData()
+    override suspend fun register(registerUserRequest: RegisterUserRequest): UserDto {
+        val formData = registerUserRequest.toFormData()
         return authService.register(
             partMap = formData.requestBody,
             image = formData.multipart,
@@ -31,9 +28,9 @@ class AuthRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateUser(
-        authUserRequest: AuthUserRequest,
+        updateUserRequest: UpdateUserRequest,
     ): UserDto {
-        val formData = authUserRequest.toFormData()
+        val formData = updateUserRequest.toFormData()
         return authService.updateUser(
             partMap = formData.requestBody,
             image = formData.multipart,
