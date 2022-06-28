@@ -1,6 +1,5 @@
 package com.firstgroup.secondhand.ui.auth.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +34,6 @@ import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.TopSnackBar
-import com.firstgroup.secondhand.ui.main.MainActivity
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,9 +56,8 @@ class LoginFragment : Fragment() {
                             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
                         },
                         onLoginSuccess = {
-                            startActivity(Intent(activity, MainActivity::class.java))
                             activity?.finish()
-                        }
+                        },
                     )
                 }
             }

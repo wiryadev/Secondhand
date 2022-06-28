@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/editAccountFragment"
-        android:name="com.firstgroup.secondhand.ui.main.account.EditAccountFragment"
+        android:name="com.firstgroup.secondhand.ui.main.account.edit.EditAccountFragment"
         android:label="EditAccountFragment" >
         <argument android:name="recentUserData"
             app:argType="com.firstgroup.secondhand.core.model.User" />

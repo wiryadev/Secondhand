@@ -424,7 +424,7 @@ fun RegisterScreen(
 
         if (uiState.isSuccess) {
             TopSnackBar(
-                message = stringResource(id = R.string.register_succes),
+                message = stringResource(id = R.string.register_success),
                 isError = false,
                 onDismissClick = {
                     onSnackbarDismissed()

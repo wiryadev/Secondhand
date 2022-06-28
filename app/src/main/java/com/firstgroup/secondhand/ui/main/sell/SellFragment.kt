@@ -36,7 +36,7 @@ fun SellScreen(
     // cek kondisi sudah login belum
 
     // jika belum login LoginLayoutPlaceholder di tampilin
-    LoginLayoutPlaceholder { onClickAction() }
+//    LoginLayoutPlaceholder { onClickAction() }
 
     // jika udah login nampilin
     // SellScreen() {
