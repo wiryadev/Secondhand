@@ -6,16 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
@@ -23,11 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.noRippleClickable
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,9 +50,10 @@ class AccountFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
+                val uiState by viewModel.uiState.collectAsState()
                 MdcTheme {
                     AccountScreen(
-                        viewModel = viewModel,
+                        uiState = uiState,
                         toEditScreen = {
                             toEditWithData()
                         }
@@ -94,7 +102,7 @@ class AccountFragment : Fragment() {
 
 @Composable
 fun AccountScreen(
-    viewModel: AccountViewModel,
+    uiState: AccountUiState,
     toEditScreen: () -> Unit
 ) {
     Box(
@@ -116,17 +124,23 @@ fun AccountScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             // Account profile picture
+            val profilePainter = rememberAsyncImagePainter(
+                model = uiState.recentUser?.profilePicture
+                    ?: R.drawable.img_profile_placeholder
+            )
+
             Image(
-                painter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                    .data(viewModel.uiState.value.recentUser?.profilePicture)
-                    .crossfade(true)
-                    .build()
-                ),
+                painter = profilePainter,
                 contentDescription = stringResource(id = R.string.description_profile_image),
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(96.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .align(Alignment.CenterHorizontally)
+                    .placeholder(
+                        visible = profilePainter.state is AsyncImagePainter.State.Loading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    ),
             )
 
             Spacer(modifier = Modifier.height(34.dp))
