@@ -247,7 +247,7 @@ fun AccountScreen(
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .noRippleClickable { onLogoutClick() }
+                        .noRippleClickable(onClick = onLogoutClick)
                         .height(24.dp)
                         .padding(vertical = 4.dp),
                 )
