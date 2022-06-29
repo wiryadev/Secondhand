@@ -1,12 +1,9 @@
-package com.firstgroup.secondhand.ui.main.account
+package com.firstgroup.secondhand.ui.main.sell
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
-import com.firstgroup.secondhand.domain.auth.GetUserUseCase
-import com.firstgroup.secondhand.domain.auth.LogoutUseCase
 import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,14 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountViewModel @Inject constructor(
-    private val getSessionUseCase: GetSessionUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val logoutUseCase: LogoutUseCase
-) : ViewModel() {
+class SellViewModel @Inject constructor(
+    private val getSessionUseCase: GetSessionUseCase
+): ViewModel() {
 
-    private val _uiState: MutableStateFlow<AccountUiState> = MutableStateFlow(AccountUiState())
-    val uiState: StateFlow<AccountUiState> get() = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<SellUiState> = MutableStateFlow(SellUiState())
+    val uiState: StateFlow<SellUiState> get() = _uiState.asStateFlow()
 
     fun getSession() {
         viewModelScope.launch {
@@ -51,33 +46,8 @@ class AccountViewModel @Inject constructor(
             }
         }
     }
-
-    fun getUser() {
-        viewModelScope.launch {
-            when (val result = getUserUseCase(Unit)) {
-                is Result.Success -> {
-                    _uiState.update {
-                        it.copy(recentUser = result.data)
-                    }
-                }
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(error = result.exception?.message.toString())
-                    }
-                }
-            }
-        }
-    }
-
-    fun logOut() {
-        viewModelScope.launch {
-            logoutUseCase(Unit)
-        }
-    }
 }
 
-data class AccountUiState(
+data class SellUiState(
     val loginState: LoginState = LoginState.Idle,
-    val error: String? = null,
-    val recentUser: User? = null,
 )

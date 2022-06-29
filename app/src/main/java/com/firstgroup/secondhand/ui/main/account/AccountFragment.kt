@@ -62,6 +62,7 @@ class AccountFragment : Fragment() {
                         onEditAccountClick = ::goToEditAccountScreen,
                         onLoginClick = ::goToLoginScreen,
                         onUserLoggedIn = viewModel::getUser,
+                        onLogoutClick = viewModel::logOut
                     )
                 }
             }
@@ -91,6 +92,7 @@ fun AccountScreen(
     onEditAccountClick: (User) -> Unit,
     onLoginClick: () -> Unit,
     onUserLoggedIn: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
@@ -110,26 +112,25 @@ fun AccountScreen(
                     AccountScreen(
                         user = uiState.recentUser,
                         onEditAccountClick = onEditAccountClick,
+                        onLogoutClick = onLogoutClick
                     )
                 } else {
                     GenericLoadingScreen()
+                }
+            } else {
+                LoginLayoutPlaceholder(
+                    onButtonClick = onLoginClick
+                )
             }
         }
-        else {
-            LoginLayoutPlaceholder(
-                onButtonClick = onLoginClick
-            )
-        }
     }
-}
-
-
 }
 
 @Composable
 fun AccountScreen(
     user: User,
-    onEditAccountClick: (User) -> Unit
+    onEditAccountClick: (User) -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -168,16 +169,14 @@ fun AccountScreen(
                     ),
             )
             Spacer(modifier = Modifier.height(12.dp))
-            user.email.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
+            Text(
+                text = user.email,
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                textAlign = TextAlign.Center
+            )
 
             Spacer(modifier = Modifier.height(22.dp))
             // Account Edit
@@ -248,6 +247,7 @@ fun AccountScreen(
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .noRippleClickable { onLogoutClick() }
                         .height(24.dp)
                         .padding(vertical = 4.dp),
                 )
