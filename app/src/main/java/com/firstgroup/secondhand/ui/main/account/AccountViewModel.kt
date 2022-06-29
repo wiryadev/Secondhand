@@ -6,6 +6,7 @@ import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.auth.GetUserUseCase
+import com.firstgroup.secondhand.domain.auth.LogoutUseCase
 import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     private val getSessionUseCase: GetSessionUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AccountUiState> = MutableStateFlow(AccountUiState())
@@ -67,6 +69,11 @@ class AccountViewModel @Inject constructor(
         }
     }
 
+    fun logOut() {
+        viewModelScope.launch {
+            logoutUseCase(Unit)
+        }
+    }
 }
 
 data class AccountUiState(
