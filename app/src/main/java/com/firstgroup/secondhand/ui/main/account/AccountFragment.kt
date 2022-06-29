@@ -62,7 +62,7 @@ class AccountFragment : Fragment() {
                         onEditAccountClick = ::goToEditAccountScreen,
                         onLoginClick = ::goToLoginScreen,
                         onUserLoggedIn = viewModel::getUser,
-                        onLogoutClick = viewModel::logOut
+                        onLogoutClick = viewModel::logout,
                     )
                 }
             }
