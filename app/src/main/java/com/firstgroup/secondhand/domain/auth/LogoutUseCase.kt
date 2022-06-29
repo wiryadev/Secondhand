@@ -18,8 +18,6 @@ class LogoutUseCase @Inject constructor(
 
     override suspend fun execute(param: Any) {
         repository.deleteUserSession()
-        productRepository.deleteCachedProducts()
-        productRepository.deleteCachedCategories()
         productRepository.deleteWishlist()
         authInterceptor.deleteToken()
     }

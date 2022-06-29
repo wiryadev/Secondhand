@@ -69,7 +69,7 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    fun logOut() {
+    fun logout() {
         viewModelScope.launch {
             logoutUseCase(Unit)
         }
