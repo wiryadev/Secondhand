@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.order.model
 
 
+import com.firstgroup.secondhand.core.model.Order
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -53,5 +54,14 @@ data class GetOrderDto(
         val fullName: String,
         @Json(name = "phone_number")
         val phoneNumber: String,
+    )
+
+    fun mapToDomain() = Order(
+        id = id,
+        bidPrice = price,
+        status = status,
+        productName = this.product.name,
+        productImage = this.product.imageUrl,
+        productPrice = this.product.basePrice,
     )
 }

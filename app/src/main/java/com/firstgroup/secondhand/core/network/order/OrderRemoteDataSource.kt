@@ -9,14 +9,16 @@ interface OrderRemoteDataSource {
     /**
      * Buyer
      */
+
     suspend fun createOrder(orderRequest: OrderRequest): CreateOrderDto
 
-    suspend fun updateOrder(id: Int): CreateOrderDto
+    // wait for backend fix
+//    suspend fun updateOrder(id: Int): CreateOrderDto
 
-    suspend fun deleteOrder(id: Int)
+//    suspend fun deleteOrder(id: Int)
 
     suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
-    suspend fun getOrderByIdAsBuyer(id: Int): List<GetOrderDto>
+    suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto
 
 }
