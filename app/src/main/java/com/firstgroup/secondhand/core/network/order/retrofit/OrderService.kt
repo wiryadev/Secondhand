@@ -38,6 +38,6 @@ interface OrderService {
     @GET("buyer/order/{id}")
     suspend fun getOrderByIdAsBuyer(
         @Path("id") id: Int
-    ): List<GetOrderDto>
+    ): GetOrderDto
 
 }

@@ -17,19 +17,19 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun updateOrder(id: Int): CreateOrderDto {
-        return service.updateOrder(id)
-    }
+//    override suspend fun updateOrder(id: Int): CreateOrderDto {
+//        return service.updateOrder(id)
+//    }
 
-    override suspend fun deleteOrder(id: Int) {
-        service.deleteOrder(id)
-    }
+//    override suspend fun deleteOrder(id: Int) {
+//        service.deleteOrder(id)
+//    }
 
     override suspend fun getOrdersAsBuyer(): List<GetOrderDto> {
         return service.getOrdersAsBuyer()
     }
 
-    override suspend fun getOrderByIdAsBuyer(id: Int): List<GetOrderDto> {
+    override suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto {
         return service.getOrderByIdAsBuyer(id)
     }
 
