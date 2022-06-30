@@ -26,7 +26,7 @@ class ProductRemoteDataSourceImpl @Inject constructor(
         return service.addNewProduct(
             partMap = formData.requestBody,
             image = formData.multipart,
-            categoryIds = formData.categoryIds
+            categoryIds = formData.categoryIds,
         )
     }
 
