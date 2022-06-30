@@ -58,7 +58,7 @@ class DetailFragment : Fragment() {
         
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
-            viewModel.checkUser()
+//            viewModel.checkUser()   // commented until login checking implemented
         }
     }
     
