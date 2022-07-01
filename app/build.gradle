@@ -86,7 +86,7 @@ dependencies {
 
     // Compose Additional Lib
     implementation "io.coil-kt:coil-compose:2.1.0"
-    implementation "com.google.android.material:compose-theme-adapter:1.1.13"
+    implementation "com.google.android.material:compose-theme-adapter:1.1.14"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist_version"
 
     // Paging
