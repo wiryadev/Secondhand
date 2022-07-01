@@ -6,10 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -96,13 +93,14 @@ fun ProductItem(
 fun ListProduct(
     products: LazyPagingItems<Product>,
     onProductClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val errorState = products.loadState.refresh as? LoadState.Error
         ?: products.loadState.append as? LoadState.Error
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 8.dp)
             .fillMaxWidth(),
     ) {
@@ -158,6 +156,26 @@ fun ListProduct(
 //                    }
 //                }
             }
+        }
+    }
+}
+
+@Composable
+fun ListProductLoadingScreen(
+    modifier: Modifier = Modifier,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth(),
+    ) {
+        items(10) {
+            ProductItem(
+                product = dummyProduct,
+                isLoading = true,
+                onClick = {},
+            )
         }
     }
 }

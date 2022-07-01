@@ -31,8 +31,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
 import com.firstgroup.secondhand.ui.components.ListProduct
+import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -158,7 +158,7 @@ fun HomeScreen(
 
         when (uiState.productState) {
             BuyerProductsUiState.Loading -> {
-                GenericLoadingScreen()
+                ListProductLoadingScreen()
             }
             BuyerProductsUiState.Loaded -> {
                 ListProduct(
