@@ -17,6 +17,8 @@ interface ProductRepository {
 
     fun getProductsAsBuyer(): Flow<PagingData<Product>>
 
+    suspend fun getProductsByCategory(categoryId: Int): List<Product>
+
     suspend fun getProductByIdAsBuyer(id: Int): Product
 
     suspend fun deleteCachedProducts()

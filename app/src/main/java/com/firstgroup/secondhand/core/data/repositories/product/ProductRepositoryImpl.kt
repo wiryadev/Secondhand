@@ -12,6 +12,7 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
+import com.firstgroup.secondhand.core.network.product.model.filterProductPolicy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -35,6 +36,11 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProductsByCategory(categoryId: Int): List<Product> =
+        remoteDataSource.getProductsByCategory(categoryId)
+            .filter(::filterProductPolicy)
+            .map { it.mapToDomainModel() }
+
     override suspend fun getProductByIdAsBuyer(id: Int): Product =
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
 
@@ -57,11 +63,7 @@ class ProductRepositoryImpl @Inject constructor(
         val remoteData = remoteDataSource.getProductsAsBuyer()
         localDataSource.cacheAllProducts(
             remoteData
-                .filter { product ->
-                    product.imageUrl != null
-                            && !product.name.isNullOrEmpty()
-                            && product.basePrice != null
-                }
+                .filter(::filterProductPolicy)
                 .map { filteredProduct ->
                     ProductEntity(
                         id = filteredProduct.id,
@@ -93,6 +95,7 @@ class ProductRepositoryImpl @Inject constructor(
             }
         )
     }
+
 
     /**
      * Seller

@@ -33,6 +33,7 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
 import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
+import com.firstgroup.secondhand.ui.main.home.HomeViewModel.Companion.DEFAULT_SELECTED_CATEGORY_ID
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -166,15 +167,32 @@ fun HomeScreen(
             }
         }
 
-        when (uiState.productState) {
-            BuyerProductsUiState.Loading -> {
-                ListProductLoadingScreen()
+        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
+            when (uiState.productsByCategoryState) {
+                is ProductByCategoryUiState.Error -> {
+                    // do nothing yet
+                }
+                is ProductByCategoryUiState.Loading -> {
+                    ListProductLoadingScreen()
+                }
+                is ProductByCategoryUiState.Success -> {
+                    ListProduct(
+                        products = uiState.productsByCategoryState.products,
+                        onProductClick = onProductClick,
+                    )
+                }
             }
-            BuyerProductsUiState.Loaded -> {
-                ListProduct(
-                    products = products,
-                    onProductClick = onProductClick,
-                )
+        } else {
+            when (uiState.allProductState) {
+                AllProductsUiState.Loading -> {
+                    ListProductLoadingScreen()
+                }
+                AllProductsUiState.Loaded -> {
+                    ListProduct(
+                        products = products,
+                        onProductClick = onProductClick,
+                    )
+                }
             }
         }
     }

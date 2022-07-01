@@ -91,6 +91,31 @@ fun ProductItem(
 
 @Composable
 fun ListProduct(
+    products: List<Product>,
+    onProductClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth(),
+    ) {
+        items(
+            items = products,
+            key = { it.id }
+        ) { product ->
+            ProductItem(
+                product = product,
+                isLoading = false,
+                onClick = onProductClick,
+            )
+        }
+    }
+}
+
+@Composable
+fun ListProduct(
     products: LazyPagingItems<Product>,
     onProductClick: (Int) -> Unit,
     modifier: Modifier = Modifier,

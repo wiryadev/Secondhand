@@ -43,3 +43,9 @@ data class ProductDto(
         category = categories[0].name,
     )
 }
+
+fun filterProductPolicy(productDto: ProductDto): Boolean {
+    return productDto.imageUrl != null
+            && !productDto.name.isNullOrEmpty()
+            && productDto.basePrice != null
+}
