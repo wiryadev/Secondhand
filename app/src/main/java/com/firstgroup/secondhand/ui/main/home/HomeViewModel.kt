@@ -2,18 +2,18 @@ package com.firstgroup.secondhand.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Category
-import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.domain.product.GetCategoriesUseCase
 import com.firstgroup.secondhand.domain.product.GetProductsAsBuyerUseCase
 import com.firstgroup.secondhand.domain.product.RefreshCategoriesUseCase
 import com.firstgroup.secondhand.domain.product.RefreshProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,39 +25,47 @@ class HomeViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
 ) : ViewModel() {
 
+    val products = getProductsAsBuyerUseCase().cachedIn(viewModelScope)
+
+    private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> get() = _uiState
+
     init {
         viewModelScope.launch {
-            refreshProductsUseCase(Unit)
-            refreshCategoriesUseCase(Unit)
+            refreshProductLocalCache()
+            getCategories()
         }
     }
 
-    val uiState: StateFlow<HomeUiState> = combine(
-        getProductsAsBuyerUseCase(Unit),
-        getCategoriesUseCase(Unit),
-    ) { buyerProductsResult, categoriesResult ->
-        val products: BuyerProductsUiState = when (buyerProductsResult) {
-            is Result.Error -> BuyerProductsUiState.Error
-            is Result.Success -> BuyerProductsUiState.Success(buyerProductsResult.data)
+    private suspend fun refreshProductLocalCache() {
+        refreshProductsUseCase(Unit)
+        _uiState.update {
+            it.copy(productState = BuyerProductsUiState.Loaded)
         }
+    }
 
-        val categories: CategoriesUiState = when (categoriesResult) {
-            is Result.Error -> CategoriesUiState.Error
-            is Result.Success -> CategoriesUiState.Success(categoriesResult.data)
+    private suspend fun getCategories() {
+        refreshCategoriesUseCase(Unit)
+        getCategoriesUseCase(Unit).collectLatest { result ->
+            when (result) {
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(categoryState = CategoriesUiState.Error)
+                    }
+                }
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(categoryState = CategoriesUiState.Success(result.data))
+                    }
+                }
+            }
         }
-
-        HomeUiState(products, categories)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = HomeUiState(BuyerProductsUiState.Loading, CategoriesUiState.Loading)
-    )
+    }
 
 }
 
 sealed interface BuyerProductsUiState {
-    data class Success(val products: List<Product>) : BuyerProductsUiState
-    object Error : BuyerProductsUiState
+    object Loaded : BuyerProductsUiState
     object Loading : BuyerProductsUiState
 }
 
@@ -68,6 +76,6 @@ sealed interface CategoriesUiState {
 }
 
 data class HomeUiState(
-    val productState: BuyerProductsUiState,
-    val categoryState: CategoriesUiState,
+    val productState: BuyerProductsUiState = BuyerProductsUiState.Loading,
+    val categoryState: CategoriesUiState = CategoriesUiState.Loading,
 )

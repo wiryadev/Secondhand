@@ -1,5 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
@@ -21,9 +25,14 @@ class ProductRepositoryImpl @Inject constructor(
     private val localDataSource: ProductLocalDataSource,
 ) : ProductRepository {
 
-    override fun getProductsAsBuyer(): Flow<List<Product>> {
-        return localDataSource.getCachedProducts().map { products ->
-            products.map { it.mapToDomainModel() }
+    override fun getProductsAsBuyer(): Flow<PagingData<Product>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = {
+                localDataSource.getCachedProducts()
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.mapToDomainModel() }
         }
     }
 
@@ -34,17 +43,7 @@ class ProductRepositoryImpl @Inject constructor(
         try {
             refreshProductCache()
         } catch (e: Exception) {
-            when (e) {
-                is UnknownHostException,
-                is ConnectException,
-                is HttpException -> {
-                    if (localDataSource.getCachedProducts().first().isEmpty())
-                        throw Exception(
-                            "Something went wrong. No Data Available"
-                        )
-                }
-                else -> throw e
-            }
+            // do nothing
         }
     }
 

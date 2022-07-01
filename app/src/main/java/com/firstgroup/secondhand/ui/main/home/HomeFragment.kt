@@ -1,7 +1,6 @@
 package com.firstgroup.secondhand.ui.main.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,17 +9,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -31,11 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import coil.compose.AsyncImagePainter
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
+import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
+import com.firstgroup.secondhand.ui.components.ListProduct
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -53,10 +50,12 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
+                val products = viewModel.products.collectAsLazyPagingItems()
 
                 MdcTheme {
                     HomeScreen(
                         uiState = uiState,
+                        products = products,
                         onProductClick = {
                             findNavController().navigate(
                                 HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
@@ -72,6 +71,7 @@ class HomeFragment : Fragment() {
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
+    products: LazyPagingItems<Product>,
     onProductClick: (Int) -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
@@ -157,24 +157,13 @@ fun HomeScreen(
         }
 
         when (uiState.productState) {
-            is BuyerProductsUiState.Error -> {
-                Log.d("HomeState", "HomeScreen: error")
-                Box(Modifier.fillMaxWidth()) {
-                    Text(text = "Error", modifier = Modifier.align(Alignment.Center))
-                }
+            BuyerProductsUiState.Loading -> {
+                GenericLoadingScreen()
             }
-            is BuyerProductsUiState.Loading -> {
+            BuyerProductsUiState.Loaded -> {
                 ListProduct(
-                    products = dummyProducts,
-                    isLoading = true,
-                    onProductClick = {}
-                )
-            }
-            is BuyerProductsUiState.Success -> {
-                ListProduct(
-                    products = uiState.productState.products,
-                    isLoading = false,
-                    onProductClick = onProductClick
+                    products = products,
+                    onProductClick = onProductClick,
                 )
             }
         }
@@ -228,91 +217,6 @@ fun ListCategory(
     }
 }
 
-@Composable
-fun ListProduct(
-    products: List<Product>,
-    isLoading: Boolean,
-    onProductClick: (Int) -> Unit,
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .fillMaxWidth(),
-    ) {
-        items(products, key = { it.id }) { product ->
-            ProductItem(
-                product = product,
-                isLoading = isLoading,
-                onClick = onProductClick,
-            )
-        }
-    }
-}
-
-@Composable
-fun ProductItem(
-    product: Product,
-    isLoading: Boolean,
-    onClick: (Int) -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .size(width = 156.dp, height = 206.dp)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .background(color = Color.White)
-            .clickable { onClick(product.id) },
-        shape = RoundedCornerShape(16.dp),
-        elevation = 4.dp,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
-        ) {
-            val painter = rememberAsyncImagePainter(
-                model = product.imageUrl ?: dummyProduct.imageUrl
-            )
-            val isImageLoading = painter.state is AsyncImagePainter.State.Loading
-
-            Image(
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .height(height = 100.dp)
-                    .fillMaxWidth()
-                    .padding(all = 4.dp)
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .placeholder(
-                        visible = isLoading || isImageLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    )
-            )
-            Text(
-                text = product.name,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .placeholder(
-                        visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    ),
-            )
-            Text(
-                text = product.category,
-                modifier = Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.body2
-            )
-            Text(
-                text = "Rp. ${product.price}",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.body1
-            )
-        }
-    }
-}
-
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable
 //fun HomePreview() {
@@ -320,32 +224,6 @@ fun ProductItem(
 //        HomeScreen()
 //    }
 //}
-
-val dummyProduct = Product(
-    1,
-    "lenovo",
-    "ww",
-    50000,
-    "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
-    "bekasi",
-    2,
-    "new",
-    "elektronik"
-)
-
-val dummyProducts: List<Product> = List(10) {
-    Product(
-        it,
-        "lenovo",
-        "ww",
-        50000,
-        "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
-        "bekasi",
-        2,
-        "new",
-        "elektronik"
-    )
-}
 
 val dummyCategories: List<Category> = List(10) {
     Category(it, "elektronik")

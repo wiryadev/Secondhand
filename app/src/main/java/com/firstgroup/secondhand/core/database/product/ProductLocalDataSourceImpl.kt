@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.core.database.product
 
+import androidx.paging.PagingSource
 import com.firstgroup.secondhand.core.database.product.dao.CategoryDao
 import com.firstgroup.secondhand.core.database.product.dao.ProductCacheDao
 import com.firstgroup.secondhand.core.database.product.dao.WishlistDao
@@ -14,7 +15,7 @@ class ProductLocalDataSourceImpl @Inject constructor(
     private val wishlistDao: WishlistDao,
 ) : ProductLocalDataSource {
 
-    override fun getCachedProducts(): Flow<List<ProductEntity>> {
+    override fun getCachedProducts(): PagingSource<Int, ProductEntity> {
         return productCacheDao.getCachedProducts()
     }
 
