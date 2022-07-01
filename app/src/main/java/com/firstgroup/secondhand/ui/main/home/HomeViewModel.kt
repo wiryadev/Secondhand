@@ -24,14 +24,15 @@ class HomeViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
 ) : ViewModel() {
 
-    val products = getProductsAsBuyerUseCase().cachedIn(viewModelScope)
-
-    private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> get() = _uiState
-
     private val allCategories = listOf(
         Category(id = -1, name = "Semua"),
     )
+    val products = getProductsAsBuyerUseCase().cachedIn(viewModelScope)
+
+    private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(
+        HomeUiState(selectedCategory = allCategories[0])
+    )
+    val uiState: StateFlow<HomeUiState> get() = _uiState
 
     init {
         viewModelScope.launch {
@@ -67,6 +68,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun setCategory(category: Category) {
+        _uiState.update {
+            it.copy(selectedCategory = category)
+        }
+    }
+
 }
 
 sealed interface BuyerProductsUiState {
@@ -83,4 +90,5 @@ sealed interface CategoriesUiState {
 data class HomeUiState(
     val productState: BuyerProductsUiState = BuyerProductsUiState.Loading,
     val categoryState: CategoriesUiState = CategoriesUiState.Loading,
+    val selectedCategory: Category,
 )

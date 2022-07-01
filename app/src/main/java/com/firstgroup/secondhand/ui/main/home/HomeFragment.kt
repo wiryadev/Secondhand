@@ -56,6 +56,7 @@ class HomeFragment : Fragment() {
                     HomeScreen(
                         uiState = uiState,
                         products = products,
+                        onCategorySelected = viewModel::setCategory,
                         onProductClick = {
                             findNavController().navigate(
                                 HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
@@ -72,6 +73,7 @@ class HomeFragment : Fragment() {
 fun HomeScreen(
     uiState: HomeUiState,
     products: LazyPagingItems<Product>,
+    onCategorySelected: (Category) -> Unit,
     onProductClick: (Int) -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
@@ -145,12 +147,19 @@ fun HomeScreen(
                         }
                     }
                     is CategoriesUiState.Loading -> {
-                        ListCategory(categories = dummyCategories, isLoading = true)
+                        ListCategory(
+                            categories = dummyCategories,
+                            isLoading = true,
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = { },
+                        )
                     }
                     is CategoriesUiState.Success -> {
                         ListCategory(
                             categories = uiState.categoryState.categories,
                             isLoading = false,
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = onCategorySelected
                         )
                     }
                 }
@@ -175,8 +184,10 @@ fun HomeScreen(
 fun ListCategory(
     categories: List<Category>,
     isLoading: Boolean,
+    selectedCategory: Category,
+    onCategorySelected: (Category) -> Unit,
 ) {
-    var selectedIndex by remember { mutableStateOf(-1) }
+//    var selectedIndex by remember { mutableStateOf(-1) }
     LazyRow(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -185,11 +196,9 @@ fun ListCategory(
         items(
             items = categories,
             key = { it.id }
-        ) {
+        ) { category ->
             Button(
-                onClick = {
-                    selectedIndex = if (selectedIndex != it.id) it.id else -1
-                },
+                onClick = { onCategorySelected(category) },
                 modifier = Modifier
                     .height(44.dp)
                     .padding(horizontal = 8.dp)
@@ -198,7 +207,7 @@ fun ListCategory(
                         highlight = PlaceholderHighlight.shimmer(),
                     ),
                 shape = RoundedCornerShape(16.dp),
-                colors = if (it.id != selectedIndex) buttonColors(
+                colors = if (category.id != selectedCategory.id) buttonColors(
                     contentColor = Color.Black,
                     backgroundColor = colorResource(id = R.color.dark_blue_01)
                 ) else buttonColors(
@@ -209,10 +218,10 @@ fun ListCategory(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = null,
-                    tint = if (it.id != selectedIndex) Color.Black else Color.White,
+                    tint = if (category.id != selectedCategory.id) Color.Black else Color.White,
                     modifier = Modifier.padding(end = 8.dp)
                 )
-                Text(text = it.name, style = MaterialTheme.typography.button)
+                Text(text = category.name, style = MaterialTheme.typography.button)
             }
         }
     }
