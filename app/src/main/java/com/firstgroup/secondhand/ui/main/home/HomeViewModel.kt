@@ -68,6 +68,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setCategory(category: Category) {
+        // do not update if category is the same as before
+        if (category.id == _uiState.value.selectedCategory.id) return
+
         _uiState.update {
             it.copy(selectedCategory = category)
         }
