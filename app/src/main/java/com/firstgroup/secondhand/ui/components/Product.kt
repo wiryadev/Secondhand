@@ -50,7 +50,7 @@ fun ProductItem(
                 .padding(4.dp)
         ) {
             val painter = rememberAsyncImagePainter(
-                model = product.imageUrl ?: dummyProduct.imageUrl
+                model = product.imageUrl
             )
             val isImageLoading = painter.state is AsyncImagePainter.State.Loading
 
@@ -213,6 +213,5 @@ val dummyProduct = Product(
     "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
     "bekasi",
     2,
-    "new",
     "elektronik"
 )

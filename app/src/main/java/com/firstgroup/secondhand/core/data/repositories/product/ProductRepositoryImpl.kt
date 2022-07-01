@@ -57,24 +57,29 @@ class ProductRepositoryImpl @Inject constructor(
     private suspend fun refreshProductCache() {
         val remoteData = remoteDataSource.getProductsAsBuyer()
         localDataSource.cacheAllProducts(
-            remoteData.map { product ->
-                ProductEntity(
-                    id = product.id,
-                    name = product.name ?: "",
-                    description = product.description,
-                    price = product.basePrice ?: 0,
-                    imageUrl = product.imageUrl,
-                    location = product.location,
-                    userId = product.userId,
-                    status = product.status ?: "available",
-                    category = try {
-                        val categories = product.categories.map { it.name }
-                        categories.joinToString(separator = ", ")
-                    } catch (e: Exception) {
-                        "No Categories"
-                    },
-                )
-            }
+            remoteData
+                .filter { product ->
+                    product.imageUrl != null
+                            && !product.name.isNullOrEmpty()
+                            && product.basePrice != null
+                }
+                .map { filteredProduct ->
+                    ProductEntity(
+                        id = filteredProduct.id,
+                        name = filteredProduct.name!!,
+                        description = filteredProduct.description,
+                        price = filteredProduct.basePrice!!,
+                        imageUrl = filteredProduct.imageUrl!!,
+                        location = filteredProduct.location,
+                        userId = filteredProduct.userId,
+                        category = try {
+                            val categories = filteredProduct.categories.map { it.name }
+                            categories.joinToString(separator = ", ")
+                        } catch (e: Exception) {
+                            "No Categories"
+                        },
+                    )
+                }
         )
     }
 
