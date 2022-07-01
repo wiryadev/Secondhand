@@ -9,6 +9,8 @@ interface ProductRemoteDataSource {
      */
     suspend fun getProductsAsBuyer(): List<ProductDto>
 
+    suspend fun getProductsByCategory(categoryId: Int): List<ProductDto>
+
     suspend fun getProductByIdAsBuyer(
         productId: Int,
     ): ProductDetailDto

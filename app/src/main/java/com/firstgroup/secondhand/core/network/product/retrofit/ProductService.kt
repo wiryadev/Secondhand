@@ -11,9 +11,12 @@ interface ProductService {
     /**
      * Buyer
      */
-    @GET("buyer/product")
+    @GET("buyer/product?status=available")
     @Headers("${NO_AUTH_HEADER_KEY}: true")
-    suspend fun getProductsAsBuyer(): List<ProductDto>
+    suspend fun getProductsAsBuyer(
+        @Query("category_id") categoryId: Int? = null,
+        @Query("query") query: String? = null,
+    ): List<ProductDto>
 
     @GET("buyer/product/{id}")
     @Headers("${NO_AUTH_HEADER_KEY}: true")

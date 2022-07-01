@@ -34,13 +34,18 @@ data class ProductDto(
 ) {
     fun mapToDomainModel() = Product(
         id = id,
-        name = name ?: "",
+        name = name!!,
         description = description,
-        price = basePrice ?: 0,
-        imageUrl = imageUrl,
+        price = basePrice!!,
+        imageUrl = imageUrl!!,
         location = location,
         userId = userId,
-        status = status,
         category = categories[0].name,
     )
+}
+
+fun filterProductPolicy(productDto: ProductDto): Boolean {
+    return productDto.imageUrl != null
+            && !productDto.name.isNullOrEmpty()
+            && productDto.basePrice != null
 }

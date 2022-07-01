@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
+import androidx.paging.PagingData
 import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
@@ -14,7 +15,9 @@ interface ProductRepository {
 
     suspend fun loadBuyerProducts()
 
-    fun getProductsAsBuyer(): Flow<List<Product>>
+    fun getProductsAsBuyer(): Flow<PagingData<Product>>
+
+    suspend fun getProductsByCategory(categoryId: Int): List<Product>
 
     suspend fun getProductByIdAsBuyer(id: Int): Product
 
@@ -35,7 +38,7 @@ interface ProductRepository {
 
     suspend fun loadCategories()
 
-    fun getCategories(): Flow<List<Category>>
+    suspend fun getCategories(): List<Category>
 
     suspend fun getBanner(): List<Banner>
 

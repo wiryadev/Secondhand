@@ -60,13 +60,12 @@ data class ProductDetailDto(
 
     fun mapToDomainModel() = Product(
         id = id,
-        name = name ?: "",
+        name = name!!,
         description = description,
         price = basePrice ?: 0,
-        imageUrl = imageUrl,
+        imageUrl = imageUrl!!,
         location = location,
         userId = userId,
-        status = status,
         category = try {
             val categories = categories.map { it.name }
             categories.joinToString(separator = ", ")

@@ -2,18 +2,15 @@ package com.firstgroup.secondhand.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.domain.product.GetCategoriesUseCase
-import com.firstgroup.secondhand.domain.product.GetProductsAsBuyerUseCase
-import com.firstgroup.secondhand.domain.product.RefreshCategoriesUseCase
-import com.firstgroup.secondhand.domain.product.RefreshProductsUseCase
+import com.firstgroup.secondhand.domain.product.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,42 +20,102 @@ class HomeViewModel @Inject constructor(
     private val getProductsAsBuyerUseCase: GetProductsAsBuyerUseCase,
     private val refreshCategoriesUseCase: RefreshCategoriesUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getProductsByCategoryUseCase: GetProductsByCategoryUseCase,
 ) : ViewModel() {
+
+    private val allCategories = listOf(
+        Category(id = DEFAULT_SELECTED_CATEGORY_ID, name = "Semua"),
+    )
+    val products = getProductsAsBuyerUseCase().cachedIn(viewModelScope)
+
+    private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(
+        HomeUiState(selectedCategory = allCategories[0])
+    )
+    val uiState: StateFlow<HomeUiState> get() = _uiState
 
     init {
         viewModelScope.launch {
-            refreshProductsUseCase(Unit)
-            refreshCategoriesUseCase(Unit)
+            refreshProductLocalCache()
+            getCategories()
         }
     }
 
-    val uiState: StateFlow<HomeUiState> = combine(
-        getProductsAsBuyerUseCase(Unit),
-        getCategoriesUseCase(Unit),
-    ) { buyerProductsResult, categoriesResult ->
-        val products: BuyerProductsUiState = when (buyerProductsResult) {
-            is Result.Error -> BuyerProductsUiState.Error
-            is Result.Success -> BuyerProductsUiState.Success(buyerProductsResult.data)
+    private suspend fun refreshProductLocalCache() {
+        refreshProductsUseCase(Unit)
+        _uiState.update {
+            it.copy(allProductState = AllProductsUiState.Loaded)
+        }
+    }
+
+    private suspend fun getCategories() {
+        refreshCategoriesUseCase(Unit)
+        when (val result = getCategoriesUseCase(Unit)) {
+            is Result.Error -> {
+                _uiState.update {
+                    it.copy(categoryState = CategoriesUiState.Error)
+                }
+            }
+            is Result.Success -> {
+                _uiState.update {
+                    it.copy(
+                        categoryState = CategoriesUiState.Success(
+                            categories = allCategories + result.data
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun setCategory(category: Category) {
+        // do not update if category is the same as before
+        if (category.id == _uiState.value.selectedCategory.id) return
+
+        _uiState.update {
+            it.copy(selectedCategory = category)
         }
 
-        val categories: CategoriesUiState = when (categoriesResult) {
-            is Result.Error -> CategoriesUiState.Error
-            is Result.Success -> CategoriesUiState.Success(categoriesResult.data)
+        // only update productByCategory if selected category is not default
+        if (category.id != DEFAULT_SELECTED_CATEGORY_ID) {
+            _uiState.update {
+                it.copy(productsByCategoryState = ProductByCategoryUiState.Loading)
+            }
+            viewModelScope.launch {
+                when (val result = getProductsByCategoryUseCase(category)) {
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                productsByCategoryState = ProductByCategoryUiState.Error(result.exception?.message)
+                            )
+                        }
+                    }
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                productsByCategoryState = ProductByCategoryUiState.Success(result.data)
+                            )
+                        }
+                    }
+                }
+            }
         }
+    }
 
-        HomeUiState(products, categories)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = HomeUiState(BuyerProductsUiState.Loading, CategoriesUiState.Loading)
-    )
+    companion object {
+        const val DEFAULT_SELECTED_CATEGORY_ID = 1
+    }
 
 }
 
-sealed interface BuyerProductsUiState {
-    data class Success(val products: List<Product>) : BuyerProductsUiState
-    object Error : BuyerProductsUiState
-    object Loading : BuyerProductsUiState
+sealed interface AllProductsUiState {
+    object Loaded : AllProductsUiState
+    object Loading : AllProductsUiState
+}
+
+sealed interface ProductByCategoryUiState {
+    data class Success(val products: List<Product>) : ProductByCategoryUiState
+    data class Error(val message: String?) : ProductByCategoryUiState
+    object Loading : ProductByCategoryUiState
 }
 
 sealed interface CategoriesUiState {
@@ -68,6 +125,8 @@ sealed interface CategoriesUiState {
 }
 
 data class HomeUiState(
-    val productState: BuyerProductsUiState,
-    val categoryState: CategoriesUiState,
+    val allProductState: AllProductsUiState = AllProductsUiState.Loading,
+    val productsByCategoryState: ProductByCategoryUiState = ProductByCategoryUiState.Loading,
+    val categoryState: CategoriesUiState = CategoriesUiState.Loading,
+    val selectedCategory: Category,
 )

@@ -38,7 +38,6 @@ data class AddProductDto(
         imageUrl = imageUrl,
         location = location,
         userId = userId,
-        status = status,
         category = "",
     )
 }

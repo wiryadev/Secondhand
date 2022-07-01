@@ -1,7 +1,6 @@
 package com.firstgroup.secondhand.ui.main.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,17 +9,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -31,11 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import coil.compose.AsyncImagePainter
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
+import com.firstgroup.secondhand.ui.components.ListProduct
+import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
+import com.firstgroup.secondhand.ui.main.home.HomeViewModel.Companion.DEFAULT_SELECTED_CATEGORY_ID
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -53,10 +51,13 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
+                val products = viewModel.products.collectAsLazyPagingItems()
 
                 MdcTheme {
                     HomeScreen(
                         uiState = uiState,
+                        products = products,
+                        onCategorySelected = viewModel::setCategory,
                         onProductClick = {
                             findNavController().navigate(
                                 HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
@@ -72,6 +73,8 @@ class HomeFragment : Fragment() {
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
+    products: LazyPagingItems<Product>,
+    onCategorySelected: (Category) -> Unit,
     onProductClick: (Int) -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
@@ -138,7 +141,6 @@ fun HomeScreen(
                     text = "Telusuri Kategori",
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
-                val categories = mutableListOf(Category(-1, "Semua"))
                 when (uiState.categoryState) {
                     is CategoriesUiState.Error -> {
                         Box(Modifier.fillMaxWidth()) {
@@ -146,36 +148,51 @@ fun HomeScreen(
                         }
                     }
                     is CategoriesUiState.Loading -> {
-                        ListCategory(category = dummyCategories, isLoading = true)
+                        ListCategory(
+                            categories = dummyCategories,
+                            isLoading = true,
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = { },
+                        )
                     }
                     is CategoriesUiState.Success -> {
-                        categories.addAll(uiState.categoryState.categories)
-                        ListCategory(category = categories, isLoading = false)
+                        ListCategory(
+                            categories = uiState.categoryState.categories,
+                            isLoading = false,
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = onCategorySelected
+                        )
                     }
                 }
             }
         }
 
-        when (uiState.productState) {
-            is BuyerProductsUiState.Error -> {
-                Log.d("HomeState", "HomeScreen: error")
-                Box(Modifier.fillMaxWidth()) {
-                    Text(text = "Error", modifier = Modifier.align(Alignment.Center))
+        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
+            when (uiState.productsByCategoryState) {
+                is ProductByCategoryUiState.Error -> {
+                    // do nothing yet
+                }
+                is ProductByCategoryUiState.Loading -> {
+                    ListProductLoadingScreen()
+                }
+                is ProductByCategoryUiState.Success -> {
+                    ListProduct(
+                        products = uiState.productsByCategoryState.products,
+                        onProductClick = onProductClick,
+                    )
                 }
             }
-            is BuyerProductsUiState.Loading -> {
-                ListProduct(
-                    products = dummyProducts,
-                    isLoading = true,
-                    onProductClick = {}
-                )
-            }
-            is BuyerProductsUiState.Success -> {
-                ListProduct(
-                    products = uiState.productState.products,
-                    isLoading = false,
-                    onProductClick = onProductClick
-                )
+        } else {
+            when (uiState.allProductState) {
+                AllProductsUiState.Loading -> {
+                    ListProductLoadingScreen()
+                }
+                AllProductsUiState.Loaded -> {
+                    ListProduct(
+                        products = products,
+                        onProductClick = onProductClick,
+                    )
+                }
             }
         }
     }
@@ -183,23 +200,23 @@ fun HomeScreen(
 
 @Composable
 fun ListCategory(
-    category: List<Category>,
+    categories: List<Category>,
     isLoading: Boolean,
+    selectedCategory: Category,
+    onCategorySelected: (Category) -> Unit,
 ) {
-    var selectedIndex by remember { mutableStateOf(-1) }
+//    var selectedIndex by remember { mutableStateOf(-1) }
     LazyRow(
         modifier = Modifier
             .padding(start = 8.dp)
             .height(44.dp)
     ) {
         items(
-            items = category,
+            items = categories,
             key = { it.id }
-        ) {
+        ) { category ->
             Button(
-                onClick = {
-                    selectedIndex = if (selectedIndex != it.id) it.id else -1
-                },
+                onClick = { onCategorySelected(category) },
                 modifier = Modifier
                     .height(44.dp)
                     .padding(horizontal = 8.dp)
@@ -208,7 +225,7 @@ fun ListCategory(
                         highlight = PlaceholderHighlight.shimmer(),
                     ),
                 shape = RoundedCornerShape(16.dp),
-                colors = if (it.id != selectedIndex) buttonColors(
+                colors = if (category.id != selectedCategory.id) buttonColors(
                     contentColor = Color.Black,
                     backgroundColor = colorResource(id = R.color.dark_blue_01)
                 ) else buttonColors(
@@ -219,96 +236,11 @@ fun ListCategory(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = null,
-                    tint = if (it.id != selectedIndex) Color.Black else Color.White,
+                    tint = if (category.id != selectedCategory.id) Color.Black else Color.White,
                     modifier = Modifier.padding(end = 8.dp)
                 )
-                Text(text = it.name, style = MaterialTheme.typography.button)
+                Text(text = category.name, style = MaterialTheme.typography.button)
             }
-        }
-    }
-}
-
-@Composable
-fun ListProduct(
-    products: List<Product>,
-    isLoading: Boolean,
-    onProductClick: (Int) -> Unit,
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .fillMaxWidth(),
-    ) {
-        items(products, key = { it.id }) { product ->
-            ProductItem(
-                product = product,
-                isLoading = isLoading,
-                onClick = onProductClick,
-            )
-        }
-    }
-}
-
-@Composable
-fun ProductItem(
-    product: Product,
-    isLoading: Boolean,
-    onClick: (Int) -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .size(width = 156.dp, height = 206.dp)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .background(color = Color.White)
-            .clickable { onClick(product.id) },
-        shape = RoundedCornerShape(16.dp),
-        elevation = 4.dp,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
-        ) {
-            val painter = rememberAsyncImagePainter(
-                model = product.imageUrl ?: dummyProduct.imageUrl
-            )
-            val isImageLoading = painter.state is AsyncImagePainter.State.Loading
-
-            Image(
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .height(height = 100.dp)
-                    .fillMaxWidth()
-                    .padding(all = 4.dp)
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .placeholder(
-                        visible = isLoading || isImageLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    )
-            )
-            Text(
-                text = product.name,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .placeholder(
-                        visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    ),
-            )
-            Text(
-                text = product.category,
-                modifier = Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.body2
-            )
-            Text(
-                text = "Rp. ${product.price}",
-                modifier = Modifier.padding(all = 8.dp),
-                style = MaterialTheme.typography.body1
-            )
         }
     }
 }
@@ -320,32 +252,6 @@ fun ProductItem(
 //        HomeScreen()
 //    }
 //}
-
-val dummyProduct = Product(
-    1,
-    "lenovo",
-    "ww",
-    50000,
-    "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
-    "bekasi",
-    2,
-    "new",
-    "elektronik"
-)
-
-val dummyProducts: List<Product> = List(10) {
-    Product(
-        it,
-        "lenovo",
-        "ww",
-        50000,
-        "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/banner%2FBAN-1655129268343-gundam00.jpg?alt=media",
-        "bekasi",
-        2,
-        "new",
-        "elektronik"
-    )
-}
 
 val dummyCategories: List<Category> = List(10) {
     Category(it, "elektronik")

@@ -21,16 +21,13 @@ data class ProductEntity(
     val price: Int,
 
     @ColumnInfo(name = "image_url")
-    val imageUrl: String?,
+    val imageUrl: String,
 
     @ColumnInfo(name = "location")
     val location: String?,
 
     @ColumnInfo(name = "user_id")
     val userId: Int,
-
-    @ColumnInfo(name = "status")
-    val status: String,
 
     @ColumnInfo(name = "category")
     val category: String,
@@ -43,7 +40,6 @@ data class ProductEntity(
         imageUrl = imageUrl,
         location = location,
         userId = userId,
-        status = status,
         category = category,
     )
 }

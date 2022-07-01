@@ -1,5 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
@@ -8,8 +12,8 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
+import com.firstgroup.secondhand.core.network.product.model.filterProductPolicy
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -21,11 +25,21 @@ class ProductRepositoryImpl @Inject constructor(
     private val localDataSource: ProductLocalDataSource,
 ) : ProductRepository {
 
-    override fun getProductsAsBuyer(): Flow<List<Product>> {
-        return localDataSource.getCachedProducts().map { products ->
-            products.map { it.mapToDomainModel() }
+    override fun getProductsAsBuyer(): Flow<PagingData<Product>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = {
+                localDataSource.getCachedProducts()
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.mapToDomainModel() }
         }
     }
+
+    override suspend fun getProductsByCategory(categoryId: Int): List<Product> =
+        remoteDataSource.getProductsByCategory(categoryId)
+            .filter(::filterProductPolicy)
+            .map { it.mapToDomainModel() }
 
     override suspend fun getProductByIdAsBuyer(id: Int): Product =
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
@@ -34,17 +48,7 @@ class ProductRepositoryImpl @Inject constructor(
         try {
             refreshProductCache()
         } catch (e: Exception) {
-            when (e) {
-                is UnknownHostException,
-                is ConnectException,
-                is HttpException -> {
-                    if (localDataSource.getCachedProducts().first().isEmpty())
-                        throw Exception(
-                            "Something went wrong. No Data Available"
-                        )
-                }
-                else -> throw e
-            }
+            // do nothing
         }
     }
 
@@ -58,24 +62,25 @@ class ProductRepositoryImpl @Inject constructor(
     private suspend fun refreshProductCache() {
         val remoteData = remoteDataSource.getProductsAsBuyer()
         localDataSource.cacheAllProducts(
-            remoteData.map { product ->
-                ProductEntity(
-                    id = product.id,
-                    name = product.name ?: "",
-                    description = product.description,
-                    price = product.basePrice ?: 0,
-                    imageUrl = product.imageUrl,
-                    location = product.location,
-                    userId = product.userId,
-                    status = product.status ?: "available",
-                    category = try {
-                        val categories = product.categories.map { it.name }
-                        categories.joinToString(separator = ", ")
-                    } catch (e: Exception) {
-                        "No Categories"
-                    },
-                )
-            }
+            remoteData
+                .filter(::filterProductPolicy)
+                .map { filteredProduct ->
+                    ProductEntity(
+                        id = filteredProduct.id,
+                        name = filteredProduct.name!!,
+                        description = filteredProduct.description,
+                        price = filteredProduct.basePrice!!,
+                        imageUrl = filteredProduct.imageUrl!!,
+                        location = filteredProduct.location,
+                        userId = filteredProduct.userId,
+                        category = try {
+                            val categories = filteredProduct.categories.map { it.name }
+                            categories.joinToString(separator = ", ")
+                        } catch (e: Exception) {
+                            "No Categories"
+                        },
+                    )
+                }
         )
     }
 
@@ -90,6 +95,7 @@ class ProductRepositoryImpl @Inject constructor(
             }
         )
     }
+
 
     /**
      * Seller
@@ -107,10 +113,11 @@ class ProductRepositoryImpl @Inject constructor(
         productRequest: ProductRequest
     ): Product = remoteDataSource.addNewProduct(productRequest).mapToDomainModel()
 
-    override fun getCategories(): Flow<List<Category>> {
-        return localDataSource.getCachedCategories().map { categories ->
-            categories.map { it.mapToDomainModel() }
-        }
+    override suspend fun getCategories(): List<Category> {
+        return localDataSource.getCachedCategories()
+            .map { category ->
+                category.mapToDomainModel()
+            }
     }
 
     override suspend fun loadCategories() {
@@ -121,7 +128,7 @@ class ProductRepositoryImpl @Inject constructor(
                 is UnknownHostException,
                 is ConnectException,
                 is HttpException -> {
-                    if (localDataSource.getCachedCategories().first().isEmpty())
+                    if (localDataSource.getCachedCategories().isEmpty())
                         throw Exception(
                             "Something went wrong. No Data Available"
                         )
