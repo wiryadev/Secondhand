@@ -12,7 +12,6 @@ import com.firstgroup.secondhand.domain.product.RefreshProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +29,10 @@ class HomeViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> get() = _uiState
 
+    private val allCategories = listOf(
+        Category(id = -1, name = "Semua"),
+    )
+
     init {
         viewModelScope.launch {
             refreshProductLocalCache()
@@ -46,17 +49,19 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun getCategories() {
         refreshCategoriesUseCase(Unit)
-        getCategoriesUseCase(Unit).collectLatest { result ->
-            when (result) {
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(categoryState = CategoriesUiState.Error)
-                    }
+        when (val result = getCategoriesUseCase(Unit)) {
+            is Result.Error -> {
+                _uiState.update {
+                    it.copy(categoryState = CategoriesUiState.Error)
                 }
-                is Result.Success -> {
-                    _uiState.update {
-                        it.copy(categoryState = CategoriesUiState.Success(result.data))
-                    }
+            }
+            is Result.Success -> {
+                _uiState.update {
+                    it.copy(
+                        categoryState = CategoriesUiState.Success(
+                            categories = allCategories + result.data
+                        )
+                    )
                 }
             }
         }

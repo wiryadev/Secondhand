@@ -3,7 +3,6 @@ package com.firstgroup.secondhand.core.database.product
 import androidx.paging.PagingSource
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
-import kotlinx.coroutines.flow.Flow
 
 interface ProductLocalDataSource {
 
@@ -13,7 +12,7 @@ interface ProductLocalDataSource {
 
     suspend fun deleteCachedProducts()
 
-    fun getCachedCategories(): Flow<List<CategoryEntity>>
+    suspend fun getCachedCategories(): List<CategoryEntity>
 
     suspend fun cacheAllCategories(categories: List<CategoryEntity>)
 

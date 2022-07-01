@@ -6,7 +6,6 @@ import com.firstgroup.secondhand.core.database.product.dao.ProductCacheDao
 import com.firstgroup.secondhand.core.database.product.dao.WishlistDao
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ProductLocalDataSourceImpl @Inject constructor(
@@ -27,7 +26,7 @@ class ProductLocalDataSourceImpl @Inject constructor(
         productCacheDao.deleteAll()
     }
 
-    override fun getCachedCategories(): Flow<List<CategoryEntity>> {
+    override suspend fun getCachedCategories(): List<CategoryEntity> {
         return categoryDao.getCachedCategories()
     }
 

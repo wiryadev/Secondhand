@@ -13,7 +13,6 @@ import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -111,10 +110,11 @@ class ProductRepositoryImpl @Inject constructor(
         productRequest: ProductRequest
     ): Product = remoteDataSource.addNewProduct(productRequest).mapToDomainModel()
 
-    override fun getCategories(): Flow<List<Category>> {
-        return localDataSource.getCachedCategories().map { categories ->
-            categories.map { it.mapToDomainModel() }
-        }
+    override suspend fun getCategories(): List<Category> {
+        return localDataSource.getCachedCategories()
+            .map { category ->
+                category.mapToDomainModel()
+            }
     }
 
     override suspend fun loadCategories() {
@@ -125,7 +125,7 @@ class ProductRepositoryImpl @Inject constructor(
                 is UnknownHostException,
                 is ConnectException,
                 is HttpException -> {
-                    if (localDataSource.getCachedCategories().first().isEmpty())
+                    if (localDataSource.getCachedCategories().isEmpty())
                         throw Exception(
                             "Something went wrong. No Data Available"
                         )

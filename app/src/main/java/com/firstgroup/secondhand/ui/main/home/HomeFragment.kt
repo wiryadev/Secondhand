@@ -138,7 +138,6 @@ fun HomeScreen(
                     text = "Telusuri Kategori",
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
-                val categories = mutableListOf(Category(-1, "Semua"))
                 when (uiState.categoryState) {
                     is CategoriesUiState.Error -> {
                         Box(Modifier.fillMaxWidth()) {
@@ -146,11 +145,13 @@ fun HomeScreen(
                         }
                     }
                     is CategoriesUiState.Loading -> {
-                        ListCategory(category = dummyCategories, isLoading = true)
+                        ListCategory(categories = dummyCategories, isLoading = true)
                     }
                     is CategoriesUiState.Success -> {
-                        categories.addAll(uiState.categoryState.categories)
-                        ListCategory(category = categories, isLoading = false)
+                        ListCategory(
+                            categories = uiState.categoryState.categories,
+                            isLoading = false,
+                        )
                     }
                 }
             }
@@ -172,7 +173,7 @@ fun HomeScreen(
 
 @Composable
 fun ListCategory(
-    category: List<Category>,
+    categories: List<Category>,
     isLoading: Boolean,
 ) {
     var selectedIndex by remember { mutableStateOf(-1) }
@@ -182,7 +183,7 @@ fun ListCategory(
             .height(44.dp)
     ) {
         items(
-            items = category,
+            items = categories,
             key = { it.id }
         ) {
             Button(
