@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.di
 
 import com.firstgroup.secondhand.core.network.auth.retrofit.AuthService
+import com.firstgroup.secondhand.core.network.notification.retrofit.NotificationService
 import com.firstgroup.secondhand.core.network.order.retrofit.OrderService
 import com.firstgroup.secondhand.core.network.product.retrofit.ProductService
 import dagger.Module
@@ -30,6 +31,12 @@ object ServicesModule {
     @Provides
     @Singleton
     fun provideOrderService(retrofit: Retrofit): OrderService {
+        return retrofit.create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationService(retrofit: Retrofit): NotificationService {
         return retrofit.create()
     }
 
