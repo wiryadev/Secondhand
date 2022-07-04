@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +31,6 @@ import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.SecondaryButton
 import com.google.android.material.composethemeadapter.MdcTheme
-import kotlinx.coroutines.launch
 
 class DetailBidderFragment: Fragment() {
     override fun onCreateView(
