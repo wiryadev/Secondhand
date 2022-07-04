@@ -69,7 +69,6 @@
     <string name="product_price">Harga Produk</string>
     <string name="placeholder_product_price">Rp 0,00</string>
     <string name="category">Kategori</string>
-    <string name="placeholder_category">Pilih Kategori</string>
     <string name="placeholder_description">Contoh : Jalan Ikan Hiu 33</string>
     <string name="product_image">Foto Product</string>
     <string name="preview">Preview</string>
