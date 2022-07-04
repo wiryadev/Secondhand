@@ -36,11 +36,12 @@ interface ProductService {
         @Path("id") productId: Int,
     ): ProductDto
 
+    @Multipart
     @POST("seller/product")
     suspend fun addNewProduct(
         @PartMap partMap: HashMap<String, RequestBody>,
         @Part image: MultipartBody.Part,
-        @Part("category_ids[]") categoryIds: List<Int>,
+        @Part("category_ids") categoryIds: List<Int>,
     ): AddProductDto
 
     @GET("seller/category")

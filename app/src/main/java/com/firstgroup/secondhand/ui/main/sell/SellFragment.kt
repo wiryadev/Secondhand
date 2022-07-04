@@ -1,10 +1,13 @@
 package com.firstgroup.secondhand.ui.main.sell
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,13 +36,13 @@ import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
-import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
-import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
-import com.firstgroup.secondhand.ui.components.PrimaryButton
-import com.firstgroup.secondhand.ui.components.SecondaryButton
+import com.firstgroup.secondhand.ui.components.*
+import com.firstgroup.secondhand.ui.main.home.CategoriesUiState
 import com.firstgroup.secondhand.ui.main.home.dummyCategories
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class SellFragment : Fragment() {
@@ -57,7 +60,9 @@ class SellFragment : Fragment() {
                 MdcTheme {
                     SellScreen(
                         uiState = uiState,
-                        onLoginClick = ::goToLoginScreen
+                        viewModel = viewModel,
+                        onLoginClick = ::goToLoginScreen,
+                        imagePicker = ::setProductPictures
                     )
                 }
             }
@@ -72,20 +77,57 @@ class SellFragment : Fragment() {
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
+
+    private fun setProductPictures() {
+        ImagePicker.with(requireActivity())
+            .crop()
+            .saveDir(File(activity?.externalCacheDir, "Product Picture"))
+            .compress(2048)
+            .maxResultSize(1080, 1080)
+            .createIntent {
+                productPicsResult.launch(it)
+            }
+    }
+
+    private val productPicsResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val result = it.resultCode
+            val uri = it.data
+            when (result) {
+                Activity.RESULT_OK -> {
+                    val image = File(uri?.data?.path ?: "")
+                    viewModel.setImage(imageFile = image)
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), ImagePicker.getError(uri), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else -> {
+                    //nothing
+                }
+            }
+        }
 }
 
 @Composable
 fun SellScreen(
     uiState: SellUiState,
-    onLoginClick: () -> Unit
-    ) {
+    viewModel: SellViewModel,
+    onLoginClick: () -> Unit,
+    imagePicker: () -> Unit,
+) {
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                SellScreen()
+                SellScreen(
+                    onProductPictureClick = imagePicker,
+                    onPublishClick = viewModel::addProduct,
+                    uiState = uiState,
+                    onCategorySelected = viewModel::setCategory
+                )
             } else {
                 LoginLayoutPlaceholder(
                     onButtonClick = onLoginClick
@@ -96,10 +138,14 @@ fun SellScreen(
 }
 
 @Composable
-fun SellScreen() {
+fun SellScreen(
+    uiState: SellUiState,
+    onProductPictureClick: () -> Unit,
+    onCategorySelected: (Category) -> Unit,
+    onPublishClick: (String, String, String) -> Unit
+) {
     var productName by remember { mutableStateOf("") }
-    var productPrice by remember { mutableStateOf("") }
-    var productCategory by remember { mutableStateOf(Category(0, "Pilih Kategori")) }
+    var productPrice by remember { mutableStateOf("0") }
     var productDescription by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
@@ -211,7 +257,7 @@ fun SellScreen() {
         Spacer(modifier = Modifier.height(4.dp))
         // select product categories
         OutlinedTextField(
-            value = productCategory.name,
+            value = uiState.selectedCategoryId.name,
             onValueChange = { },
             textStyle = MaterialTheme.typography.body1,
             modifier = Modifier
@@ -224,25 +270,32 @@ fun SellScreen() {
             shape = RoundedCornerShape(16.dp),
             enabled = false,
             singleLine = true,
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.placeholder_category),
-                    style = MaterialTheme.typography.body1,
-                )
-            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 placeholderColor = colorResource(id = R.color.neutral_02),
-                disabledTextColor = if(productCategory.id != 0) Color.Black
+                disabledTextColor = if (uiState.selectedCategoryId.id != 0) Color.Black
                 else Color.Gray
             ),
             trailingIcon = {
-                CategoryDropDown(
-                    categories = dummyCategories,
-                    onSelectedCategory = {
-                        productCategory = it
+                when(uiState.categoryState) {
+                    is CategoriesUiState.Error -> {
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(text = "Error")
+                        }
                     }
-                )
+                    is CategoriesUiState.Loading -> {
+                        CategoryDropDown(
+                            categories = dummyCategories,
+                            onCategorySelected = onCategorySelected,
+                        )
+                    }
+                    is CategoriesUiState.Success -> {
+                        CategoryDropDown(
+                            categories = uiState.categoryState.categories,
+                            onCategorySelected = onCategorySelected,
+                        )
+                    }
+                }
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -291,14 +344,16 @@ fun SellScreen() {
         Spacer(modifier = Modifier.height(4.dp))
         // select image product
         Image(
-            painter = rememberAsyncImagePainter(model = R.drawable.img_product_placeholder),
+            painter = rememberAsyncImagePainter(
+                model = uiState.image                       // Image picked by user
+                    ?: R.drawable.img_product_placeholder), // placeholder
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(96.dp)
-                .clickable {
-                    /*TODO select image*/
-                }
+                .noRippleClickable(
+                    onClick = onProductPictureClick
+                )
         )
     }
     // box for button 'preview' and 'terbitkan'
@@ -315,7 +370,7 @@ fun SellScreen() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-        ){
+        ) {
             SecondaryButton(
                 onClick = {
                     /*TODO go to detail as preview*/
@@ -334,7 +389,7 @@ fun SellScreen() {
             )
             PrimaryButton(
                 onClick = {
-                    /*TODO publish product*/
+                    onPublishClick(productName, productDescription, productPrice)
                 },
                 content = {
                     Text(
@@ -352,8 +407,8 @@ fun SellScreen() {
 @Composable
 fun CategoryDropDown(
     categories: List<Category>,
-    onSelectedCategory :(Category) -> Unit)
-{
+    onCategorySelected: (Category) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     IconButton(onClick = { expanded = true }) {
         Icon(
@@ -368,7 +423,7 @@ fun CategoryDropDown(
     ) {
         categories.forEach {
             DropdownMenuItem(onClick = {
-                onSelectedCategory(it)
+                onCategorySelected(it)
                 expanded = false
             }) {
                 Text(text = it.name)
