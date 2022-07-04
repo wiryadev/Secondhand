@@ -73,5 +73,22 @@
     <string name="product_image">Foto Product</string>
     <string name="preview">Preview</string>
     <string name="login_placeholder_commentary_text">Seems like you are not currently signed in!</string>
+    <string name="header_detail_bidder">Info Penawar</string>
+    <string name="header_product_bidded">Produkmu yang Ditawar</string>
+    <string name="product_offer">Penawaran Produk</string>
+    <string name="decline">Tolak</string>
+    <string name="accept">Terima</string>
+    <string name="bottomsheet_title">Yeay kamu berhasil mendapat harga yang sesuai</string>
+    <string name="bottomsheet_bidder_description">Segera hubungi pembeli melalui whatsapp untuk transaksi selanjutnya</string>
+    <string name="product_match">Product Match</string>
+    <string name="bottomsheet_status_title">Perbarui status penjualan produkmu</string>
+    <string name="product_sold">Berhasil Terjual</string>
+    <string name="transaction_canceled">Batalkan Transaksi</string>
+    <string name="product_sold_description">Kamu telah sepakat menjual produk ini kepada pembeli</string>
+    <string name="transaction_canceled_description">Kamu membatalkan transaksi produk ini dengan pembeli</string>
+    <string name="submit">Kirim</string>
+    <string name="contact_whatsapp">Hubungi via Whatsapp</string>
+    <string name="status">Status</string>
+    <string name="contact">Hubungi</string>
 
 </resources>
