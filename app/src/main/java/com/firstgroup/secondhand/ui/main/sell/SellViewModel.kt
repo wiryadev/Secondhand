@@ -16,7 +16,10 @@ import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.main.home.CategoriesUiState
 import com.firstgroup.secondhand.ui.main.home.HomeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -44,7 +47,6 @@ class SellViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getCategories()
-            getUser()
         }
     }
 
@@ -102,7 +104,7 @@ class SellViewModel @Inject constructor(
         }
     }
 
-    private fun getUser() {
+    fun getUser() {
         viewModelScope.launch {
             when (val result = getUserUseCase(Unit)) {
                 is Result.Success -> {
@@ -125,6 +127,21 @@ class SellViewModel @Inject constructor(
         }
     }
 
+    fun postProduct() {
+        viewModelScope.launch {
+            when (val result = uiState.value.productData?.let { addNewProductUseCase(it) }) {
+                is Result.Success -> {
+                    // to sell list page
+                }
+                is Result.Error -> {
+                    Log.d("addproduct", result.exception?.message.toString())
+                    // show snack bar error
+                }
+                else -> {}
+            }
+        }
+    }
+
     fun addProduct(
         name: String,
         description: String,
@@ -143,26 +160,74 @@ class SellViewModel @Inject constructor(
                     )
                 }
             }
+        _uiState.update {
+            it.copy(
+                productData = productData
+            )
+        }
         viewModelScope.launch {
             when (val result = productData?.let { addNewProductUseCase(it) }) {
                 is Result.Success -> {
                     // to sell list page
                 }
                 is Result.Error -> {
-                    Log.d("add product", result.exception?.message.toString())
+                    Log.d("addproduct", result.exception?.message.toString())
                     // show snack bar error
                 }
                 else -> {}
             }
         }
     }
+
+    fun showPreview(
+        name: String,
+        description: String,
+        basePrice: String
+    ) {
+        _uiState.update {
+            it.copy(
+                sellState = SellState.PreviewNewProduct
+            )
+        }
+        uiState.value.image?.let { image ->
+            uiState.value.recentUser?.city?.let { location ->
+                _uiState.update {
+                    it.copy(
+                        productData = ProductRequest(
+                            name = name,
+                            description = description,
+                            basePrice = basePrice.toInt(),
+                            categoryIds = listOf(uiState.value.selectedCategoryId.id),
+                            location = location,
+                            image = image
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun showAddProduct() {
+        _uiState.update {
+            it.copy(
+                sellState = SellState.AddNewProduct
+            )
+        }
+    }
 }
 
 data class SellUiState(
+    val productData: ProductRequest? = null,
     val image: File? = null,
     val loginState: LoginState = LoginState.Idle,
     val recentUser: User? = null,
     val error: String? = null,
     val categoryState: CategoriesUiState = CategoriesUiState.Loading,
-    val selectedCategoryId: Category
+    val selectedCategoryId: Category,
+    val sellState: SellState = SellState.AddNewProduct
 )
+
+sealed interface SellState {
+    object AddNewProduct : SellState
+    object PreviewNewProduct : SellState
+}

@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Category
@@ -39,6 +43,7 @@ import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.*
 import com.firstgroup.secondhand.ui.main.home.CategoriesUiState
 import com.firstgroup.secondhand.ui.main.home.dummyCategories
+import com.firstgroup.secondhand.ui.main.sell.preview.SellPreview
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,8 +67,9 @@ class SellFragment : Fragment() {
                         uiState = uiState,
                         viewModel = viewModel,
                         onLoginClick = ::goToLoginScreen,
-                        imagePicker = ::setProductPictures
-                    )
+                        imagePicker = ::setProductPictures,
+                        onPreviewPublishButtonClicked = ::postProductAndGoToSellListScreen,
+                        )
                 }
             }
         }
@@ -76,6 +82,11 @@ class SellFragment : Fragment() {
 
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
+    }
+
+    private fun postProductAndGoToSellListScreen() {
+        viewModel.postProduct()
+        findNavController().navigate(R.id.action_main_navigation_sell_to_main_navigation_sell_list)
     }
 
     private fun setProductPictures() {
@@ -115,6 +126,7 @@ fun SellScreen(
     viewModel: SellViewModel,
     onLoginClick: () -> Unit,
     imagePicker: () -> Unit,
+    onPreviewPublishButtonClicked: () -> Unit,
 ) {
     when (uiState.loginState) {
         is LoginState.Idle -> {
@@ -122,12 +134,26 @@ fun SellScreen(
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                SellScreen(
-                    onProductPictureClick = imagePicker,
-                    onPublishClick = viewModel::addProduct,
-                    uiState = uiState,
-                    onCategorySelected = viewModel::setCategory
-                )
+                viewModel.getUser()
+                when (uiState.sellState) {
+                    SellState.AddNewProduct -> {
+                        SellScreen(
+                            onProductPictureClick = imagePicker,
+                            onPublishClick = viewModel::addProduct,
+                            uiState = uiState,
+                            onCategorySelected = viewModel::setCategory,
+                            onPreviewClick = viewModel::showPreview,
+                        )
+                    }
+                    SellState.PreviewNewProduct -> {
+                        SellPreview(
+                            onPublishPreviewButtonClicked = onPreviewPublishButtonClicked,
+                            onPreviewBackButtonClicked = viewModel::showAddProduct,
+                            onSystemBackPressed = viewModel::showAddProduct,
+                            uiState = uiState
+                        )
+                    }
+                }
             } else {
                 LoginLayoutPlaceholder(
                     onButtonClick = onLoginClick
@@ -142,7 +168,8 @@ fun SellScreen(
     uiState: SellUiState,
     onProductPictureClick: () -> Unit,
     onCategorySelected: (Category) -> Unit,
-    onPublishClick: (String, String, String) -> Unit
+    onPublishClick: (String, String, String) -> Unit,
+    onPreviewClick: (String, String, String) -> Unit,
 ) {
     var productName by remember { mutableStateOf("") }
     var productPrice by remember { mutableStateOf("0") }
@@ -277,7 +304,7 @@ fun SellScreen(
                 else Color.Gray
             ),
             trailingIcon = {
-                when(uiState.categoryState) {
+                when (uiState.categoryState) {
                     is CategoriesUiState.Error -> {
                         Box(Modifier.fillMaxWidth()) {
                             Text(text = "Error")
@@ -346,7 +373,8 @@ fun SellScreen(
         Image(
             painter = rememberAsyncImagePainter(
                 model = uiState.image                       // Image picked by user
-                    ?: R.drawable.img_product_placeholder), // placeholder
+                    ?: R.drawable.img_product_placeholder
+            ), // placeholder
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -372,9 +400,7 @@ fun SellScreen(
                 .fillMaxWidth()
         ) {
             SecondaryButton(
-                onClick = {
-                    /*TODO go to detail as preview*/
-                },
+                onClick = { onPreviewClick(productName, productDescription, productPrice) },
                 content = {
                     Text(
                         text = stringResource(R.string.preview),
