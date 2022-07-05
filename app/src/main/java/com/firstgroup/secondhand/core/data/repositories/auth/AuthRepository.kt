@@ -1,7 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
+import com.firstgroup.secondhand.core.model.ChangePassword
 import com.firstgroup.secondhand.core.model.User
+import com.firstgroup.secondhand.core.network.auth.model.ChangePasswordRequest
 import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
@@ -22,6 +24,10 @@ interface AuthRepository {
     suspend fun updateUser(
         updateUserRequest: UpdateUserRequest,
     ): User
+
+    suspend fun changePassword(
+        changePasswordRequest: ChangePasswordRequest,
+    ): ChangePassword
 
     fun getUserSession(): Flow<Authentication>
 

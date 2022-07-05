@@ -9,11 +9,11 @@ class AuthRemoteDataSourceImpl @Inject constructor(
     private val authService: AuthService,
 ) : AuthRemoteDataSource {
 
-    override suspend fun login(loginRequest: LoginRequest): LoginDto {
-        return authService.login(
-            loginData = RequestUtil.createJsonRequestBody(loginRequest)
-        )
-    }
+    override suspend fun login(
+        loginRequest: LoginRequest
+    ): LoginDto = authService.login(
+        loginData = RequestUtil.createJsonRequestBody(loginRequest)
+    )
 
     override suspend fun register(registerUserRequest: RegisterUserRequest): UserDto {
         val formData = registerUserRequest.toFormData()
@@ -36,5 +36,11 @@ class AuthRemoteDataSourceImpl @Inject constructor(
             image = formData.multipart,
         )
     }
+
+    override suspend fun changePassword(
+        changePasswordRequest: ChangePasswordRequest
+    ): ChangePasswordDto = authService.changePassword(
+        changePasswordData = RequestUtil.createJsonRequestBody(changePasswordRequest)
+    )
 
 }
