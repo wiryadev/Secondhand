@@ -19,7 +19,13 @@
     <fragment
         android:id="@+id/main_navigation_sell"
         android:name="com.firstgroup.secondhand.ui.main.sell.SellFragment"
-        android:label="SellFragment" />
+        android:label="SellFragment" >
+        <action
+            android:id="@+id/action_main_navigation_sell_to_main_navigation_sell_list"
+            app:destination="@id/main_navigation_sell_list"
+            app:popUpTo="@id/main_navigation_sell"
+            app:popUpToInclusive="true"/>
+    </fragment>
     <fragment
         android:id="@+id/main_navigation_sell_list"
         android:name="com.firstgroup.secondhand.ui.main.sell_list.SellListFragment"
