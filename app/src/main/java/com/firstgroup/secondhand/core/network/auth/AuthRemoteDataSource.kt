@@ -18,4 +18,8 @@ interface AuthRemoteDataSource {
         updateUserRequest: UpdateUserRequest
     ): UserDto
 
+    suspend fun changePassword(
+        changePasswordRequest: ChangePasswordRequest,
+    ): ChangePasswordDto
+
 }

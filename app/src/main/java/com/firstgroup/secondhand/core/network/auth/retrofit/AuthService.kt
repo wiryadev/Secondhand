@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.core.network.auth.retrofit
 
+import com.firstgroup.secondhand.core.network.auth.model.ChangePasswordDto
 import com.firstgroup.secondhand.core.network.auth.model.LoginDto
 import com.firstgroup.secondhand.core.network.auth.model.UserDto
 import com.firstgroup.secondhand.core.network.utils.AuthInterceptor.Companion.NO_AUTH_HEADER_KEY
@@ -32,5 +33,10 @@ interface AuthService {
         @PartMap partMap: HashMap<String, RequestBody>,
         @Part image: MultipartBody.Part? = null,
     ): UserDto
+
+    @PUT("auth/change-password")
+    suspend fun changePassword(
+        @Body changePasswordData: RequestBody
+    ): ChangePasswordDto
 
 }
