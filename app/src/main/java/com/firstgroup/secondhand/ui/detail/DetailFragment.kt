@@ -19,15 +19,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.ui.components.PrimaryButton
+import com.firstgroup.secondhand.ui.detail.create_order.OrderBottomSheetFragment
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailFragment : Fragment() {
 
     private val viewModel: DetailViewModel by viewModels()
-    
+
     private val args: DetailFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -47,7 +47,10 @@ class DetailFragment : Fragment() {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
                 MdcTheme {
-                    DetailScreen(uiState = uiState)
+                    DetailScreen(
+                        uiState = uiState,
+                        fragmentManager = parentFragmentManager
+                    )
                 }
             }
         }
@@ -55,18 +58,18 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
 //            viewModel.checkUser()   // commented until login checking implemented
         }
     }
-    
 }
 
 @Composable
 fun DetailScreen(
-     uiState: DetailUiState
+    uiState: DetailUiState,
+    fragmentManager: FragmentManager
 ) {
     uiState.product?.let { product ->
         Box(
@@ -261,11 +264,12 @@ fun DetailScreen(
         ) {
             PrimaryButton(
                 onClick = {
-
+                    val orderBottomsheet = OrderBottomSheetFragment.newInstance(uiState.product.id)
+                    orderBottomsheet.show(fragmentManager, orderBottomsheet.tag)
                 },
                 content = {
                     Text(
-                        text = stringResource(R.string.publish),
+                        text = stringResource(R.string.bid),
                         style = MaterialTheme.typography.button
                     )
                 }
@@ -274,21 +278,21 @@ fun DetailScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DetailPreview() {
-    MdcTheme {
-//        DetailScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun DetailPreview() {
+//    MdcTheme {
+////        DetailScreen()
+//    }
+//}
 
-val dummyUser = User(
-    fullName = "Agus William",
-    email = "agus12@mail.com",
-    password = "123456",
-    phoneNo = "081907280637",
-    address = "Bekasi",
-    profilePicture = "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/avatar%2FAV-1655983009420-hina.PNG?alt=media",
-    city = "Bekasi"
-)
+//val dummyUser = User(
+//    fullName = "Agus William",
+//    email = "agus12@mail.com",
+//    password = "123456",
+//    phoneNo = "081907280637",
+//    address = "Bekasi",
+//    profilePicture = "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/avatar%2FAV-1655983009420-hina.PNG?alt=media",
+//    city = "Bekasi"
+//)
 
