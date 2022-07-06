@@ -2,6 +2,8 @@ package com.firstgroup.secondhand.core.data.di
 
 import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepository
 import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepositoryImpl
+import com.firstgroup.secondhand.core.data.repositories.history.HistoryRepository
+import com.firstgroup.secondhand.core.data.repositories.history.HistoryRepositoryImpl
 import com.firstgroup.secondhand.core.data.repositories.notification.NotificationRepository
 import com.firstgroup.secondhand.core.data.repositories.notification.NotificationRepositoryImpl
 import com.firstgroup.secondhand.core.data.repositories.order.OrderRepository
@@ -41,5 +43,11 @@ interface RepositoryModule {
     fun bindsNotificationRepository(
         notificationRepositoryImpl: NotificationRepositoryImpl
     ): NotificationRepository
+
+    @Binds
+    @Singleton
+    fun bindsHistoryRepository(
+        historyRepositoryImpl: HistoryRepositoryImpl
+    ): HistoryRepository
 
 }
