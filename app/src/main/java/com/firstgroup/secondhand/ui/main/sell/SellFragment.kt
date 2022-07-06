@@ -132,13 +132,19 @@ fun SellScreen(
             onPostProductSuccess.invoke()
         }
     }
+
+    LaunchedEffect(key1 = uiState.loginState) {
+        if (uiState.loginState is LoginState.Loaded) {
+            if (uiState.loginState.isLoggedIn) viewModel.getUser()
+        }
+    }
+
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                viewModel.getUser()
                 when (uiState.sellState) {
                     SellState.AddNewProduct -> {
                         SellScreen(
