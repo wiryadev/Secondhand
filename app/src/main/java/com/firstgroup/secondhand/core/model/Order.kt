@@ -4,13 +4,7 @@ data class Order(
     val id: Int,
     val bidPrice: Int,
     val status: String,
-    val productName: String,
-    val productImage: String,
-    val productPrice: Int,
-
-    // enable when api fixed
-//    val sellerName: String,
-//    val sellerCity: String,
+    val product: Product,
 )
 
 data class CreateOrder(
