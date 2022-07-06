@@ -36,9 +36,7 @@ fun LoginLayoutPlaceholder(
 
         Spacer(modifier = Modifier.height(48.dp))
         PrimaryButton(
-            onClick = {
-                onButtonClick()
-            },
+            onClick = onButtonClick,
             content = {
                 Text(text = stringResource(id = R.string.login))
             }
