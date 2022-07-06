@@ -290,7 +290,7 @@ val dummyOrder = GetOrderDto(
     buyerId = 274,
     price = 100000,
     status = "pending",
-    product = GetOrderDto.Product(
+    product = GetOrderDto.ProductData(
         name = "adidas red",
         description = "null",
         basePrice = 100000,
@@ -298,7 +298,15 @@ val dummyOrder = GetOrderDto(
         imageName = "adidas image",
         location = "bandung",
         userId = 5,
-        status = "pending"
+        status = "pending",
+        user = GetOrderDto.ProductData.User(
+            address = "",
+            city = "",
+            email = "",
+            fullName = "",
+            id = 0,
+            phoneNumber = ""
+        )
     ),
     user = GetOrderDto.User(
         fullName = "Agus WIlliam",
