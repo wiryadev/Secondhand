@@ -67,12 +67,16 @@ class SellFragment : Fragment() {
                         uiState = uiState,
                         viewModel = viewModel,
                         onLoginClick = ::goToLoginScreen,
-                        imagePicker = ::setProductPictures,
-                        onPreviewPublishButtonClicked = ::postProductAndGoToSellListScreen,
-                        )
+                        onImagePickerClick = ::setProductPictures,
+                        onPostProductSuccess = ::goToSellListScreen,
+                    )
                 }
             }
         }
+    }
+
+    private fun goToSellListScreen() {
+        findNavController().navigate(R.id.action_main_navigation_sell_to_main_navigation_sell_list)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,11 +86,6 @@ class SellFragment : Fragment() {
 
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
-    }
-
-    private fun postProductAndGoToSellListScreen() {
-        viewModel.postProduct()
-        findNavController().navigate(R.id.action_main_navigation_sell_to_main_navigation_sell_list)
     }
 
     private fun setProductPictures() {
@@ -125,31 +124,48 @@ fun SellScreen(
     uiState: SellUiState,
     viewModel: SellViewModel,
     onLoginClick: () -> Unit,
-    imagePicker: () -> Unit,
-    onPreviewPublishButtonClicked: () -> Unit,
+    onImagePickerClick: () -> Unit,
+    onPostProductSuccess: () -> Unit,
 ) {
+    LaunchedEffect(key1 = uiState.postProductState) {
+        if (uiState.postProductState is PostProductState.Success) {
+            onPostProductSuccess.invoke()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.loginState) {
+        if (uiState.loginState is LoginState.Loaded) {
+            if (uiState.loginState.isLoggedIn) viewModel.getUser()
+        }
+    }
+
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                viewModel.getUser()
                 when (uiState.sellState) {
                     SellState.AddNewProduct -> {
                         SellScreen(
-                            onProductPictureClick = imagePicker,
-                            onPublishClick = viewModel::addProduct,
                             uiState = uiState,
+                            onProductPictureClick = onImagePickerClick,
                             onCategorySelected = viewModel::setCategory,
-                            onPreviewClick = viewModel::showPreview,
+                            onPublishClick = { name, description, basePrice ->
+                                viewModel.addProduct(name, description, basePrice)
+                                viewModel.postProduct(uiState.productData)
+                            },
+                            onPreviewClick = { name, description, basePrice ->
+                                viewModel.addProduct(name, description, basePrice)
+                                viewModel.showPreviewScreen()
+                            },
                         )
                     }
                     SellState.PreviewNewProduct -> {
                         SellPreview(
-                            onPublishPreviewButtonClicked = onPreviewPublishButtonClicked,
-                            onPreviewBackButtonClicked = viewModel::showAddProduct,
-                            onSystemBackPressed = viewModel::showAddProduct,
+                            onPublishPreviewButtonClicked = viewModel::postProduct,
+                            onPreviewBackButtonClicked = viewModel::showAddProductScreen,
+                            onSystemBackPressed = viewModel::showAddProductScreen,
                             uiState = uiState
                         )
                     }
@@ -172,7 +188,7 @@ fun SellScreen(
     onPreviewClick: (String, String, String) -> Unit,
 ) {
     var productName by remember { mutableStateOf("") }
-    var productPrice by remember { mutableStateOf("0") }
+    var productPrice by remember { mutableStateOf("") }
     var productDescription by remember { mutableStateOf("") }
     Column(
         modifier = Modifier

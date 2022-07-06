@@ -127,17 +127,42 @@ class SellViewModel @Inject constructor(
         }
     }
 
-    fun postProduct() {
+    fun postProduct(product: ProductRequest?) {
+        _uiState.update {
+            it.copy(
+                postProductState = PostProductState.Loading
+            )
+        }
         viewModelScope.launch {
-            when (val result = uiState.value.productData?.let { addNewProductUseCase(it) }) {
-                is Result.Success -> {
-                    // to sell list page
+            if (product != null) {
+                when (val result = addNewProductUseCase(product)) {
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                postProductState = PostProductState.Success
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        Log.d("addproduct", result.exception?.message.toString())
+                        // show snack bar error
+                        _uiState.update {
+                            it.copy(
+                                postProductState = PostProductState.Error(
+                                    message = result.exception?.message.toString()
+                                )
+                            )
+                        }
+                    }
                 }
-                is Result.Error -> {
-                    Log.d("addproduct", result.exception?.message.toString())
-                    // show snack bar error
+            } else {
+                _uiState.update {
+                    it.copy(
+                        postProductState = PostProductState.Error(
+                            message = "Fill all necessary data first"
+                        )
+                    )
                 }
-                else -> {}
             }
         }
     }
@@ -147,67 +172,52 @@ class SellViewModel @Inject constructor(
         description: String,
         basePrice: String
     ) {
-        val productData =
-            uiState.value.image?.let { image ->
-                uiState.value.recentUser?.city?.let { location ->
-                    ProductRequest(
-                        name = name,
-                        description = description,
-                        basePrice = basePrice.toInt(),
-                        categoryIds = listOf(uiState.value.selectedCategoryId.id),
-                        location = location,
-                        image = image
+        val image = uiState.value.image
+        val city = uiState.value.recentUser?.city
+
+        when {
+            image == null -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Please pick image first"
                     )
                 }
             }
-        _uiState.update {
-            it.copy(
-                productData = productData
-            )
-        }
-        viewModelScope.launch {
-            when (val result = productData?.let { addNewProductUseCase(it) }) {
-                is Result.Success -> {
-                    // to sell list page
+            city == null -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Please complete your profile"
+                    )
                 }
-                is Result.Error -> {
-                    Log.d("addproduct", result.exception?.message.toString())
-                    // show snack bar error
+            }
+            else -> {
+                val productData = ProductRequest(
+                    name = name,
+                    description = description,
+                    basePrice = basePrice.toInt(),
+                    categoryIds = listOf(uiState.value.selectedCategoryId.id),
+                    location = city,
+                    image = image,
+                )
+
+                _uiState.update {
+                    it.copy(
+                        productData = productData
+                    )
                 }
-                else -> {}
             }
         }
     }
 
-    fun showPreview(
-        name: String,
-        description: String,
-        basePrice: String
-    ) {
+    fun showPreviewScreen() {
         _uiState.update {
             it.copy(
                 sellState = SellState.PreviewNewProduct
             )
         }
-        uiState.value.image?.let { image ->
-            uiState.value.recentUser?.city?.let { location ->
-                _uiState.update {
-                    it.copy(
-                        productData = ProductRequest(
-                            name = name,
-                            description = description,
-                            basePrice = basePrice.toInt(),
-                            categoryIds = listOf(uiState.value.selectedCategoryId.id),
-                            location = location,
-                            image = image
-                        )
-                    )
-                }
-            }
-        }
     }
 
-    fun showAddProduct() {
+    fun showAddProductScreen() {
         _uiState.update {
             it.copy(
                 sellState = SellState.AddNewProduct
@@ -224,10 +234,18 @@ data class SellUiState(
     val error: String? = null,
     val categoryState: CategoriesUiState = CategoriesUiState.Loading,
     val selectedCategoryId: Category,
-    val sellState: SellState = SellState.AddNewProduct
+    val sellState: SellState = SellState.AddNewProduct,
+    val postProductState: PostProductState = PostProductState.Idle
 )
 
 sealed interface SellState {
     object AddNewProduct : SellState
     object PreviewNewProduct : SellState
+}
+
+sealed interface PostProductState {
+    object Idle : PostProductState
+    object Loading : PostProductState
+    object Success : PostProductState
+    data class Error(val message: String) : PostProductState
 }
