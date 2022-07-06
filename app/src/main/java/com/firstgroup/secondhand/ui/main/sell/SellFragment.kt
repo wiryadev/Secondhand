@@ -67,12 +67,16 @@ class SellFragment : Fragment() {
                         uiState = uiState,
                         viewModel = viewModel,
                         onLoginClick = ::goToLoginScreen,
-                        imagePicker = ::setProductPictures,
-                        onPreviewPublishButtonClicked = ::postProductAndGoToSellListScreen,
-                        )
+                        onImagePickerClick = ::setProductPictures,
+                        onPostProductSuccess = ::goToSellListScreen,
+                    )
                 }
             }
         }
+    }
+
+    private fun goToSellListScreen() {
+        findNavController().navigate(R.id.action_main_navigation_sell_to_main_navigation_sell_list)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,11 +86,6 @@ class SellFragment : Fragment() {
 
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
-    }
-
-    private fun postProductAndGoToSellListScreen() {
-        viewModel.postProduct()
-        findNavController().navigate(R.id.action_main_navigation_sell_to_main_navigation_sell_list)
     }
 
     private fun setProductPictures() {
@@ -125,9 +124,14 @@ fun SellScreen(
     uiState: SellUiState,
     viewModel: SellViewModel,
     onLoginClick: () -> Unit,
-    imagePicker: () -> Unit,
-    onPreviewPublishButtonClicked: () -> Unit,
+    onImagePickerClick: () -> Unit,
+    onPostProductSuccess: () -> Unit,
 ) {
+    LaunchedEffect(key1 = uiState.postProductState) {
+        if (uiState.postProductState is PostProductState.Success) {
+            onPostProductSuccess.invoke()
+        }
+    }
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
@@ -138,7 +142,7 @@ fun SellScreen(
                 when (uiState.sellState) {
                     SellState.AddNewProduct -> {
                         SellScreen(
-                            onProductPictureClick = imagePicker,
+                            onProductPictureClick = onImagePickerClick,
                             onPublishClick = viewModel::addProduct,
                             uiState = uiState,
                             onCategorySelected = viewModel::setCategory,
@@ -147,7 +151,7 @@ fun SellScreen(
                     }
                     SellState.PreviewNewProduct -> {
                         SellPreview(
-                            onPublishPreviewButtonClicked = onPreviewPublishButtonClicked,
+                            onPublishPreviewButtonClicked = viewModel::postProduct,
                             onPreviewBackButtonClicked = viewModel::showAddProduct,
                             onSystemBackPressed = viewModel::showAddProduct,
                             uiState = uiState

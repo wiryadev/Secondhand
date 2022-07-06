@@ -22,19 +22,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.main.sell.SellUiState
 
 @Composable
 fun SellPreview(
-    onPublishPreviewButtonClicked: () -> Unit,
+    onPublishPreviewButtonClicked: (ProductRequest?) -> Unit,
     onPreviewBackButtonClicked: () -> Unit,
     onSystemBackPressed: () -> Unit,
     uiState: SellUiState
 ) {
-    BackHandler(enabled = true) {
-        onSystemBackPressed()
-    }
+    BackHandler(
+        enabled = true,
+        onBack = onSystemBackPressed,
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -225,7 +227,7 @@ fun SellPreview(
     ) {
         PrimaryButton(
             onClick = {
-                onPublishPreviewButtonClicked()
+                onPublishPreviewButtonClicked(uiState.productData)
             },
             content = {
                 Text(
