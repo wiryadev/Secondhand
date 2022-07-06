@@ -148,18 +148,24 @@ fun SellScreen(
                 when (uiState.sellState) {
                     SellState.AddNewProduct -> {
                         SellScreen(
-                            onProductPictureClick = onImagePickerClick,
-                            onPublishClick = viewModel::addProduct,
                             uiState = uiState,
+                            onProductPictureClick = onImagePickerClick,
                             onCategorySelected = viewModel::setCategory,
-                            onPreviewClick = viewModel::showPreview,
+                            onPublishClick = { name, description, basePrice ->
+                                viewModel.addProduct(name, description, basePrice)
+                                viewModel.postProduct(uiState.productData)
+                            },
+                            onPreviewClick = { name, description, basePrice ->
+                                viewModel.addProduct(name, description, basePrice)
+                                viewModel.showPreviewScreen()
+                            },
                         )
                     }
                     SellState.PreviewNewProduct -> {
                         SellPreview(
                             onPublishPreviewButtonClicked = viewModel::postProduct,
-                            onPreviewBackButtonClicked = viewModel::showAddProduct,
-                            onSystemBackPressed = viewModel::showAddProduct,
+                            onPreviewBackButtonClicked = viewModel::showAddProductScreen,
+                            onSystemBackPressed = viewModel::showAddProductScreen,
                             uiState = uiState
                         )
                     }
@@ -182,7 +188,7 @@ fun SellScreen(
     onPreviewClick: (String, String, String) -> Unit,
 ) {
     var productName by remember { mutableStateOf("") }
-    var productPrice by remember { mutableStateOf("0") }
+    var productPrice by remember { mutableStateOf("") }
     var productDescription by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
