@@ -25,6 +25,9 @@
         <!--        <item name="textAppearanceSubtitle2">@style/TextAppearance.Secondhand.Subtitle2</item>-->
         <!--        <item name="textAppearanceCaption">@style/TextAppearance.Secondhand.Caption</item>-->
         <!--        <item name="textAppearanceOverline">@style/TextAppearance.Secondhand.Overline</item>-->
+
+        <!-- Rounded Bottomsheet -->
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
     <style name="Theme.AppSplash" parent="Theme.SplashScreen">
@@ -33,5 +36,13 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_second_hand</item>
         <item name="windowSplashScreenAnimationDuration">300</item>
         <item name="postSplashScreenTheme">@style/Theme.Secondhand</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_top_bottomsheet</item>
     </style>
 </resources>
