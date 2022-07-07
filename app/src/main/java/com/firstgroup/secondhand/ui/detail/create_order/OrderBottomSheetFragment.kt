@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -15,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -61,11 +61,21 @@ class OrderBottomSheetFragment : BottomSheetDialogFragment() {
                     OrderBottomSheetUi(
                         uiState = uiState,
                         onBidButtonClick = viewModel::createOrder,
-                        onDismissClick = ::dismiss
+                        onDismissClick = ::dismiss,
+                        toastErrorMessage = ::toastErrorMessage
                     )
                 }
             }
         }
+    }
+
+    private fun toastErrorMessage(errorMessage: String) {
+        val message = if (errorMessage.contains("400")) {
+            R.string.bid // Nanti diganti ya isinya..
+        } else {
+            R.string.login // Internal service error
+        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
@@ -84,7 +94,8 @@ class OrderBottomSheetFragment : BottomSheetDialogFragment() {
 fun OrderBottomSheetUi(
     uiState: OrderUiState,
     onBidButtonClick: (Int, Int) -> Unit,
-    onDismissClick: () -> Unit
+    onDismissClick: () -> Unit,
+    toastErrorMessage: (String) -> Unit
 ) {
     if (uiState.orderState is CreateOrderState.Success) {
         SuccessOrderUi(
@@ -95,6 +106,11 @@ fun OrderBottomSheetUi(
             uiState = uiState,
             onBidButtonClick = onBidButtonClick
         )
+        LaunchedEffect(key1 = uiState.orderState) {
+            if (uiState.orderState is CreateOrderState.Error) {
+                toastErrorMessage.invoke(uiState.orderState.message)
+            }
+        }
     }
 }
 
@@ -114,7 +130,7 @@ fun SuccessOrderUi(
         Spacer(modifier = Modifier.height(16.dp))
         // waiting for new lottie raw json files
         val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.login_and_sign_up2))
-        
+
         LottieAnimation(
             composition = rawLottie,
             modifier = Modifier.size(180.dp),
