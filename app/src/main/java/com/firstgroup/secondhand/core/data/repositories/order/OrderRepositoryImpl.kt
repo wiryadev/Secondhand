@@ -28,4 +28,28 @@ class OrderRepositoryImpl @Inject constructor(
         return remoteDataSource.getOrderByIdAsBuyer(id).mapToDomain()
     }
 
+    override suspend fun getAllOrdersAsSeller(): List<Order> {
+        return remoteDataSource.getAllOrdersAsSeller().map {
+            it.mapToDomain()
+        }
+    }
+
+    override suspend fun getAcceptedOrdersAsSeller(): List<Order> {
+        return remoteDataSource.getAcceptedOrdersAsSeller().map {
+            it.mapToDomain()
+        }
+    }
+
+    override suspend fun getDeclinedOrdersAsSeller(): List<Order> {
+        return remoteDataSource.getDeclinedOrdersAsSeller().map {
+            it.mapToDomain()
+        }
+    }
+
+    override suspend fun getPendingOrdersAsSeller(): List<Order> {
+        return remoteDataSource.getPendingOrdersAsSeller().map {
+            it.mapToDomain()
+        }
+    }
+
 }

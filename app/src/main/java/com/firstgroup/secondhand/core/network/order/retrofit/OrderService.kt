@@ -9,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface OrderService {
 
@@ -39,5 +40,14 @@ interface OrderService {
     suspend fun getOrderByIdAsBuyer(
         @Path("id") id: Int
     ): GetOrderDto
+
+    /**
+     * Seller
+     */
+
+    @GET("seller/order")
+    suspend fun getOrdersAsSeller(
+        @Query("status") status: String? = null
+    ): List<GetOrderDto>
 
 }

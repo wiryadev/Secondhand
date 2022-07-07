@@ -33,4 +33,20 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         return service.getOrderByIdAsBuyer(id)
     }
 
+    override suspend fun getAllOrdersAsSeller(): List<GetOrderDto> {
+        return service.getOrdersAsSeller()
+    }
+
+    override suspend fun getAcceptedOrdersAsSeller(): List<GetOrderDto> {
+        return service.getOrdersAsSeller("accepted")
+    }
+
+    override suspend fun getDeclinedOrdersAsSeller(): List<GetOrderDto> {
+        return service.getOrdersAsSeller("declined")
+    }
+
+    override suspend fun getPendingOrdersAsSeller(): List<GetOrderDto> {
+        return service.getOrdersAsSeller("pending")
+    }
+
 }
