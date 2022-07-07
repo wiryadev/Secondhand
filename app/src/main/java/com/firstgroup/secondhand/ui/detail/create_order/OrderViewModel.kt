@@ -39,7 +39,7 @@ class OrderViewModel @Inject constructor(
             bidPrice = bidPrice
         )
         viewModelScope.launch {
-            when(val result = createOrderUseCase(productToBid)) {
+            when (val result = createOrderUseCase(productToBid)) {
                 is Result.Error -> {
                     _uiState.update {
                         it.copy(
@@ -79,10 +79,10 @@ class OrderViewModel @Inject constructor(
 
 data class OrderUiState(
     val product: Product? = null,
-    val orderState: CreateOrderState = CreateOrderState.Idle
+    val orderState: CreateOrderState = CreateOrderState.Idle,
 )
 
-sealed interface CreateOrderState{
+sealed interface CreateOrderState {
     object Idle : CreateOrderState
     object Loading : CreateOrderState
     object Success : CreateOrderState
