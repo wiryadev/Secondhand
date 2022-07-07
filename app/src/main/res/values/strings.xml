@@ -63,7 +63,8 @@
     <string name="account">Account</string>
     <string name="description">Deskripsi</string>
     <string name="publish">Terbitkan</string>
-    <string name="bid">Saya Tertarik dan ingin Nego</string>
+    <string name="bid">Bid</string>
+    <string name="bid_price">Bid Price</string>
     <string name="header_edit_detail_product">Lengkapi Detail Produk</string>
     <string name="product_name">Nama Produk</string>
     <string name="product_price">Harga Produk</string>
@@ -90,5 +91,7 @@
     <string name="contact_whatsapp">Hubungi via Whatsapp</string>
     <string name="status">Status</string>
     <string name="contact">Hubungi</string>
+    <string name="order_bottomsheet_title">Set Your Bid Price</string>
+    <string name="order_bottomsheet_description">Your bid price will be proposed to the seller, if the seller matches your price, the seller will contact you through Whatsapp</string>
 
 </resources>
