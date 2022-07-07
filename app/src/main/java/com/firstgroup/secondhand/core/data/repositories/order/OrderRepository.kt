@@ -18,4 +18,12 @@ interface OrderRepository {
 
     suspend fun getOrderByIdAsBuyer(id: Int): Order
 
+    suspend fun getAllOrdersAsSeller(): List<Order>
+
+    suspend fun getAcceptedOrdersAsSeller(): List<Order>
+
+    suspend fun getDeclinedOrdersAsSeller(): List<Order>
+
+    suspend fun getPendingOrdersAsSeller(): List<Order>
+
 }

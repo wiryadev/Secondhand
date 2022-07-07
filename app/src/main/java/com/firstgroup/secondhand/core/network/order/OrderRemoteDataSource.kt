@@ -21,4 +21,12 @@ interface OrderRemoteDataSource {
 
     suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto
 
+    suspend fun getAllOrdersAsSeller(): List<GetOrderDto>
+
+    suspend fun getAcceptedOrdersAsSeller(): List<GetOrderDto>
+
+    suspend fun getDeclinedOrdersAsSeller(): List<GetOrderDto>
+
+    suspend fun getPendingOrdersAsSeller(): List<GetOrderDto>
+
 }
