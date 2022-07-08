@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_main_navigation_account_to_editAccountFragment"
             app:destination="@id/editAccountFragment" />
+        <action
+            android:id="@+id/action_main_navigation_account_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
     </fragment>
 
     <fragment
@@ -56,6 +59,14 @@
         <argument
             android:name="id"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.firstgroup.secondhand.ui.main.account.change_password.ChangePasswordFragment"
+        android:label="ChangePasswordFragment" >
+        <action
+            android:id="@+id/action_changePasswordFragment_to_main_navigation_account"
+            app:destination="@id/main_navigation_account" />
     </fragment>
 
 </navigation>
