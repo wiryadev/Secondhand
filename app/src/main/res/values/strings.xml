@@ -96,5 +96,15 @@
     <string name="order_success">Order Success!</string>
     <string name="make_another_order">Next order please!</string>
     <string name="error_bad_order">You can\'t bid your own product or maybe You already bid this product</string>
+    <string name="old_password">Password Lama</string>
+    <string name="new_password">Password Baru</string>
+    <string name="placeholder_old_password">Masukan password lama</string>
+    <string name="placeholder_new_password">Masukan password baru</string>
+    <string name="change_password">Ubah Password</string>
+    <string name="change">Ubah</string>
+    <string name="confirm_password">Konfirmasi Password</string>
+    <string name="placeholder_confirm_password">Masukan konfirmasi password baru</string>
+    <string name="invalid_password">Please input your password correctly</string>
+    <string name="change_password_success">Change Password Success</string>
 
 </resources>
