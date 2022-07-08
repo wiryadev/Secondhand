@@ -14,6 +14,9 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     override suspend fun getProductsByCategory(categoryId: Int): List<ProductDto> =
         service.getProductsAsBuyer(categoryId = categoryId)
 
+    override suspend fun searchProducts(query: String): List<ProductDto> =
+        service.getProductsAsBuyer(query = query)
+
     override suspend fun getProductByIdAsBuyer(
         productId: Int,
     ): ProductDetailDto = service.getProductByIdAsBuyer(productId)

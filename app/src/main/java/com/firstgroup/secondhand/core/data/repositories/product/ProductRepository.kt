@@ -19,6 +19,8 @@ interface ProductRepository {
 
     suspend fun getProductsByCategory(categoryId: Int): List<Product>
 
+    suspend fun searchProducts(query: String): List<Product>
+
     suspend fun getProductByIdAsBuyer(id: Int): Product
 
     suspend fun deleteCachedProducts()

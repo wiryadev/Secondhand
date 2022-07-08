@@ -41,6 +41,11 @@ class ProductRepositoryImpl @Inject constructor(
             .filter(::filterProductPolicy)
             .map { it.mapToDomainModel() }
 
+    override suspend fun searchProducts(query: String): List<Product> =
+        remoteDataSource.searchProducts(query)
+            .filter(::filterProductPolicy)
+            .map { it.mapToDomainModel() }
+
     override suspend fun getProductByIdAsBuyer(id: Int): Product =
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
 
@@ -61,6 +66,7 @@ class ProductRepositoryImpl @Inject constructor(
      */
     private suspend fun refreshProductCache() {
         val remoteData = remoteDataSource.getProductsAsBuyer()
+        localDataSource.deleteCachedProducts()
         localDataSource.cacheAllProducts(
             remoteData
                 .filter(::filterProductPolicy)
