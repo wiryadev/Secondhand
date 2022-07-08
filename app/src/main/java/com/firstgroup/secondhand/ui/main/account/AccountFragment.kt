@@ -60,6 +60,7 @@ class AccountFragment : Fragment() {
                     AccountScreen(
                         uiState = uiState,
                         onEditAccountClick = ::goToEditAccountScreen,
+                        onAccountSettingClick = ::goToAccountSettingScreen,
                         onLoginClick = ::goToLoginScreen,
                         onUserLoggedIn = viewModel::getUser,
                         onLogoutClick = viewModel::logout,
@@ -80,6 +81,12 @@ class AccountFragment : Fragment() {
         )
     }
 
+    private fun goToAccountSettingScreen(){
+        findNavController().navigate(
+            AccountFragmentDirections.actionMainNavigationAccountToChangePasswordFragment()
+        )
+    }
+
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
@@ -90,6 +97,7 @@ class AccountFragment : Fragment() {
 fun AccountScreen(
     uiState: AccountUiState,
     onEditAccountClick: (User) -> Unit,
+    onAccountSettingClick: () -> Unit,
     onLoginClick: () -> Unit,
     onUserLoggedIn: () -> Unit,
     onLogoutClick: () -> Unit
@@ -112,6 +120,7 @@ fun AccountScreen(
                     AccountScreen(
                         user = uiState.recentUser,
                         onEditAccountClick = onEditAccountClick,
+                        onAccountSettingClick = onAccountSettingClick,
                         onLogoutClick = onLogoutClick
                     )
                 } else {
@@ -130,6 +139,7 @@ fun AccountScreen(
 fun AccountScreen(
     user: User,
     onEditAccountClick: (User) -> Unit,
+    onAccountSettingClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     Box(
@@ -219,6 +229,7 @@ fun AccountScreen(
                     text = stringResource(R.string.account_setting),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
+                        .noRippleClickable { onAccountSettingClick() }
                         .fillMaxWidth()
                         .height(24.dp)
                         .padding(vertical = 4.dp),
