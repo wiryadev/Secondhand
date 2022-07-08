@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.core.model.User
-import com.firstgroup.secondhand.domain.auth.GetUserUseCase
+import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.product.GetProductByIdAsBuyerUseCase
+import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,12 +16,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
+    private val getSessionUseCase: GetSessionUseCase,
     private val getProductByIdAsBuyerUseCase: GetProductByIdAsBuyerUseCase,
-    private val getUserUseCase: GetUserUseCase,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<DetailUiState> = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> get() = _uiState
+
+    fun getSession() {
+        viewModelScope.launch {
+            getSessionUseCase(Unit).collect { result ->
+                when (result) {
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                loginState = LoginState.Loaded(isLoggedIn = false)
+                            )
+                        }
+                    }
+                    is Result.Success -> {
+                        val token = result.data.token
+                        _uiState.update {
+                            it.copy(
+                                loginState = LoginState.Loaded(
+                                    isLoggedIn = token.isNotEmpty()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun getProductDetailById(id: Int) {
         _uiState.update {
@@ -48,34 +74,11 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
-
-    fun checkUser() {
-        viewModelScope.launch {
-            when(val result = getUserUseCase(Unit)) {
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            errorMessage = result.exception?.message,
-                        )
-                    }
-                }
-                is Result.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            user = result.data,
-                            isLoading = false,
-                        )
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 data class DetailUiState(
+    val loginState: LoginState = LoginState.Idle,
     val product: Product? = null,
-    val user: User? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

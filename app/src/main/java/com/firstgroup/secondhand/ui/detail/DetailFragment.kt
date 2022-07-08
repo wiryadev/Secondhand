@@ -1,19 +1,14 @@
 package com.firstgroup.secondhand.ui.detail
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,10 +22,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
+import com.firstgroup.secondhand.ui.auth.AuthActivity
+import com.firstgroup.secondhand.ui.auth.LoginState
+import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.detail.create_order.OrderBottomSheetFragment
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -54,22 +53,23 @@ class DetailFragment : Fragment() {
                 MdcTheme {
                     DetailScreen(
                         uiState = uiState,
-                        onBuyClicked = {
-                            val orderBottomsheet = OrderBottomSheetFragment.newInstance(it)
-                            orderBottomsheet.show(parentFragmentManager, orderBottomsheet.tag)
-                        }
+                        fragmentManager = parentFragmentManager,
+                        onLoginClick = ::goToLoginScreen
                     )
                 }
             }
         }
     }
 
+    private fun goToLoginScreen() {
+        startActivity(Intent(requireContext(), AuthActivity::class.java))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel.getSession()
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
-//            viewModel.checkUser()   // commented until login checking implemented
         }
     }
 }
@@ -77,7 +77,8 @@ class DetailFragment : Fragment() {
 @Composable
 fun DetailScreen(
     uiState: DetailUiState,
-    onBuyClicked: (Int) -> Unit,
+    fragmentManager: FragmentManager,
+    onLoginClick: () -> Unit
 ) {
     uiState.product?.let { product ->
         Box(
@@ -270,15 +271,38 @@ fun DetailScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            PrimaryButton(
-                onClick = { onBuyClicked(uiState.product.id) },
-                content = {
-                    Text(
-                        text = stringResource(R.string.bid),
-                        style = MaterialTheme.typography.button
-                    )
+            when(uiState.loginState) {
+                is LoginState.Loaded -> {
+                    if (uiState.loginState.isLoggedIn) {
+                        PrimaryButton(
+                            onClick = {
+                                val orderBottomsheet = OrderBottomSheetFragment.newInstance(uiState.product.id)
+                                orderBottomsheet.show(fragmentManager, orderBottomsheet.tag)
+                            },
+                            content = {
+                                Text(
+                                    text = stringResource(R.string.bid),
+                                    style = MaterialTheme.typography.button
+                                )
+                            }
+                        )
+                    } else {
+                        PrimaryButton(
+                            onClick = onLoginClick,
+                            content = {
+                                Text(
+                                    text = stringResource(R.string.login),
+                                    style = MaterialTheme.typography.button
+                                )
+                            }
+                        )
+                    }
                 }
-            )
+                is LoginState.Idle -> {
+                    GenericLoadingScreen()
+                }
+            }
+
         }
     }
 }
