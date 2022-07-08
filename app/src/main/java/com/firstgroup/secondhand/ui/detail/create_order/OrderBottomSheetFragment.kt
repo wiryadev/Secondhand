@@ -71,9 +71,9 @@ class OrderBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun toastErrorMessage(errorMessage: String) {
         val message = if (errorMessage.contains("400")) {
-            R.string.bid // Nanti diganti ya isinya..
+            R.string.error_bad_order
         } else {
-            R.string.login // Internal service error
+            R.string.internal_service_error
         }
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
@@ -129,20 +129,19 @@ fun SuccessOrderUi(
         BottomSheetHandle()
         Spacer(modifier = Modifier.height(16.dp))
         // waiting for new lottie raw json files
-        val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.login_and_sign_up2))
+        val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.order_success2))
 
         LottieAnimation(
             composition = rawLottie,
             modifier = Modifier.size(180.dp),
         )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(text = stringResource(R.string.login_placeholder_commentary_text))
+        Text(text = stringResource(R.string.order_success))
 
         Spacer(modifier = Modifier.height(48.dp))
         PrimaryButton(
             onClick = onDismissClick,
             content = {
-                Text(text = stringResource(id = R.string.login))
+                Text(text = stringResource(id = R.string.make_another_order))
             }
         )
         Spacer(modifier = Modifier.height(24.dp))
