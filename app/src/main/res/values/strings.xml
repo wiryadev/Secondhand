@@ -93,5 +93,8 @@
     <string name="contact">Hubungi</string>
     <string name="order_bottomsheet_title">Set Your Bid Price</string>
     <string name="order_bottomsheet_description">Your bid price will be proposed to the seller, if the seller matches your price, the seller will contact you through Whatsapp</string>
+    <string name="order_success">Order Success!</string>
+    <string name="make_another_order">Next order please!</string>
+    <string name="error_bad_order">You can\'t bid your own product or maybe You already bid this product</string>
 
 </resources>
