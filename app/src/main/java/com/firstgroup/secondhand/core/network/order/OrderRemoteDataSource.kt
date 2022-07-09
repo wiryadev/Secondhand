@@ -1,8 +1,6 @@
 package com.firstgroup.secondhand.core.network.order
 
-import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
-import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
-import com.firstgroup.secondhand.core.network.order.model.OrderRequest
+import com.firstgroup.secondhand.core.network.order.model.*
 
 interface OrderRemoteDataSource {
 
@@ -12,14 +10,13 @@ interface OrderRemoteDataSource {
 
     suspend fun createOrder(orderRequest: OrderRequest): CreateOrderDto
 
-    // wait for backend fix
-//    suspend fun updateOrder(id: Int): CreateOrderDto
-
-//    suspend fun deleteOrder(id: Int)
-
     suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
     suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto
+
+    suspend fun updateOrderAsBuyer(updateOrderRequest: UpdateOrderRequest): CreateOrderDto
+
+    suspend fun deleteOrderAsBuyer(id: Int): DeleteOrderDto
 
     suspend fun getAllOrdersAsSeller(): List<GetOrderDto>
 

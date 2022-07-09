@@ -1,10 +1,13 @@
 package com.firstgroup.secondhand.core.network.order.retrofit
 
 import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
+import com.firstgroup.secondhand.core.network.order.model.DeleteOrderDto
 import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -22,17 +25,6 @@ interface OrderService {
         @Body orderData: RequestBody
     ): CreateOrderDto
 
-    // for seller will be named "respondOrder" or smth like that
-    @PUT("buyer/order/{id}")
-    suspend fun updateOrder(
-        @Path("id") id: Int
-    ): CreateOrderDto
-
-    @DELETE("buyer/order/{id}")
-    suspend fun deleteOrder(
-        @Path("id") id: Int
-    )
-
     @GET("buyer/order")
     suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
@@ -40,6 +32,20 @@ interface OrderService {
     suspend fun getOrderByIdAsBuyer(
         @Path("id") id: Int
     ): GetOrderDto
+
+    // for seller will be named "respondOrder" or smth like that
+    @FormUrlEncoded
+    @PUT("buyer/order/{id}")
+    suspend fun updateOrderAsBuyer(
+        @Path("id") id: Int,
+        @Field("bid_price") bidPrice: Int,
+    ): CreateOrderDto
+
+    @DELETE("buyer/order/{id}")
+    suspend fun deleteOrderAsBuyer(
+        @Path("id") id: Int
+    ): DeleteOrderDto
+
 
     /**
      * Seller
