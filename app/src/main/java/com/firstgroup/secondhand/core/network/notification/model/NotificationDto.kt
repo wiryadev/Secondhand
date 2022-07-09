@@ -10,17 +10,17 @@ data class NotificationDto(
     @Json(name = "base_price")
     val basePrice: Any?,
     @Json(name = "bid_price")
-    val bidPrice: Int,
+    val bidPrice: Int?,
     @Json(name = "buyer_name")
-    val buyerName: String,
+    val buyerName: String?,
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "id")
     val id: Int,
     @Json(name = "image_url")
-    val imageUrl: Any?,
+    val imageUrl: String?,
     @Json(name = "Product")
-    val product: Product,
+    val product: Product?,
     @Json(name = "product_id")
     val productId: Int,
     @Json(name = "product_name")
@@ -30,11 +30,11 @@ data class NotificationDto(
     @Json(name = "receiver_id")
     val receiverId: Int,
     @Json(name = "seller_name")
-    val sellerName: String,
+    val sellerName: String?,
     @Json(name = "status")
     val status: String,
     @Json(name = "transaction_date")
-    val transactionDate: String,
+    val transactionDate: String?,
     @Json(name = "updatedAt")
     val updatedAt: String,
     @Json(name = "User")
@@ -43,27 +43,27 @@ data class NotificationDto(
     @JsonClass(generateAdapter = true)
     data class Product(
         @Json(name = "base_price")
-        val basePrice: Int,
+        val basePrice: Int?,
         @Json(name = "createdAt")
-        val createdAt: String,
+        val createdAt: String?,
         @Json(name = "description")
-        val description: String,
+        val description: String?,
         @Json(name = "id")
-        val id: Int,
+        val id: Int?,
         @Json(name = "image_name")
         val imageName: String?,
         @Json(name = "image_url")
         val imageUrl: String?,
         @Json(name = "location")
-        val location: String,
+        val location: String?,
         @Json(name = "name")
         val name: String?,
         @Json(name = "status")
-        val status: String,
+        val status: String?,
         @Json(name = "updatedAt")
-        val updatedAt: String,
+        val updatedAt: String?,
         @Json(name = "user_id")
-        val userId: Int
+        val userId: Int?
     )
 
     @JsonClass(generateAdapter = true)
@@ -87,13 +87,17 @@ data class NotificationDto(
     fun mapToDomainModel() = Notification(
         id = id,
         read = read,
-        bidPrice = bidPrice,
+        bidPrice = bidPrice ?: 0,
         product = Notification.Product(
-            id = this.product.id,
-            name = this.product.name ?: "",
-            price = this.product.basePrice,
+            id = this.product?.id ?: 0,
+            name = this.product?.name.orEmpty(),
+            price = this.product?.basePrice ?: 0,
         ),
-        date = transactionDate,
+        status = status,
+        buyerName = buyerName.orEmpty(),
+        sellerName = sellerName.orEmpty(),
+        imageUrl = imageUrl.orEmpty(),
+        date = transactionDate.orEmpty(),
     )
 
 }

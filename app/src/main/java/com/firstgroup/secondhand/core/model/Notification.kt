@@ -5,6 +5,10 @@ data class Notification(
     val read: Boolean,
     val bidPrice: Int,
     val product: Product,
+    val status: String,
+    val buyerName: String,
+    val sellerName: String,
+    val imageUrl: String,
     val date: String,
 ) {
     data class Product(
