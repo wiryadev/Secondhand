@@ -1,5 +1,6 @@
 package com.firstgroup.secondhand.core.data.repositories.order
 
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.CreateOrder
 import com.firstgroup.secondhand.core.model.Order
 import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
@@ -14,9 +15,11 @@ class OrderRepositoryImpl @Inject constructor(
         orderRequest: OrderRequest
     ): CreateOrder = remoteDataSource.createOrder(orderRequest).mapToDomain()
 
-//    override suspend fun updateOrder(id: Int): CreateOrderDto {
-//
-//    }
+    override suspend fun updateOrderAsBuyer(id: Int): CreateOrder =
+        remoteDataSource.updateOrderAsBuyer(id).mapToDomain()
+
+    override suspend fun deleteOrderAsBuyer(id: Int): BasicResponse =
+        remoteDataSource.deleteOrderAsBuyer(id).mapToDomainModel()
 
     override suspend fun getOrdersAsBuyer(): List<Order> {
         return remoteDataSource.getOrdersAsBuyer().map {

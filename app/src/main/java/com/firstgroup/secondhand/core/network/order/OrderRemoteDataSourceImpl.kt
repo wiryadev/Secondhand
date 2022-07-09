@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.order
 
 import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
+import com.firstgroup.secondhand.core.network.order.model.DeleteOrderDto
 import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
 import com.firstgroup.secondhand.core.network.order.model.OrderRequest
 import com.firstgroup.secondhand.core.network.order.retrofit.OrderService
@@ -11,19 +12,11 @@ class OrderRemoteDataSourceImpl @Inject constructor(
     private val service: OrderService
 ) : OrderRemoteDataSource {
 
-    override suspend fun createOrder(orderRequest: OrderRequest): CreateOrderDto {
-        return service.createOrder(
-            orderData = RequestUtil.createJsonRequestBody(orderRequest)
-        )
-    }
-
-//    override suspend fun updateOrder(id: Int): CreateOrderDto {
-//        return service.updateOrder(id)
-//    }
-
-//    override suspend fun deleteOrder(id: Int) {
-//        service.deleteOrder(id)
-//    }
+    override suspend fun createOrder(
+        orderRequest: OrderRequest
+    ): CreateOrderDto = service.createOrder(
+        orderData = RequestUtil.createJsonRequestBody(orderRequest)
+    )
 
     override suspend fun getOrdersAsBuyer(): List<GetOrderDto> {
         return service.getOrdersAsBuyer()
@@ -32,6 +25,12 @@ class OrderRemoteDataSourceImpl @Inject constructor(
     override suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto {
         return service.getOrderByIdAsBuyer(id)
     }
+
+    override suspend fun updateOrderAsBuyer(id: Int): CreateOrderDto =
+        service.updateOrderAsBuyer(id)
+
+    override suspend fun deleteOrderAsBuyer(id: Int): DeleteOrderDto =
+        service.deleteOrderAsBuyer(id)
 
     override suspend fun getAllOrdersAsSeller(): List<GetOrderDto> {
         return service.getOrdersAsSeller()

@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.order.retrofit
 
 import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
+import com.firstgroup.secondhand.core.network.order.model.DeleteOrderDto
 import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -22,17 +23,6 @@ interface OrderService {
         @Body orderData: RequestBody
     ): CreateOrderDto
 
-    // for seller will be named "respondOrder" or smth like that
-    @PUT("buyer/order/{id}")
-    suspend fun updateOrder(
-        @Path("id") id: Int
-    ): CreateOrderDto
-
-    @DELETE("buyer/order/{id}")
-    suspend fun deleteOrder(
-        @Path("id") id: Int
-    )
-
     @GET("buyer/order")
     suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
@@ -40,6 +30,18 @@ interface OrderService {
     suspend fun getOrderByIdAsBuyer(
         @Path("id") id: Int
     ): GetOrderDto
+
+    // for seller will be named "respondOrder" or smth like that
+    @PUT("buyer/order/{id}")
+    suspend fun updateOrderAsBuyer(
+        @Path("id") id: Int
+    ): CreateOrderDto
+
+    @DELETE("buyer/order/{id}")
+    suspend fun deleteOrderAsBuyer(
+        @Path("id") id: Int
+    ): DeleteOrderDto
+
 
     /**
      * Seller
