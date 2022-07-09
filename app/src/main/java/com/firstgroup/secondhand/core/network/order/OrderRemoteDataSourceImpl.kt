@@ -1,9 +1,6 @@
 package com.firstgroup.secondhand.core.network.order
 
-import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
-import com.firstgroup.secondhand.core.network.order.model.DeleteOrderDto
-import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
-import com.firstgroup.secondhand.core.network.order.model.OrderRequest
+import com.firstgroup.secondhand.core.network.order.model.*
 import com.firstgroup.secondhand.core.network.order.retrofit.OrderService
 import com.firstgroup.secondhand.core.network.utils.RequestUtil
 import javax.inject.Inject
@@ -26,8 +23,12 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         return service.getOrderByIdAsBuyer(id)
     }
 
-    override suspend fun updateOrderAsBuyer(id: Int): CreateOrderDto =
-        service.updateOrderAsBuyer(id)
+    override suspend fun updateOrderAsBuyer(
+        updateOrderRequest: UpdateOrderRequest
+    ): CreateOrderDto = service.updateOrderAsBuyer(
+        id = updateOrderRequest.orderId,
+        bidPrice = updateOrderRequest.bidPrice,
+    )
 
     override suspend fun deleteOrderAsBuyer(id: Int): DeleteOrderDto =
         service.deleteOrderAsBuyer(id)

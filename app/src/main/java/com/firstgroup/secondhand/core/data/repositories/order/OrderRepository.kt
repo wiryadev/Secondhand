@@ -4,6 +4,7 @@ import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.CreateOrder
 import com.firstgroup.secondhand.core.model.Order
 import com.firstgroup.secondhand.core.network.order.model.OrderRequest
+import com.firstgroup.secondhand.core.network.order.model.UpdateOrderRequest
 
 interface OrderRepository {
 
@@ -17,7 +18,7 @@ interface OrderRepository {
 
     suspend fun getOrderByIdAsBuyer(id: Int): Order
 
-    suspend fun updateOrderAsBuyer(id: Int): CreateOrder
+    suspend fun updateOrderAsBuyer(updateOrderRequest: UpdateOrderRequest): CreateOrder
 
     suspend fun deleteOrderAsBuyer(id: Int): BasicResponse
 

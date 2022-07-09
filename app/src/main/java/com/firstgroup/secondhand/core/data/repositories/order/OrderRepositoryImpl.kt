@@ -5,6 +5,7 @@ import com.firstgroup.secondhand.core.model.CreateOrder
 import com.firstgroup.secondhand.core.model.Order
 import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
 import com.firstgroup.secondhand.core.network.order.model.OrderRequest
+import com.firstgroup.secondhand.core.network.order.model.UpdateOrderRequest
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -15,8 +16,9 @@ class OrderRepositoryImpl @Inject constructor(
         orderRequest: OrderRequest
     ): CreateOrder = remoteDataSource.createOrder(orderRequest).mapToDomain()
 
-    override suspend fun updateOrderAsBuyer(id: Int): CreateOrder =
-        remoteDataSource.updateOrderAsBuyer(id).mapToDomain()
+    override suspend fun updateOrderAsBuyer(
+        updateOrderRequest: UpdateOrderRequest
+    ): CreateOrder = remoteDataSource.updateOrderAsBuyer(updateOrderRequest).mapToDomain()
 
     override suspend fun deleteOrderAsBuyer(id: Int): BasicResponse =
         remoteDataSource.deleteOrderAsBuyer(id).mapToDomainModel()
