@@ -106,5 +106,6 @@
     <string name="placeholder_confirm_password">Masukan konfirmasi password baru</string>
     <string name="invalid_password">Please input your password correctly</string>
     <string name="change_password_success">Change Password Success</string>
+    <string name="confirm_password_placeholder">Confirm your password</string>
 
 </resources>

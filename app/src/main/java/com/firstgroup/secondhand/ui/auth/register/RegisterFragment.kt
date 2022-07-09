@@ -91,6 +91,7 @@ fun RegisterScreen(
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmpassword by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
@@ -354,6 +355,82 @@ fun RegisterScreen(
                     placeholderColor = colorResource(id = R.color.neutral_02)
                 )
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            // Confirm Password TextField
+            Text(
+                text = stringResource(R.string.confirm_password_placeholder),
+                style = MaterialTheme.typography.body1,
+            )
+            var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = confirmpassword,
+                onValueChange = { confirmpassword = it },
+                textStyle = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        1.dp,
+                        colorResource(id = R.color.neutral_02),
+                        RoundedCornerShape(16.dp)
+                    ),
+                visualTransformation = if (confirmPasswordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                trailingIcon = {
+                    val description =
+                        if (confirmPasswordVisible) {
+                            stringResource(R.string.desc_hide_password)
+                        } else {
+                            stringResource(R.string.desc_show_password)
+                        }
+                    if (confirmPasswordVisible) {
+                        IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_show_password
+                                ),
+                                description
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(
+                                    id = R.drawable.ic_hide_password
+                                ),
+                                description
+                            )
+                        }
+                    }
+                },
+                isError = password != confirmpassword,
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.confirm_password_placeholder),
+                        style = MaterialTheme.typography.body1,
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    placeholderColor = colorResource(id = R.color.neutral_02)
+                )
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            if (password != confirmpassword) {
+                Text(
+                    text = "Password doesn't match!",
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
             //Register Button
             PrimaryButton(
@@ -369,7 +446,7 @@ fun RegisterScreen(
                             stringResource(id = R.string.register)
                         },
                     )
-                }, enabled = !uiState.isLoading
+                }, enabled = !uiState.isLoading && password == confirmpassword
             )
             // Register Bottom Clickable Text
             Spacer(modifier = Modifier.heightIn(min = 16.dp, max = 32.dp))
