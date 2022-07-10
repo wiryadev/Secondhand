@@ -13,3 +13,12 @@ data class CreateOrder(
     val status: String,
     val date: String,
 )
+
+data class RespondOrder(
+    val id: Int,
+    val productId: Int,
+    val productName: String,
+    val buyerId: Int,
+    val price: Int,
+    val status: String,
+)

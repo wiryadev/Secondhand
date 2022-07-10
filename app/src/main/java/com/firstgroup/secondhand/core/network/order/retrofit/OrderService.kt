@@ -3,12 +3,14 @@ package com.firstgroup.secondhand.core.network.order.retrofit
 import com.firstgroup.secondhand.core.network.order.model.CreateOrderDto
 import com.firstgroup.secondhand.core.network.order.model.DeleteOrderDto
 import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
+import com.firstgroup.secondhand.core.network.order.model.RespondOrderDto
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -33,10 +35,9 @@ interface OrderService {
         @Path("id") id: Int
     ): GetOrderDto
 
-    // for seller will be named "respondOrder" or smth like that
     @FormUrlEncoded
     @PUT("buyer/order/{id}")
-    suspend fun updateOrderAsBuyer(
+    suspend fun updateOrder(
         @Path("id") id: Int,
         @Field("bid_price") bidPrice: Int,
     ): CreateOrderDto
@@ -55,5 +56,12 @@ interface OrderService {
     suspend fun getOrdersAsSeller(
         @Query("status") status: String? = null
     ): List<GetOrderDto>
+
+    @FormUrlEncoded
+    @PATCH("seller/order/{id}")
+    suspend fun respondOrder(
+        @Path("id") id: Int,
+        @Field("status") status: String,
+    ): RespondOrderDto
 
 }

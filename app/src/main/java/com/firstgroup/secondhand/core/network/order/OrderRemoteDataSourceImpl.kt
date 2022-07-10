@@ -23,9 +23,9 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         return service.getOrderByIdAsBuyer(id)
     }
 
-    override suspend fun updateOrderAsBuyer(
+    override suspend fun updateOrder(
         updateOrderRequest: UpdateOrderRequest
-    ): CreateOrderDto = service.updateOrderAsBuyer(
+    ): CreateOrderDto = service.updateOrder(
         id = updateOrderRequest.orderId,
         bidPrice = updateOrderRequest.bidPrice,
     )
@@ -48,5 +48,11 @@ class OrderRemoteDataSourceImpl @Inject constructor(
     override suspend fun getPendingOrdersAsSeller(): List<GetOrderDto> {
         return service.getOrdersAsSeller("pending")
     }
+
+    override suspend fun acceptOrder(id: Int): RespondOrderDto =
+        service.respondOrder(id = id, status = "accepted")
+
+    override suspend fun rejectOrder(id: Int): RespondOrderDto =
+        service.respondOrder(id = id, status = "declined")
 
 }
