@@ -14,7 +14,7 @@ interface OrderRemoteDataSource {
 
     suspend fun getOrderByIdAsBuyer(id: Int): GetOrderDto
 
-    suspend fun updateOrderAsBuyer(updateOrderRequest: UpdateOrderRequest): CreateOrderDto
+    suspend fun updateOrder(updateOrderRequest: UpdateOrderRequest): CreateOrderDto
 
     suspend fun deleteOrderAsBuyer(id: Int): DeleteOrderDto
 
@@ -25,5 +25,9 @@ interface OrderRemoteDataSource {
     suspend fun getDeclinedOrdersAsSeller(): List<GetOrderDto>
 
     suspend fun getPendingOrdersAsSeller(): List<GetOrderDto>
+
+    suspend fun acceptOrder(id: Int): RespondOrderDto
+
+    suspend fun rejectOrder(id: Int): RespondOrderDto
 
 }

@@ -15,7 +15,7 @@ class UpdateOrderUseCase @Inject constructor(
 ) : UseCase<UpdateOrderRequest, CreateOrder>(ioDispatcher) {
 
     override suspend fun execute(param: UpdateOrderRequest): CreateOrder {
-        return orderRepository.updateOrderAsBuyer(param)
+        return orderRepository.updateOrder(param)
     }
 
 }

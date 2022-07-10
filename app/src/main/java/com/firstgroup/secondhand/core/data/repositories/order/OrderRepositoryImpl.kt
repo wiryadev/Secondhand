@@ -3,6 +3,7 @@ package com.firstgroup.secondhand.core.data.repositories.order
 import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.CreateOrder
 import com.firstgroup.secondhand.core.model.Order
+import com.firstgroup.secondhand.core.model.RespondOrder
 import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
 import com.firstgroup.secondhand.core.network.order.model.OrderRequest
 import com.firstgroup.secondhand.core.network.order.model.UpdateOrderRequest
@@ -16,9 +17,9 @@ class OrderRepositoryImpl @Inject constructor(
         orderRequest: OrderRequest
     ): CreateOrder = remoteDataSource.createOrder(orderRequest).mapToDomain()
 
-    override suspend fun updateOrderAsBuyer(
+    override suspend fun updateOrder(
         updateOrderRequest: UpdateOrderRequest
-    ): CreateOrder = remoteDataSource.updateOrderAsBuyer(updateOrderRequest).mapToDomain()
+    ): CreateOrder = remoteDataSource.updateOrder(updateOrderRequest).mapToDomain()
 
     override suspend fun deleteOrderAsBuyer(id: Int): BasicResponse =
         remoteDataSource.deleteOrderAsBuyer(id).mapToDomainModel()
@@ -56,5 +57,11 @@ class OrderRepositoryImpl @Inject constructor(
             it.mapToDomain()
         }
     }
+
+    override suspend fun acceptOrder(id: Int): RespondOrder =
+        remoteDataSource.acceptOrder(id).mapToDomainModel()
+
+    override suspend fun rejectOrder(id: Int): RespondOrder =
+        remoteDataSource.rejectOrder(id).mapToDomainModel()
 
 }
