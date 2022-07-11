@@ -29,7 +29,14 @@
     <fragment
         android:id="@+id/main_navigation_sell_list"
         android:name="com.firstgroup.secondhand.ui.main.sell_list.SellListFragment"
-        android:label="SellListFragment" />
+        android:label="SellListFragment" >
+        <action
+            android:id="@+id/action_main_navigation_sell_list_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_main_navigation_sell_list_to_detailBidderFragment"
+            app:destination="@id/detailBidderFragment" />
+    </fragment>
     <fragment
         android:id="@+id/main_navigation_account"
         android:name="com.firstgroup.secondhand.ui.main.account.AccountFragment"
@@ -67,6 +74,14 @@
         <action
             android:id="@+id/action_changePasswordFragment_to_main_navigation_account"
             app:destination="@id/main_navigation_account" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailBidderFragment"
+        android:name="com.firstgroup.secondhand.ui.main.sell_list.detail.DetailBidderFragment"
+        android:label="DetailBidderFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
     </fragment>
 
 </navigation>
