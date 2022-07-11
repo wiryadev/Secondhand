@@ -2,8 +2,7 @@ package com.firstgroup.secondhand.domain.auth
 
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.data.repositories.auth.AuthRepository
-import com.firstgroup.secondhand.core.model.Authentication
-import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import com.firstgroup.secondhand.utils.AuthDummyDataProvider
 import com.firstgroup.secondhand.utils.TestDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -35,22 +34,11 @@ class LoginUseCaseTest {
 
     @Test
     fun login_whenInputValid_thenReturnSuccessWithData() = runTest {
-        val authentication = Authentication(
-            id = 1,
-            token = "token",
-            email = "email",
-            name = "name",
-        )
+        val authentication = AuthDummyDataProvider.provideAuthentication()
 
-        val loginParam = LoginUseCase.Param(
-            email = "email",
-            password = "password"
-        )
+        val loginParam = AuthDummyDataProvider.provideValidLoginParam()
 
-        val loginRequest = LoginRequest(
-            email = "email",
-            password = "password"
-        )
+        val loginRequest = AuthDummyDataProvider.provideValidLoginRequest()
 
         whenever(repository.login(loginRequest))
             .thenReturn(authentication)
@@ -67,15 +55,9 @@ class LoginUseCaseTest {
 
     @Test
     fun login_whenInputInvalid_thenReturnError() = runTest {
-        val loginParam = LoginUseCase.Param(
-            email = "",
-            password = ""
-        )
+        val loginParam = AuthDummyDataProvider.provideInvalidLoginParam()
 
-        val loginRequest = LoginRequest(
-            email = "",
-            password = ""
-        )
+        val loginRequest = AuthDummyDataProvider.provideInvalidLoginRequest()
 
         val exception = RuntimeException("HTTP Error")
         whenever(repository.login(loginRequest))
