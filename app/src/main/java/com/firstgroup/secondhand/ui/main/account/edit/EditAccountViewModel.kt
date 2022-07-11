@@ -3,7 +3,6 @@ package com.firstgroup.secondhand.ui.main.account.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
 import com.firstgroup.secondhand.domain.auth.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,12 +29,12 @@ class EditAccountViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
         }
-        val newUserData = UpdateUserRequest(
+        val newUserData = UpdateUserUseCase.Param(
             fullName = fullName,
             phoneNo = phoneNo,
             address = address,
             city = city,
-            image = uiState.value.image
+            image = uiState.value.image,
         )
         viewModelScope.launch {
             when (val result = updateUserUseCase(newUserData)) {

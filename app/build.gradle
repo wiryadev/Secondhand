@@ -132,7 +132,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
 
     // Coroutines
-    def coroutines_version = "1.6.2"
+    def coroutines_version = "1.6.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
