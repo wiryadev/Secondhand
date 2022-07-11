@@ -9,8 +9,3 @@ data class Authentication(
     val name: String,
     val token: String,
 )
-
-data class ChangePassword(
-    val name: String,
-    val message: String,
-)

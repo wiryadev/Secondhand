@@ -1,10 +1,13 @@
 package com.firstgroup.secondhand.utils
 
 import com.firstgroup.secondhand.core.model.Authentication
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.User
+import com.firstgroup.secondhand.core.network.auth.model.ChangePasswordRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
+import com.firstgroup.secondhand.domain.auth.ChangePasswordUseCase
 import com.firstgroup.secondhand.domain.auth.LoginUseCase
 import com.firstgroup.secondhand.domain.auth.RegisterUseCase
 import com.firstgroup.secondhand.domain.auth.UpdateUserUseCase
@@ -80,4 +83,22 @@ object AuthDummyDataProvider {
         city = "city",
         profilePicture = null,
     )
+
+    fun provideValidChangePasswordParam() = ChangePasswordUseCase.Param(
+        currentPassword = "oldPassword",
+        newPassword = "newPassword",
+        confirmationPassword = "newPassword",
+    )
+
+    fun provideValidChangePasswordRequest() = ChangePasswordRequest(
+        currentPassword = "oldPassword",
+        newPassword = "newPassword",
+        confirmationPassword = "newPassword",
+    )
+
+    fun provideValidChangePasswordResponse() = BasicResponse(
+        name = "OK",
+        message = "Change password success",
+    )
+
 }
