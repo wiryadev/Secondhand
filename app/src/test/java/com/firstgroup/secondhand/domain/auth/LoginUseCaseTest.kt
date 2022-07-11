@@ -36,17 +36,17 @@ class LoginUseCaseTest {
     fun login_whenInputValid_thenReturnSuccessWithData() = runTest {
         val authentication = AuthDummyDataProvider.provideAuthentication()
 
-        val loginParam = AuthDummyDataProvider.provideValidLoginParam()
+        val param = AuthDummyDataProvider.provideValidLoginParam()
 
-        val loginRequest = AuthDummyDataProvider.provideValidLoginRequest()
+        val request = AuthDummyDataProvider.provideValidLoginRequest()
 
-        whenever(repository.login(loginRequest))
+        whenever(repository.login(request))
             .thenReturn(authentication)
 
         val expected = Result.Success(data = authentication)
-        val actual = loginUseCase(loginParam)
+        val actual = loginUseCase(param)
 
-        verify(repository).login(loginRequest)
+        verify(repository).login(request)
         verify(setTokenUseCase).invoke(authentication.token)
         assertNotNull(actual)
         assertTrue(actual is Result.Success)
@@ -55,18 +55,18 @@ class LoginUseCaseTest {
 
     @Test
     fun login_whenInputInvalid_thenReturnError() = runTest {
-        val loginParam = AuthDummyDataProvider.provideInvalidLoginParam()
+        val param = AuthDummyDataProvider.provideInvalidLoginParam()
 
-        val loginRequest = AuthDummyDataProvider.provideInvalidLoginRequest()
+        val request = AuthDummyDataProvider.provideInvalidLoginRequest()
 
         val exception = RuntimeException("HTTP Error")
-        whenever(repository.login(loginRequest))
+        whenever(repository.login(request))
             .thenThrow(exception)
 
         val expected = Result.Error(exception = exception)
-        val actual = loginUseCase(loginParam)
+        val actual = loginUseCase(param)
 
-        verify(repository).login(loginRequest)
+        verify(repository).login(request)
         verify(setTokenUseCase, never()).invoke("")
         assertNotNull(actual)
         assertTrue(actual is Result.Error)
