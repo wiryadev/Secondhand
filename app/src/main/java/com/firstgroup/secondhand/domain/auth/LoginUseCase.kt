@@ -13,13 +13,22 @@ class LoginUseCase @Inject constructor(
     private val repository: AuthRepository,
     private val setTokenUseCase: SetTokenUseCase,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<LoginRequest, Authentication>(ioDispatcher) {
+) : UseCase<LoginUseCase.Param, Authentication>(ioDispatcher) {
 
-    override suspend fun execute(param: LoginRequest): Authentication {
-        val login = repository.login(param)
+    override suspend fun execute(param: Param): Authentication {
+        val request = LoginRequest(
+            email = param.email,
+            password = param.password,
+        )
+        val login = repository.login(request)
         repository.saveUserSession(login)
         setTokenUseCase(login.token)
         return login
     }
+
+    data class Param(
+        val email: String,
+        val password: String,
+    )
 
 }

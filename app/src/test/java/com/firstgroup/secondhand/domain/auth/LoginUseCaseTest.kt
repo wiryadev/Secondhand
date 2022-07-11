@@ -42,6 +42,11 @@ class LoginUseCaseTest {
             name = "name",
         )
 
+        val loginParam = LoginUseCase.Param(
+            email = "email",
+            password = "password"
+        )
+
         val loginRequest = LoginRequest(
             email = "email",
             password = "password"
@@ -51,7 +56,7 @@ class LoginUseCaseTest {
             .thenReturn(authentication)
 
         val expected = Result.Success(data = authentication)
-        val actual = loginUseCase(loginRequest)
+        val actual = loginUseCase(loginParam)
 
         verify(repository).login(loginRequest)
         verify(setTokenUseCase).invoke(authentication.token)
@@ -62,6 +67,11 @@ class LoginUseCaseTest {
 
     @Test
     fun login_whenInputInvalid_thenReturnError() = runTest {
+        val loginParam = LoginUseCase.Param(
+            email = "",
+            password = ""
+        )
+
         val loginRequest = LoginRequest(
             email = "",
             password = ""
@@ -72,7 +82,7 @@ class LoginUseCaseTest {
             .thenThrow(exception)
 
         val expected = Result.Error(exception = exception)
-        val actual = loginUseCase(loginRequest)
+        val actual = loginUseCase(loginParam)
 
         verify(repository).login(loginRequest)
         verify(setTokenUseCase, never()).invoke("")

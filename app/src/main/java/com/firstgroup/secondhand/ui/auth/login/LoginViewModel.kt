@@ -3,7 +3,6 @@ package com.firstgroup.secondhand.ui.auth.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.domain.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +24,9 @@ class LoginViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
         }
-        val loginCredential = LoginRequest(
-            email = email, password = password
+        val loginCredential = LoginUseCase.Param(
+            email = email,
+            password = password,
         )
         viewModelScope.launch {
             when (val result = loginUseCase(loginCredential)) {
