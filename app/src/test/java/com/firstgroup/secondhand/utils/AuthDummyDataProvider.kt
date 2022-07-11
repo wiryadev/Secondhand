@@ -4,8 +4,10 @@ import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
 import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
+import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
 import com.firstgroup.secondhand.domain.auth.LoginUseCase
 import com.firstgroup.secondhand.domain.auth.RegisterUseCase
+import com.firstgroup.secondhand.domain.auth.UpdateUserUseCase
 
 object AuthDummyDataProvider {
 
@@ -53,6 +55,20 @@ object AuthDummyDataProvider {
         address = "address",
         city = "city",
         image = null,
+    )
+
+    fun provideValidUpdateParam() = UpdateUserUseCase.Param(
+        fullName = "fullName",
+        phoneNo = "phoneNo",
+        address = "address",
+        city = "city",
+    )
+
+    fun provideValidUpdateRequest() = UpdateUserRequest(
+        fullName = "fullName",
+        phoneNo = "phoneNo",
+        address = "address",
+        city = "city",
     )
 
     fun provideValidUser() = User(
