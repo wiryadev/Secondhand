@@ -1,7 +1,7 @@
 package com.firstgroup.secondhand.core.network.auth.model
 
 
-import com.firstgroup.secondhand.core.model.ChangePassword
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -12,7 +12,7 @@ data class ChangePasswordDto(
     @Json(name = "name")
     val name: String
 ) {
-    fun mapToDomainModel() = ChangePassword(
+    fun mapToDomainModel() = BasicResponse(
         name = name,
         message = message,
     )

@@ -1,12 +1,12 @@
 package com.firstgroup.secondhand.core.data.repositories.auth
 
 import com.firstgroup.secondhand.core.model.Authentication
-import com.firstgroup.secondhand.core.model.ChangePassword
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.AuthRemoteDataSource
 import com.firstgroup.secondhand.core.network.auth.model.ChangePasswordRequest
-import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.core.network.auth.model.UpdateUserRequest
 import com.firstgroup.secondhand.core.preference.AuthPreferenceDataSource
 import com.firstgroup.secondhand.core.preference.model.AuthSessionModel
@@ -37,7 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun changePassword(
         changePasswordRequest: ChangePasswordRequest
-    ): ChangePassword = remoteDataSource.changePassword(changePasswordRequest).mapToDomainModel()
+    ): BasicResponse = remoteDataSource.changePassword(changePasswordRequest).mapToDomainModel()
 
     override fun getUserSession(): Flow<Authentication> {
         return preferenceDataSource.getUserSession().map {

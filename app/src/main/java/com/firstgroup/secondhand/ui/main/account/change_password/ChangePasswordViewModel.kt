@@ -3,7 +3,6 @@ package com.firstgroup.secondhand.ui.main.account.change_password
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.network.auth.model.ChangePasswordRequest
 import com.firstgroup.secondhand.domain.auth.ChangePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,13 +29,13 @@ class ChangePasswordViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isLoading = true)
         }
-        val changePassword = ChangePasswordRequest(
+        val changePasswordParam = ChangePasswordUseCase.Param(
             currentPassword = currentPassword,
             newPassword = newPassword,
-            confirmationPassword = confirmPassword
+            confirmationPassword = confirmPassword,
         )
         viewModelScope.launch {
-            when (val result = changePasswordUseCase(changePassword)) {
+            when (val result = changePasswordUseCase(changePasswordParam)) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(isSuccess = true, isLoading = false)
