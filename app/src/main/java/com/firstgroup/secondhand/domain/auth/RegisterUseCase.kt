@@ -10,12 +10,30 @@ import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(
-    private val repository: AuthRepository,
+    private val authRepository: AuthRepository,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<RegisterUserRequest, User>(ioDispatcher) {
+) : UseCase<RegisterUseCase.Param, User>(ioDispatcher) {
 
-    override suspend fun execute(param: RegisterUserRequest): User {
-        return repository.register(param)
+    override suspend fun execute(param: Param): User {
+        val request = RegisterUserRequest(
+            fullName = param.fullName,
+            email = param.email,
+            password = param.password,
+            phoneNo = param.phoneNo,
+            address = param.address,
+            city = param.city,
+            image = null,
+        )
+        return authRepository.register(request)
     }
+
+    data class Param(
+        val fullName: String,
+        val email: String,
+        val password: String,
+        val phoneNo: String,
+        val address: String,
+        val city: String,
+    )
 
 }

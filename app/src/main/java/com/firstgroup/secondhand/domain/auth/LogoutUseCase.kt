@@ -10,14 +10,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class LogoutUseCase @Inject constructor(
-    private val repository: AuthRepository,
+    private val authRepository: AuthRepository,
     private val productRepository: ProductRepository,
     private val authInterceptor: AuthInterceptor,
     @AppDispatcher(SecondhandDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : UseCase<Any, Unit>(ioDispatcher) {
 
     override suspend fun execute(param: Any) {
-        repository.deleteUserSession()
+        authRepository.deleteUserSession()
         productRepository.deleteWishlist()
         authInterceptor.deleteToken()
     }

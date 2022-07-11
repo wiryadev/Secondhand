@@ -3,7 +3,9 @@ package com.firstgroup.secondhand.utils
 import com.firstgroup.secondhand.core.model.Authentication
 import com.firstgroup.secondhand.core.model.User
 import com.firstgroup.secondhand.core.network.auth.model.LoginRequest
+import com.firstgroup.secondhand.core.network.auth.model.RegisterUserRequest
 import com.firstgroup.secondhand.domain.auth.LoginUseCase
+import com.firstgroup.secondhand.domain.auth.RegisterUseCase
 
 object AuthDummyDataProvider {
 
@@ -34,13 +36,32 @@ object AuthDummyDataProvider {
         password = "",
     )
 
+    fun provideValidRegisterParam() = RegisterUseCase.Param(
+        fullName = "fullName",
+        email = "email@email.com",
+        password = "password",
+        phoneNo = "phoneNo",
+        address = "address",
+        city = "city",
+    )
+
+    fun provideValidRegisterRequest() = RegisterUserRequest(
+        fullName = "fullName",
+        email = "email@email.com",
+        password = "password",
+        phoneNo = "phoneNo",
+        address = "address",
+        city = "city",
+        image = null,
+    )
+
     fun provideValidUser() = User(
-        fullName = "",
-        email = "",
-        password = "",
-        phoneNo = "",
-        address = "",
+        fullName = "fullName",
+        email = "email@email.com",
+        password = "password",
+        phoneNo = "phoneNo",
+        address = "address",
+        city = "city",
         profilePicture = null,
-        city = ""
     )
 }
