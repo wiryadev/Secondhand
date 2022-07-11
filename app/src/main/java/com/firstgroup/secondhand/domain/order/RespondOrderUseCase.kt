@@ -8,13 +8,21 @@ import com.firstgroup.secondhand.domain.UseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
-class AcceptOrderUseCase @Inject constructor(
+class RespondOrderUseCase @Inject constructor(
     private val orderRepository: OrderRepository,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<Int, RespondOrder>(ioDispatcher) {
+) : UseCase<RespondOrderUseCase.Param, RespondOrder>(ioDispatcher) {
 
-    override suspend fun execute(param: Int): RespondOrder {
-        return orderRepository.acceptOrder(param)
+    override suspend fun execute(param: Param): RespondOrder {
+        return if (param.isAccepted) {
+            orderRepository.acceptOrder(id = param.orderId)
+        } else {
+            orderRepository.rejectOrder(id = param.orderId)
+        }
     }
 
+    data class Param(
+        val orderId: Int,
+        val isAccepted: Boolean,
+    )
 }
