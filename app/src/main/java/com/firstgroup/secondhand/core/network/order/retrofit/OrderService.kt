@@ -57,6 +57,11 @@ interface OrderService {
         @Query("status") status: String? = null
     ): List<GetOrderDto>
 
+    @GET("seller/order/{id}")
+    suspend fun getOrderByIdAsSeller(
+        @Path("id") id: Int
+    ): GetOrderDto
+
     @FormUrlEncoded
     @PATCH("seller/order/{id}")
     suspend fun respondOrder(

@@ -49,6 +49,10 @@ class OrderRemoteDataSourceImpl @Inject constructor(
         return service.getOrdersAsSeller("pending")
     }
 
+    override suspend fun getOrderByIdAsSeller(id: Int): GetOrderDto {
+        return service.getOrderByIdAsSeller(id)
+    }
+
     override suspend fun acceptOrder(id: Int): RespondOrderDto =
         service.respondOrder(id = id, status = "accepted")
 

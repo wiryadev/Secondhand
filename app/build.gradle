@@ -88,6 +88,8 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.1.0"
     implementation "com.google.android.material:compose-theme-adapter:1.1.14"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
 
     // Paging
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"

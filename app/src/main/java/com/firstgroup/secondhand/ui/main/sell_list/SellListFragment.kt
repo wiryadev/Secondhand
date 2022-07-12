@@ -6,18 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,18 +22,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.core.model.Category
-import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
+import com.firstgroup.secondhand.core.model.Order
+import com.firstgroup.secondhand.domain.order.OrderFilter
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
 import com.firstgroup.secondhand.ui.components.ListProduct
 import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
-import com.firstgroup.secondhand.ui.main.sell_list.detail.dummyOrder
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SellListFragment : Fragment() {
@@ -56,7 +58,20 @@ class SellListFragment : Fragment() {
                         uiState = uiState,
                         onLoginClick = ::goToLoginScreen,
                         viewModel = viewModel,
-                        onUserLoggedIn = viewModel::getUser
+                        onProductClick = {
+                            findNavController().navigate(
+                                SellListFragmentDirections.actionMainNavigationSellListToDetailFragment(
+                                    it
+                                )
+                            )
+                        },
+                        onOrderClick = {
+                            findNavController().navigate(
+                                SellListFragmentDirections.actionMainNavigationSellListToDetailBidderFragment(
+                                    it
+                                )
+                            )
+                        }
                     )
                 }
             }
@@ -69,7 +84,7 @@ class SellListFragment : Fragment() {
         viewModel.getSession()
     }
 
-    private fun goToLoginScreen(){
+    private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
 }
@@ -78,13 +93,15 @@ class SellListFragment : Fragment() {
 fun SellListScreen(
     uiState: SellListUiState,
     onLoginClick: () -> Unit,
-    onUserLoggedIn: () -> Unit,
+    onProductClick: (Int) -> Unit,
+    onOrderClick: (Int) -> Unit,
     viewModel: SellListViewModel
-){
+) {
     LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
             if (uiState.loginState.isLoggedIn) {
-                onUserLoggedIn.invoke()
+                viewModel.getProductAsSeller()
+                viewModel.getOrderAsSeller(viewModel.filter.value)
             }
         }
     }
@@ -93,115 +110,125 @@ fun SellListScreen(
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
-            if (uiState.loginState.isLoggedIn){
-                if (uiState.recentUser != null) {
-                    viewModel.getProductAsSeller()
-                    SellListScreen(uiState = uiState)
-                }
-                else {
-                    GenericLoadingScreen()
-                }
-            }
-            else {
+            if (uiState.loginState.isLoggedIn) {
+                SellListScreen(
+                    uiState = uiState,
+                    onProductClick = onProductClick,
+                    onOrderClick = onOrderClick,
+                    viewModel = viewModel
+                )
+            } else {
                 LoginLayoutPlaceholder(onButtonClick = onLoginClick)
             }
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun SellListScreen(
-    uiState: SellListUiState
+    uiState: SellListUiState,
+    onProductClick: (Int) -> Unit,
+    onOrderClick: (Int) -> Unit,
+    viewModel: SellListViewModel
 ) {
-    var selectedIndex by remember { mutableStateOf(1) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Daftar Jual Saya",
-            style = MaterialTheme.typography.h5.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        LazyRow(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .fillMaxWidth()
-                .height(44.dp)
-        ) {
-            val listingsCategories: List<Category> =
-                listOf(Category(1, "All Listings"), Category(2, "On Bid"), Category(3, "Sold"))
-            items(
-                items = listingsCategories,
-                key = { it.id }
+        Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
+            val pages = remember {
+                listOf(R.string.product, R.string.order)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             ) {
-                Button(
-                    onClick = {
-                        selectedIndex = it.id
-                    },
-                    modifier = Modifier
-                        .height(44.dp)
-                        .padding(end = 16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = if (it.id != selectedIndex) ButtonDefaults.buttonColors(
-                        contentColor = Color.Black,
-                        backgroundColor = colorResource(id = R.color.dark_blue_01)
-                    ) else ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
-                        backgroundColor = colorResource(id = R.color.dark_blue_04)
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null,
-                        tint = if (it.id != selectedIndex) Color.Black else Color.White,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = it.name, style = MaterialTheme.typography.button)
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        when(selectedIndex){
-            1 -> {
-                uiState.product?.let { ListProduct(products = it, onProductClick = { }) }
-            }
-            2 -> {
-                ListBidProduct()
-            }
-            3 -> {
+                val coroutineScope = rememberCoroutineScope()
+                // remember a PagerState
+                val pagerState = rememberPagerState()
 
+                TabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.Indicator(
+                            modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                        )
+                    },
+                    backgroundColor = MaterialTheme.colors.background,
+                    contentColor = MaterialTheme.colors.primary
+                ) {
+                    pages.forEachIndexed { index, title ->
+                        Tab(
+                            text = { Text(text = stringResource(title)) },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            }
+                        )
+                    }
+                }
+                HorizontalPager(
+                    count = pages.size,
+                    state = pagerState,
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) { page ->
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        when (page) {
+                            0 -> {
+                                uiState.product?.let {
+                                    ListProduct(
+                                        products = it,
+                                        onProductClick = onProductClick
+                                    )
+                                }
+                            }
+                            1 -> {
+
+                                OrderFilterDropDown(onFilterSelected = { viewModel.setFilter(it) })
+                                Spacer(modifier = Modifier.height(16.dp))
+                                uiState.order?.let {
+                                    ListBidProduct(
+                                        orders = it,
+                                        onOrderClick = onOrderClick
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ListBidProduct(){
+fun ListBidProduct(
+    orders: List<Order>,
+    onOrderClick: (Int) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
-        val listDummyOrder : List<GetOrderDto> = listOf(dummyOrder)
         items(
-            items = listDummyOrder,
-            key = {it.id}
+            items = orders,
+            key = { it.id },
         ) {
-            Column {
-                if (it.id != listDummyOrder[0].id) {
+            Column(modifier = Modifier.clickable { onOrderClick(it.id) }) {
+                if (it.id != orders[0].id) {
                     Divider(color = Color.Gray, thickness = 1.dp)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     // image product
                     val painterProductImage = rememberAsyncImagePainter(
-                        model = dummyOrder.product.imageUrl
+                        model = it.product.imageUrl
                     )
                     Image(
                         painter = painterProductImage,
@@ -231,7 +258,7 @@ fun ListBidProduct(){
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = dummyOrder.product.name,
+                            text = it.product.name,
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold
                             )
@@ -239,7 +266,7 @@ fun ListBidProduct(){
                         // product normal price
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Rp ${dummyOrder.product.basePrice}",
+                            text = "Rp ${it.product.price}",
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.LineThrough
@@ -248,7 +275,7 @@ fun ListBidProduct(){
                         // buyer bid for selected product
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Ditawar Rp ${dummyOrder.price}",
+                            text = "Ditawar Rp ${it.bidPrice}",
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold
                             )
@@ -259,4 +286,52 @@ fun ListBidProduct(){
             }
         }
     }
+}
+
+@Composable
+fun OrderFilterDropDown(
+    onFilterSelected: (OrderFilter) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var filterText by remember { mutableStateOf(getDropdownTitle(OrderFilter.ALlOrders)) }
+    val filter: List<OrderFilter> = listOf(
+        OrderFilter.ALlOrders,
+        OrderFilter.AcceptedOrders,
+        OrderFilter.DeclinedOrders,
+        OrderFilter.PendingOrders
+    )
+    Column {
+        Text(
+            text = stringResource(id = filterText),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .clickable { expanded = true },
+            style = MaterialTheme.typography.body1.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            filter.forEach {
+                DropdownMenuItem(onClick = {
+                    onFilterSelected(it)
+                    expanded = false
+                    filterText = getDropdownTitle(it)
+
+                }) {
+                    Text(text = stringResource(id = getDropdownTitle(it)))
+                }
+            }
+        }
+    }
+}
+
+private fun getDropdownTitle(selectedFilter: OrderFilter) = when (selectedFilter) {
+    OrderFilter.ALlOrders -> R.string.all_orders
+    OrderFilter.AcceptedOrders -> R.string.accepted_orders
+    OrderFilter.DeclinedOrders -> R.string.declined_orders
+    OrderFilter.PendingOrders -> R.string.pending_orders
 }

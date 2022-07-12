@@ -58,6 +58,10 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getOrderByIdAsSeller(id: Int): Order {
+        return remoteDataSource.getOrderByIdAsSeller(id).mapToDomain()
+    }
+
     override suspend fun acceptOrder(id: Int): RespondOrder =
         remoteDataSource.acceptOrder(id).mapToDomainModel()
 

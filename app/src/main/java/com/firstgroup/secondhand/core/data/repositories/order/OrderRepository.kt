@@ -31,6 +31,8 @@ interface OrderRepository {
 
     suspend fun getPendingOrdersAsSeller(): List<Order>
 
+    suspend fun getOrderByIdAsSeller(id: Int): Order
+
     suspend fun acceptOrder(id: Int): RespondOrder
 
     suspend fun rejectOrder(id: Int): RespondOrder

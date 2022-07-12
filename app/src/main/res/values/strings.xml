@@ -107,5 +107,11 @@
     <string name="invalid_password">Please input your password correctly</string>
     <string name="change_password_success">Change Password Success</string>
     <string name="confirm_password_placeholder">Confirm your password</string>
+    <string name="all_orders">All Orders</string>
+    <string name="accepted_orders">Accepted Orders</string>
+    <string name="declined_orders">Declined Orders</string>
+    <string name="pending_orders">Pending Orders</string>
+    <string name="product">Product</string>
+    <string name="order">Order</string>
 
 </resources>
