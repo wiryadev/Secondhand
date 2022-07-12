@@ -34,13 +34,17 @@ data class ProductDto(
 ) {
     fun mapToDomainModel() = Product(
         id = id,
-        name = name!!,
+        name = name.orEmpty(),
         description = description,
-        price = basePrice!!,
-        imageUrl = imageUrl!!,
+        price = basePrice ?: 0,
+        imageUrl = imageUrl.orEmpty(),
         location = location,
         userId = userId,
-        category = categories[0].name,
+        category = try {
+            categories[0].name
+        } catch (e: Exception) {
+            "No Categories!"
+        }
     )
 }
 
