@@ -26,6 +26,7 @@ import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Order
+import com.firstgroup.secondhand.domain.order.OrderFilter
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
@@ -57,15 +58,18 @@ class SellListFragment : Fragment() {
                         uiState = uiState,
                         onLoginClick = ::goToLoginScreen,
                         viewModel = viewModel,
-                        onUserLoggedIn = viewModel::getUser,
                         onProductClick = {
                             findNavController().navigate(
-                                SellListFragmentDirections.actionMainNavigationSellListToDetailFragment(it)
+                                SellListFragmentDirections.actionMainNavigationSellListToDetailFragment(
+                                    it
+                                )
                             )
                         },
                         onOrderClick = {
                             findNavController().navigate(
-                                SellListFragmentDirections.actionMainNavigationSellListToDetailBidderFragment(it)
+                                SellListFragmentDirections.actionMainNavigationSellListToDetailBidderFragment(
+                                    it
+                                )
                             )
                         }
                     )
@@ -80,7 +84,7 @@ class SellListFragment : Fragment() {
         viewModel.getSession()
     }
 
-    private fun goToLoginScreen(){
+    private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
 }
@@ -89,15 +93,15 @@ class SellListFragment : Fragment() {
 fun SellListScreen(
     uiState: SellListUiState,
     onLoginClick: () -> Unit,
-    onUserLoggedIn: () -> Unit,
     onProductClick: (Int) -> Unit,
     onOrderClick: (Int) -> Unit,
     viewModel: SellListViewModel
-){
+) {
     LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
             if (uiState.loginState.isLoggedIn) {
-                onUserLoggedIn.invoke()
+                viewModel.getProductAsSeller()
+                viewModel.getOrderAsSeller(viewModel.filter.value)
             }
         }
     }
@@ -106,21 +110,14 @@ fun SellListScreen(
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
-            if (uiState.loginState.isLoggedIn){
-                if (uiState.recentUser != null) {
-                    viewModel.getProductAsSeller()
-                    viewModel.getOrderAsSeller()
-                    SellListScreen(
-                        uiState = uiState,
-                        onProductClick = onProductClick,
-                        onOrderClick = onOrderClick
-                    )
-                }
-                else {
-                    GenericLoadingScreen()
-                }
-            }
-            else {
+            if (uiState.loginState.isLoggedIn) {
+                SellListScreen(
+                    uiState = uiState,
+                    onProductClick = onProductClick,
+                    onOrderClick = onOrderClick,
+                    viewModel = viewModel
+                )
+            } else {
                 LoginLayoutPlaceholder(onButtonClick = onLoginClick)
             }
         }
@@ -133,26 +130,14 @@ fun SellListScreen(
     uiState: SellListUiState,
     onProductClick: (Int) -> Unit,
     onOrderClick: (Int) -> Unit,
+    viewModel: SellListViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar (
-                    title = {
-                        Text(
-                        text = "Daftar Jual Saya",
-                        style = MaterialTheme.typography.h5.copy(
-                            fontWeight = FontWeight.Bold
-                        ))
-                    }
-                )
-            },
-            modifier = Modifier.fillMaxSize()
-        ) { padding ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
             val pages = remember {
-                listOf("Produk", "Pesanan", "Ditawar", "Terjual")
+                listOf(R.string.product, R.string.order)
             }
             Column(
                 modifier = Modifier
@@ -163,17 +148,19 @@ fun SellListScreen(
                 // remember a PagerState
                 val pagerState = rememberPagerState()
 
-                ScrollableTabRow(
+                TabRow(
                     selectedTabIndex = pagerState.currentPage,
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
-                            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                            modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
                         )
-                    }
+                    },
+                    backgroundColor = MaterialTheme.colors.background,
+                    contentColor = MaterialTheme.colors.primary
                 ) {
                     pages.forEachIndexed { index, title ->
                         Tab(
-                            text = { Text(text = title)},
+                            text = { Text(text = stringResource(title)) },
                             selected = pagerState.currentPage == index,
                             onClick = {
                                 coroutineScope.launch {
@@ -190,7 +177,7 @@ fun SellListScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) { page ->
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Column(modifier = Modifier.fillMaxSize()) {
                         when (page) {
                             0 -> {
                                 uiState.product?.let {
@@ -201,6 +188,9 @@ fun SellListScreen(
                                 }
                             }
                             1 -> {
+
+                                OrderFilterDropDown(onFilterSelected = { viewModel.setFilter(it) })
+                                Spacer(modifier = Modifier.height(16.dp))
                                 uiState.order?.let {
                                     ListBidProduct(
                                         orders = it,
@@ -220,7 +210,7 @@ fun SellListScreen(
 fun ListBidProduct(
     orders: List<Order>,
     onOrderClick: (Int) -> Unit
-){
+) {
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -228,7 +218,7 @@ fun ListBidProduct(
     ) {
         items(
             items = orders,
-            key = {it.id},
+            key = { it.id },
         ) {
             Column(modifier = Modifier.clickable { onOrderClick(it.id) }) {
                 if (it.id != orders[0].id) {
@@ -296,4 +286,52 @@ fun ListBidProduct(
             }
         }
     }
+}
+
+@Composable
+fun OrderFilterDropDown(
+    onFilterSelected: (OrderFilter) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var filterText by remember { mutableStateOf(getDropdownTitle(OrderFilter.ALlOrders)) }
+    val filter: List<OrderFilter> = listOf(
+        OrderFilter.ALlOrders,
+        OrderFilter.AcceptedOrders,
+        OrderFilter.DeclinedOrders,
+        OrderFilter.PendingOrders
+    )
+    Column {
+        Text(
+            text = stringResource(id = filterText),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .clickable { expanded = true },
+            style = MaterialTheme.typography.body1.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            filter.forEach {
+                DropdownMenuItem(onClick = {
+                    onFilterSelected(it)
+                    expanded = false
+                    filterText = getDropdownTitle(it)
+
+                }) {
+                    Text(text = stringResource(id = getDropdownTitle(it)))
+                }
+            }
+        }
+    }
+}
+
+private fun getDropdownTitle(selectedFilter: OrderFilter) = when (selectedFilter) {
+    OrderFilter.ALlOrders -> R.string.all_orders
+    OrderFilter.AcceptedOrders -> R.string.accepted_orders
+    OrderFilter.DeclinedOrders -> R.string.declined_orders
+    OrderFilter.PendingOrders -> R.string.pending_orders
 }
