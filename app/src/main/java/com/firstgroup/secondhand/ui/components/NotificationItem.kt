@@ -74,24 +74,15 @@ fun NotificationItem(
             // product detail : name, price, bid
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    var listSubtitle: String? = null
-                    when (notification.status) {
-                        "create" -> {
-                            listSubtitle = "Product published successfully!"
-                        }
-                        "bid" -> {
-                            listSubtitle = "Bid offer sent!"
-                        }
-                        "declined" -> {
-                            listSubtitle =
-                                "${notification.sellerName} is declined your bid offer :("
-                        }
-                        "accepted" -> {
-                            listSubtitle = "${notification.sellerName} is accepting your bid, yeay!"
-                        }
+                    val listSubtitle = when (notification.status) {
+                        "create" ->  "Product published successfully!"
+                        "bid" ->  "Bid offer sent!"
+                        "declined" -> "${notification.sellerName} is declined your bid offer :("
+                        "accepted" -> "${notification.sellerName} is accepting your bid, yeay!"
+                        else -> "No title"
                     }
                     Text(
-                        text = listSubtitle ?: "No Title",
+                        text = listSubtitle,
                         modifier = Modifier.fillMaxWidth(0.7f),
                         style = MaterialTheme.typography.body2.copy(
                             color = Color.Gray

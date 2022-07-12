@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -65,13 +66,21 @@ fun NotificationScreen(
     uiState: NotificationUiState,
     onLoginClick: () -> Unit
 ) {
+    LaunchedEffect(key1 = uiState.loginState){
+        if (uiState.loginState is LoginState.Loaded) {
+            if (uiState.loginState.isLoggedIn) {
+                viewModel.getNotification()
+            }
+        }
+
+    }
+
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                viewModel.getNotification()
                 if (uiState.notifications != null) {
                     NotificationScreen(uiState = uiState)
                 } else {
