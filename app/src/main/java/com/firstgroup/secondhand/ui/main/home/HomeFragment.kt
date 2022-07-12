@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
@@ -62,11 +63,16 @@ class HomeFragment : Fragment() {
                             findNavController().navigate(
                                 HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
                             )
-                        }
+                        },
+                        onSearchClick = ::navigateToSearchPage
                     )
                 }
             }
         }
+    }
+
+    private fun navigateToSearchPage() {
+        findNavController().navigate(R.id.action_main_navigation_home_to_searchFragment)
     }
 }
 
@@ -76,6 +82,7 @@ fun HomeScreen(
     products: LazyPagingItems<Product>,
     onCategorySelected: (Category) -> Unit,
     onProductClick: (Int) -> Unit,
+    onSearchClick: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
     Column {
@@ -123,9 +130,7 @@ fun HomeScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_search),
                                 contentDescription = null,
-                                modifier = Modifier.clickable(onClick = {
-
-                                })
+                                modifier = Modifier.clickable(onClick = onSearchClick)
                             )
                         }
                     },
@@ -205,7 +210,6 @@ fun ListCategory(
     selectedCategory: Category,
     onCategorySelected: (Category) -> Unit,
 ) {
-//    var selectedIndex by remember { mutableStateOf(-1) }
     LazyRow(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -244,14 +248,6 @@ fun ListCategory(
         }
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun HomePreview() {
-//    MdcTheme {
-//        HomeScreen()
-//    }
-//}
 
 val dummyCategories: List<Category> = List(10) {
     Category(it, "elektronik")
