@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_main_navigation_home_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_main_navigation_home_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/main_navigation_notification"
@@ -66,6 +69,9 @@
         <argument
             android:name="id"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_detailFragment_to_main_navigation_home"
+            app:destination="@id/main_navigation_home" />
     </fragment>
     <fragment
         android:id="@+id/changePasswordFragment"
@@ -82,6 +88,14 @@
         <argument
             android:name="id"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.firstgroup.secondhand.ui.main.home.search.SearchFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_main_navigation_home"
+            app:destination="@id/main_navigation_home" />
     </fragment>
 
 </navigation>
