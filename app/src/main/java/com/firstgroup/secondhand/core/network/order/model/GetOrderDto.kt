@@ -49,7 +49,7 @@ data class GetOrderDto(
             @Json(name = "address")
             val address: String,
             @Json(name = "city")
-            val city: String,
+            val city: String?,
             @Json(name = "email")
             val email: String,
             @Json(name = "full_name")
@@ -66,7 +66,7 @@ data class GetOrderDto(
         @Json(name = "address")
         val address: String,
         @Json(name = "city")
-        val city: Any,
+        val city: String?,
         @Json(name = "email")
         val email: String,
         @Json(name = "full_name")
@@ -92,7 +92,7 @@ data class GetOrderDto(
                 id = product.user.id,
                 name = product.user.fullName,
                 imageUrl = "",
-                city = product.user.city
+                city = product.user.city ?: "No Location"
             )
         )
     )
