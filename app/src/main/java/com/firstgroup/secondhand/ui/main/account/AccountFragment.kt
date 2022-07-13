@@ -59,11 +59,12 @@ class AccountFragment : Fragment() {
                 MdcTheme {
                     AccountScreen(
                         uiState = uiState,
-                        onEditAccountClick = ::goToEditAccountScreen,
-                        onAccountSettingClick = ::goToAccountSettingScreen,
+                        onEditAccountClick = ::goToEditAccountFragment,
+                        onAccountSettingClick = ::goToAccountSettingFragment,
                         onLoginClick = ::goToLoginScreen,
                         onUserLoggedIn = viewModel::getUser,
                         onLogoutClick = viewModel::logout,
+                        onMyOrderClick = ::goToMyOrderAsBuyerFragment
                     )
                 }
             }
@@ -75,15 +76,21 @@ class AccountFragment : Fragment() {
         viewModel.getSession()
     }
 
-    private fun goToEditAccountScreen(user: User) {
+    private fun goToEditAccountFragment(user: User) {
         findNavController().navigate(
             AccountFragmentDirections.actionMainNavigationAccountToEditAccountFragment(user)
         )
     }
 
-    private fun goToAccountSettingScreen(){
+    private fun goToAccountSettingFragment(){
         findNavController().navigate(
             AccountFragmentDirections.actionMainNavigationAccountToChangePasswordFragment()
+        )
+    }
+
+    private fun goToMyOrderAsBuyerFragment(){
+        findNavController().navigate(
+            AccountFragmentDirections.actionMainNavigationAccountToBuyerOrderFragment()
         )
     }
 
@@ -100,7 +107,8 @@ fun AccountScreen(
     onAccountSettingClick: () -> Unit,
     onLoginClick: () -> Unit,
     onUserLoggedIn: () -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onMyOrderClick: () -> Unit
 ) {
     LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
@@ -121,7 +129,8 @@ fun AccountScreen(
                         user = uiState.recentUser,
                         onEditAccountClick = onEditAccountClick,
                         onAccountSettingClick = onAccountSettingClick,
-                        onLogoutClick = onLogoutClick
+                        onLogoutClick = onLogoutClick,
+                        onMyOrderClick = onMyOrderClick
                     )
                 } else {
                     GenericLoadingScreen()
@@ -140,7 +149,8 @@ fun AccountScreen(
     user: User,
     onEditAccountClick: (User) -> Unit,
     onAccountSettingClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onMyOrderClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -245,6 +255,34 @@ fun AccountScreen(
             )
             Spacer(modifier = Modifier.height(18.dp))
 
+            // Account Get Order as Buyer
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_shopping_cart),
+                    contentDescription = stringResource(R.string.my_order),
+                    tint = MaterialTheme.colors.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = stringResource(R.string.my_order),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable(onClick = onMyOrderClick)
+                        .height(24.dp)
+                        .padding(vertical = 4.dp),
+                )
+            }
+
+            // Third divider
+            Spacer(modifier = Modifier.height(18.dp))
+            Divider(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colors.onSecondary,
+                thickness = Dp.Hairline
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+
             // Account Log out
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(
@@ -264,7 +302,7 @@ fun AccountScreen(
                 )
             }
 
-            // Third divider
+            // Fourth divider
             Spacer(modifier = Modifier.height(18.dp))
             Divider(
                 modifier = Modifier.fillMaxWidth(),
@@ -282,12 +320,5 @@ fun AccountScreen(
             )
         }
     }
-}
 
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun AccountScreenPreview() {
-//    MdcTheme {
-//        AccountScreen { }
-//    }
-//}
+}
