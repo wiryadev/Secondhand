@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.User
-import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.auth.GetUserUseCase
 import com.firstgroup.secondhand.domain.product.AddNewProductUseCase
@@ -127,7 +126,7 @@ class SellViewModel @Inject constructor(
         }
     }
 
-    fun postProduct(product: ProductRequest?) {
+    fun postProduct(product: AddNewProductUseCase.Param?) {
         _uiState.update {
             it.copy(
                 postProductState = PostProductState.Loading
@@ -191,7 +190,7 @@ class SellViewModel @Inject constructor(
                 }
             }
             else -> {
-                val productData = ProductRequest(
+                val productData = AddNewProductUseCase.Param(
                     name = name,
                     description = description,
                     basePrice = basePrice.toInt(),
@@ -201,9 +200,7 @@ class SellViewModel @Inject constructor(
                 )
 
                 _uiState.update {
-                    it.copy(
-                        productData = productData
-                    )
+                    it.copy(productData = productData)
                 }
             }
         }
@@ -227,7 +224,7 @@ class SellViewModel @Inject constructor(
 }
 
 data class SellUiState(
-    val productData: ProductRequest? = null,
+    val productData: AddNewProductUseCase.Param? = null,
     val image: File? = null,
     val loginState: LoginState = LoginState.Idle,
     val recentUser: User? = null,
