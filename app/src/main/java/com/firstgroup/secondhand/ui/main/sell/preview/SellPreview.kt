@@ -22,13 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.core.network.product.model.ProductRequest
+import com.firstgroup.secondhand.domain.product.AddNewProductUseCase
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.main.sell.SellUiState
 
 @Composable
 fun SellPreview(
-    onPublishPreviewButtonClicked: (ProductRequest?) -> Unit,
+    onPublishPreviewButtonClicked: (AddNewProductUseCase.Param?) -> Unit,
     onPreviewBackButtonClicked: () -> Unit,
     onSystemBackPressed: () -> Unit,
     uiState: SellUiState

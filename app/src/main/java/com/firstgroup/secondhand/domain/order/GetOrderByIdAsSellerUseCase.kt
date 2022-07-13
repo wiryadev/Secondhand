@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetOrderByIdAsSellerUseCase @Inject constructor(
     private val orderRepository: OrderRepository,
     @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-): UseCase<Int, Order>(ioDispatcher){
+) : UseCase<Int, Order>(ioDispatcher) {
 
     override suspend fun execute(param: Int): Order {
         return orderRepository.getOrderByIdAsSeller(param)
