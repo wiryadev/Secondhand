@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_main_navigation_account_to_changePasswordFragment"
             app:destination="@id/changePasswordFragment" />
+        <action
+            android:id="@+id/action_main_navigation_account_to_buyerOrderFragment"
+            app:destination="@id/buyerOrderFragment" />
     </fragment>
 
     <fragment
@@ -96,6 +99,14 @@
         <action
             android:id="@+id/action_searchFragment_to_main_navigation_home"
             app:destination="@id/main_navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/buyerOrderFragment"
+        android:name="com.firstgroup.secondhand.ui.main.account.buyer_order.BuyerOrderFragment"
+        android:label="BuyerOrderFragment" >
+        <action
+            android:id="@+id/action_buyerOrderFragment_to_main_navigation_account"
+            app:destination="@id/main_navigation_account" />
     </fragment>
 
 </navigation>
