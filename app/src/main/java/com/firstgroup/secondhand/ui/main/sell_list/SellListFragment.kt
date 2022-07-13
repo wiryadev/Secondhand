@@ -181,7 +181,6 @@ fun SellListScreen(
                                 }
                             }
                             1 -> {
-
                                 OrderFilterDropDown(onFilterSelected = { viewModel.setFilter(it) })
                                 Spacer(modifier = Modifier.height(16.dp))
                                 uiState.order?.let {
