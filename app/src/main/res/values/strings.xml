@@ -113,5 +113,6 @@
     <string name="pending_orders">Pending Orders</string>
     <string name="product">Product</string>
     <string name="order">Order</string>
+    <string name="my_order">My Order</string>
 
 </resources>
