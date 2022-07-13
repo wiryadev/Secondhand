@@ -24,10 +24,11 @@ class OrderRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateOrder(
-        updateOrderRequest: UpdateOrderRequest
+        orderId: Int,
+        newBidPrice: Int,
     ): CreateOrderDto = service.updateOrder(
-        id = updateOrderRequest.orderId,
-        bidPrice = updateOrderRequest.bidPrice,
+        id = orderId,
+        bidPrice = newBidPrice,
     )
 
     override suspend fun deleteOrderAsBuyer(id: Int): DeleteOrderDto =
