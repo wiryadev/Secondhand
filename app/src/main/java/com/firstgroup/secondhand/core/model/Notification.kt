@@ -10,6 +10,7 @@ data class Notification(
     val sellerName: String,
     val imageUrl: String,
     val date: String,
+    val dateCreated: String
 ) {
     data class Product(
         val id: Int,
