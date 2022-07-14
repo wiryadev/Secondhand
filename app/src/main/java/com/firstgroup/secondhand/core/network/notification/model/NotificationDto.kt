@@ -98,6 +98,7 @@ data class NotificationDto(
         sellerName = sellerName.orEmpty(),
         imageUrl = imageUrl.orEmpty(),
         date = transactionDate.orEmpty(),
+        dateCreated = createdAt
     )
 
 }
