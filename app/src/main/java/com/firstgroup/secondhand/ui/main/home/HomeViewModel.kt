@@ -6,7 +6,10 @@ import androidx.paging.cachedIn
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.domain.product.*
+import com.firstgroup.secondhand.domain.product.GetCategoriesUseCase
+import com.firstgroup.secondhand.domain.product.GetProductsAsBuyerUseCase
+import com.firstgroup.secondhand.domain.product.GetProductsByCategoryUseCase
+import com.firstgroup.secondhand.domain.product.RefreshCategoriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val refreshProductsUseCase: RefreshProductsUseCase,
     private val getProductsAsBuyerUseCase: GetProductsAsBuyerUseCase,
     private val refreshCategoriesUseCase: RefreshCategoriesUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
@@ -35,15 +37,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            refreshProductLocalCache()
             getCategories()
-        }
-    }
-
-    private suspend fun refreshProductLocalCache() {
-        refreshProductsUseCase(Unit)
-        _uiState.update {
-            it.copy(allProductState = AllProductsUiState.Loaded)
         }
     }
 
@@ -107,11 +101,6 @@ class HomeViewModel @Inject constructor(
 
 }
 
-sealed interface AllProductsUiState {
-    object Loaded : AllProductsUiState
-    object Loading : AllProductsUiState
-}
-
 sealed interface ProductByCategoryUiState {
     data class Success(val products: List<Product>) : ProductByCategoryUiState
     data class Error(val message: String?) : ProductByCategoryUiState
@@ -125,7 +114,6 @@ sealed interface CategoriesUiState {
 }
 
 data class HomeUiState(
-    val allProductState: AllProductsUiState = AllProductsUiState.Loading,
     val productsByCategoryState: ProductByCategoryUiState = ProductByCategoryUiState.Loading,
     val categoryState: CategoriesUiState = CategoriesUiState.Loading,
     val selectedCategory: Category,

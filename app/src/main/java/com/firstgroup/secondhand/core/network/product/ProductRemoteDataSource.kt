@@ -7,7 +7,10 @@ interface ProductRemoteDataSource {
     /**
      * Buyer
      */
-    suspend fun getProductsAsBuyer(): List<ProductDto>
+    suspend fun getProductsAsBuyer(
+        page: Int,
+        size: Int,
+    ): List<ProductDto>
 
     suspend fun getProductsByCategory(categoryId: Int): List<ProductDto>
 

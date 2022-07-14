@@ -188,17 +188,18 @@ fun HomeScreen(
                 }
             }
         } else {
-            when (uiState.allProductState) {
-                AllProductsUiState.Loading -> {
-                    ListProductLoadingScreen()
-                }
-                AllProductsUiState.Loaded -> {
-                    ListProduct(
-                        products = products,
-                        onProductClick = onProductClick,
-                    )
-                }
-            }
+            ListProduct(
+                products = products,
+                onProductClick = onProductClick,
+            )
+//            when (uiState.allProductState) {
+//                AllProductsUiState.Loading -> {
+//                    ListProductLoadingScreen()
+//                }
+//                AllProductsUiState.Loaded -> {
+//
+//                }
+//            }
         }
     }
 }
