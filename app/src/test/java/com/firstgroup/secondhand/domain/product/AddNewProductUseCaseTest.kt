@@ -30,7 +30,7 @@ class AddNewProductUseCaseTest {
     }
 
     @Test
-    fun changePassword_whenInputValid_thenReturnSuccessWithData() = runTest {
+    fun addNewProduct_whenInputValid_thenReturnSuccessWithData() = runTest {
         val response = ProductDummyDataProvider.provideValidProduct()
 
         val param = ProductDummyDataProvider.provideValidProductParam()

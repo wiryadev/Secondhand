@@ -8,7 +8,10 @@ interface OrderRemoteDataSource {
      * Buyer
      */
 
-    suspend fun createOrder(orderRequest: OrderRequest): CreateOrderDto
+    suspend fun createOrder(
+        productId: Int,
+        bidPrice: Int,
+    ): CreateOrderDto
 
     suspend fun getOrdersAsBuyer(): List<GetOrderDto>
 
