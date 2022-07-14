@@ -1,49 +1,54 @@
 package com.firstgroup.secondhand.ui.components
 
-import android.text.format.DateFormat.format
-import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Notification
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 @Composable
 fun NotificationList(
-    notifications: List<Notification>
+    notifications: List<Notification>,
+    onNotificationClick: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
     ) {
-        itemsIndexed(
-            items = notifications
-        ) { index, notification ->
-            NotificationItem(notification = notification)
-            if (index < notifications.lastIndex) {
-                Divider(
-                    color = MaterialTheme.colors.onSecondary,
-                    thickness = 1.dp
-                )
-            }
+        items(
+            items = notifications,
+            key = { notificationItem -> notificationItem.id }
+        ) { notification ->
+            NotificationItem(
+                notification = notification
+            ) { onNotificationClick(notification.id) }
+            Divider(
+                color = MaterialTheme.colors.onSecondary,
+                thickness = 1.dp
+            )
         }
     }
 }
@@ -51,8 +56,9 @@ fun NotificationList(
 @Composable
 fun NotificationItem(
     notification: Notification,
+    onNotificationClick: (Int) -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.clickable { onNotificationClick(notification.id) }) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             // image product
@@ -60,6 +66,14 @@ fun NotificationItem(
                 model = notification.imageUrl
             )
             val isImageLoading = painterProductImage.state is AsyncImagePainter.State.Loading
+            if (!notification.read) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_alert),
+                    contentDescription = "notification marked as unread",
+                    tint = MaterialTheme.colors.error
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             Image(
                 painter = painterProductImage,
                 contentDescription = null,
@@ -75,8 +89,8 @@ fun NotificationItem(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     val listSubtitle = when (notification.status) {
-                        "create" ->  "Product published successfully!"
-                        "bid" ->  "Bid offer sent!"
+                        "create" -> "Product published successfully!"
+                        "bid" -> "Bid offer sent!"
                         "declined" -> "${notification.sellerName} is declined your bid offer :("
                         "accepted" -> "${notification.sellerName} is accepting your bid, yeay!"
                         else -> "No title"
@@ -90,9 +104,23 @@ fun NotificationItem(
                     )
                     if (notification.date != "") {
                         val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
-                        val convertedDate = OffsetDateTime.parse(notification.date).format(transactionDateFormat)
+                        val convertedDate =
+                            OffsetDateTime.parse(notification.date).format(transactionDateFormat)
                         Text(
-                            text = convertedDate,
+                            text = "Ordered on : $convertedDate",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.End,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color.Gray
+                            )
+                        )
+                    } else {
+                        val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
+                        val convertedDateCreate =
+                            OffsetDateTime.parse(notification.dateCreated)
+                                .format(transactionDateFormat)
+                        Text(
+                            text = "Published on : $convertedDateCreate",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.End,
                             style = MaterialTheme.typography.body2.copy(
@@ -127,6 +155,150 @@ fun NotificationItem(
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+    }
+}
+
+@Composable
+fun NotificationDetails(
+    notificationDetails: Notification,
+    resetStateOnDialogDismiss: (Boolean) -> Unit
+) {
+    var dialogState by remember { mutableStateOf(true) }
+    if (dialogState) {
+        Dialog(
+            onDismissRequest = {
+                dialogState = false
+                resetStateOnDialogDismiss(!dialogState)
+            },
+        ) {
+            Column(
+                modifier = Modifier.size(320.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Card(
+                    modifier = Modifier
+                        .widthIn(min = 64.dp, max = 160.dp)
+                        .heightIn(min = 48.dp, max = 128.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = 4.dp,
+                ) {
+                    val notificationDetailImage = rememberAsyncImagePainter(
+                        model = notificationDetails.imageUrl
+                    )
+                    val imagePainterLoading =
+                        notificationDetailImage.state is AsyncImagePainter.State.Loading
+                    Image(
+                        painter = notificationDetailImage,
+                        contentDescription = "Product Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp)
+                            .placeholder(
+                                visible = imagePainterLoading,
+                                highlight = PlaceholderHighlight.shimmer()
+                            ),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = 4.dp,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                    ) {
+                        // text product name
+                        Text(
+                            text = "Product : ${notificationDetails.product.name}",
+                            style = MaterialTheme.typography.body1.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                                .padding(
+                                    top = 16.dp,
+                                )
+                        )
+                        // text product seller
+                        val listSubtitle = when (notificationDetails.status) {
+                            "create" -> "Product published successfully!"
+                            "bid" -> "Bid offer sent!"
+                            "declined" -> "${notificationDetails.sellerName} is declined your bid offer :("
+                            "accepted" -> "${notificationDetails.sellerName} is accepting your bid, yeay!"
+                            else -> "No title"
+                        }
+                        Text(
+                            text = listSubtitle,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color.Gray
+                            ),
+                            modifier = Modifier
+                                .padding(
+                                    top = 4.dp,
+                                )
+                        )
+                        // text product original price
+                        Text(
+                            text = "Product Price : Rp ${notificationDetails.product.price}",
+                            style = MaterialTheme.typography.body1.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                                .padding(
+                                    top = 8.dp,
+                                )
+                        )
+                        if (notificationDetails.status != "create") {
+                            // text buyer bid price
+                            Text(
+                                text = "Your offer : Rp ${notificationDetails.bidPrice}",
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                                    .padding(
+                                        top = 8.dp,
+                                        bottom = 16.dp
+                                    )
+                            )
+                            if (notificationDetails.date != "") {
+                                val transactionDateFormat =
+                                    DateTimeFormatter.ofPattern("dd MMM, HH:mm")
+                                val convertedDate =
+                                    OffsetDateTime.parse(notificationDetails.date)
+                                        .format(transactionDateFormat)
+                                Text(
+                                    text = "Ordered on : $convertedDate",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.End,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Gray
+                                    )
+                                )
+                            }
+                        } else {
+                            val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
+                            val convertedDateCreate =
+                                OffsetDateTime.parse(notificationDetails.dateCreated)
+                                    .format(transactionDateFormat)
+                            Text(
+                                text = "Published on : $convertedDateCreate",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Gray
+                                )
+                            )
+                        }
+                    }
+                }
             }
         }
     }
