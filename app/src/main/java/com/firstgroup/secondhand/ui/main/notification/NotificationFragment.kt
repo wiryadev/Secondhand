@@ -20,6 +20,7 @@ import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
 import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
+import com.firstgroup.secondhand.ui.components.NotificationDetails
 import com.firstgroup.secondhand.ui.components.NotificationList
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,12 +65,12 @@ class NotificationFragment : Fragment() {
 fun NotificationScreen(
     viewModel: NotificationViewModel,
     uiState: NotificationUiState,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
 ) {
-    LaunchedEffect(key1 = uiState.loginState){
+    LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
             if (uiState.loginState.isLoggedIn) {
-                viewModel.getNotification()
+                viewModel.getNotifications()
             }
         }
 
@@ -82,7 +83,11 @@ fun NotificationScreen(
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
                 if (uiState.notifications != null) {
-                    NotificationScreen(uiState = uiState)
+                    NotificationScreen(
+                        uiState = uiState,
+                        onNotificationClick = viewModel::getNotificationById,
+                        onDialogDismiss = viewModel::resetNotificationState
+                    )
                 } else {
                     GenericLoadingScreen()
                 }
@@ -95,13 +100,31 @@ fun NotificationScreen(
 
 @Composable
 fun NotificationScreen(
-    uiState: NotificationUiState
+    uiState: NotificationUiState,
+    onNotificationClick: (Int) -> Unit,
+    onDialogDismiss: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         uiState.notifications?.let { notificationData ->
-            NotificationList(notifications = notificationData)
+            NotificationList(
+                notifications = notificationData,
+                onNotificationClick = onNotificationClick
+            )
+        }
+        when(uiState.notification) {
+            is NotificationState.Idle -> {
+
+            }
+            is NotificationState.Error -> {
+
+            }
+            is NotificationState.Success -> {
+                NotificationDetails(
+                    notificationDetails = uiState.notification.notification,
+                    resetStateOnDialogDismiss = onDialogDismiss,)
+            }
         }
     }
 }

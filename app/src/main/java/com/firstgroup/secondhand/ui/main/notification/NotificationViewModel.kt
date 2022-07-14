@@ -8,6 +8,7 @@ import com.firstgroup.secondhand.core.model.Notification
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.notification.GetNotificationByIdUseCase
 import com.firstgroup.secondhand.domain.notification.GetNotificationsUseCase
+import com.firstgroup.secondhand.domain.notification.UpdateNotificationUseCase
 import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class NotificationViewModel @Inject constructor(
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val getNotificationByIdUseCase: GetNotificationByIdUseCase,
-    private val getSessionUseCase: GetSessionUseCase
+    private val getSessionUseCase: GetSessionUseCase,
+    private val updateNotificationUseCase: UpdateNotificationUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<NotificationUiState> = MutableStateFlow(
@@ -28,7 +30,7 @@ class NotificationViewModel @Inject constructor(
     )
     val uiState: StateFlow<NotificationUiState> get() = _uiState
 
-    fun getSession(){
+    fun getSession() {
         viewModelScope.launch {
             getSessionUseCase(Unit).collect { result ->
                 when (result) {
@@ -54,7 +56,7 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
-    fun getNotification() {
+    fun getNotifications() {
         _uiState.update {
             it.copy(isLoading = true)
         }
@@ -81,6 +83,42 @@ class NotificationViewModel @Inject constructor(
             }
         }
     }
+
+    fun getNotificationById(notificationId: Int) {
+        viewModelScope.launch {
+            when (val result = getNotificationByIdUseCase(notificationId)) {
+                is Result.Error -> {
+                    Log.d("notificationbyid", "getNotificationById: ${result.exception?.message}")
+                }
+                is Result.Success -> {
+                    Log.d("notificationbyid", "getNotificationById: ${result.data}")
+                    _uiState.update {
+                        it.copy(
+                            notification = NotificationState.Success(result.data)
+                        )
+                    }
+                }
+            }
+            when (val result = updateNotificationUseCase(notificationId)) {
+                is Result.Error -> {
+                    Log.d("updatenotif", "updateNotificationStatus: ${result.exception?.message}")
+                }
+                is Result.Success -> {
+                    Log.d("updatenotif", "updateNotificationStatus: ${result.data}")
+                }
+            }
+        }
+    }
+
+    fun resetNotificationState(isDialogDismissed: Boolean) {
+        if (isDialogDismissed) {
+            _uiState.update {
+                it.copy(
+                    notification = NotificationState.Idle
+                )
+            }
+        }
+    }
 }
 
 data class NotificationUiState(
@@ -88,10 +126,11 @@ data class NotificationUiState(
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
     val loginState: LoginState = LoginState.Idle,
+    val notification: NotificationState = NotificationState.Idle,
 )
 
-//sealed interface NotificationState{
-//    data class Success(val products: List<Notification>) : NotificationState
-//    data class Error(val message: String) : NotificationState
-//    object Idle : NotificationState
-//}
+sealed interface NotificationState {
+    data class Success(val notification: Notification) : NotificationState
+    data class Error(val message: String) : NotificationState
+    object Idle : NotificationState
+}
