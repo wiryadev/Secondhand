@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.core.network.order.model.OrderRequest
 import com.firstgroup.secondhand.domain.order.CreateOrderUseCase
 import com.firstgroup.secondhand.domain.product.GetProductByIdAsBuyerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +33,7 @@ class OrderViewModel @Inject constructor(
                 orderState = CreateOrderState.Loading
             )
         }
-        val productToBid = OrderRequest(
+        val productToBid = CreateOrderUseCase.Param(
             productId = productId,
             bidPrice = bidPrice
         )

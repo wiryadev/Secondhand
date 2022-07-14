@@ -5,7 +5,6 @@ import com.firstgroup.secondhand.core.model.CreateOrder
 import com.firstgroup.secondhand.core.model.Order
 import com.firstgroup.secondhand.core.model.RespondOrder
 import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
-import com.firstgroup.secondhand.core.network.order.model.OrderRequest
 import javax.inject.Inject
 
 class OrderRepositoryImpl @Inject constructor(
@@ -13,8 +12,12 @@ class OrderRepositoryImpl @Inject constructor(
 ) : OrderRepository {
 
     override suspend fun createOrder(
-        orderRequest: OrderRequest
-    ): CreateOrder = remoteDataSource.createOrder(orderRequest).mapToDomain()
+        productId: Int,
+        bidPrice: Int,
+    ): CreateOrder = remoteDataSource.createOrder(
+        productId = productId,
+        bidPrice = bidPrice,
+    ).mapToDomain()
 
     override suspend fun updateOrder(
         orderId: Int,

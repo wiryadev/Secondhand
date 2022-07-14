@@ -10,9 +10,15 @@ class OrderRemoteDataSourceImpl @Inject constructor(
 ) : OrderRemoteDataSource {
 
     override suspend fun createOrder(
-        orderRequest: OrderRequest
+        productId: Int,
+        bidPrice: Int,
     ): CreateOrderDto = service.createOrder(
-        orderData = RequestUtil.createJsonRequestBody(orderRequest)
+        orderData = RequestUtil.createJsonRequestBody(
+            data = OrderRequest(
+                productId = productId,
+                bidPrice = bidPrice,
+            )
+        )
     )
 
     override suspend fun getOrdersAsBuyer(): List<GetOrderDto> {
