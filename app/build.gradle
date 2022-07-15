@@ -153,4 +153,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
     implementation 'androidx.test.espresso:espresso-idling-resource:3.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+
+    // Logging
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
 }
