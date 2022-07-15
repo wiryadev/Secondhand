@@ -94,10 +94,11 @@ fun SellListScreen(
         if (uiState.loginState is LoginState.Loaded) {
             if (uiState.loginState.isLoggedIn) {
                 viewModel.getProductAsSeller()
-                viewModel.getOrderAsSeller(viewModel.filter.value)
+                viewModel.getOrderAsSeller(uiState.selectedFilter)
             }
         }
     }
+
     when (uiState.loginState) {
         is LoginState.Idle -> {
             GenericLoadingScreen()
@@ -173,20 +174,20 @@ fun SellListScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (page) {
                             0 -> {
-                                uiState.product?.let {
+                                if (uiState.productState is SellerProductState.Success) {
                                     ListProduct(
-                                        products = it,
-                                        onProductClick = onProductClick
+                                        products = uiState.productState.data,
+                                        onProductClick = onProductClick,
                                     )
                                 }
                             }
                             1 -> {
-                                OrderFilterDropDown(onFilterSelected = { viewModel.setFilter(it) })
+                                OrderFilterDropDown(onFilterSelected = viewModel::setFilter)
                                 Spacer(modifier = Modifier.height(16.dp))
-                                uiState.order?.let {
+                                if (uiState.orderState is OrderState.Success) {
                                     ListBidProduct(
-                                        orders = it,
-                                        onOrderClick = onOrderClick
+                                        orders = uiState.orderState.data,
+                                        onOrderClick = onOrderClick,
                                     )
                                 }
                             }
@@ -226,12 +227,14 @@ fun OrderFilterDropDown(
             onDismissRequest = { expanded = false }
         ) {
             filter.forEach {
-                DropdownMenuItem(onClick = {
-                    onFilterSelected(it)
-                    expanded = false
-                    filterText = getDropdownTitle(it)
+                DropdownMenuItem(
+                    onClick = {
+                        onFilterSelected(it)
+                        expanded = false
+                        filterText = getDropdownTitle(it)
 
-                }) {
+                    }
+                ) {
                     Text(text = stringResource(id = getDropdownTitle(it)))
                 }
             }
