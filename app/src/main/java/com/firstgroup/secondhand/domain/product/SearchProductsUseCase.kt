@@ -1,20 +1,21 @@
 package com.firstgroup.secondhand.domain.product
 
-import com.firstgroup.secondhand.core.common.dispatchers.AppDispatcher
-import com.firstgroup.secondhand.core.common.dispatchers.SecondhandDispatchers.IO
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.firstgroup.secondhand.core.data.repositories.product.ProductRepository
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.domain.UseCase
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SearchProductsUseCase @Inject constructor(
     private val productRepository: ProductRepository,
-    @AppDispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-) : UseCase<String, List<Product>>(ioDispatcher) {
+)  {
 
-    override suspend fun execute(param: String): List<Product> {
-        return productRepository.searchProducts(param)
+    operator fun invoke(param: String): Flow<PagingData<Product>> {
+        return productRepository.searchProducts(param).map { pagingData ->
+            pagingData.map { it.mapToDomainModel() }
+        }
     }
 
 }

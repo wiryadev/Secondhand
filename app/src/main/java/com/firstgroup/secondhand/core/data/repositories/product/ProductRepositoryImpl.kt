@@ -11,6 +11,7 @@ import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import com.firstgroup.secondhand.core.network.product.model.filterProductPolicy
 import kotlinx.coroutines.flow.Flow
@@ -43,21 +44,18 @@ class ProductRepositoryImpl @Inject constructor(
             .filter(::filterProductPolicy)
             .map { it.mapToDomainModel() }
 
-    override suspend fun searchProducts(query: String): List<Product> =
-        remoteDataSource.searchProducts(query)
-            .filter(::filterProductPolicy)
-            .map { it.mapToDomainModel() }
+    override fun searchProducts(query: String): Flow<PagingData<ProductDto>> = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false,
+        ),
+        pagingSourceFactory = {
+            SearchProductPagingSource(query, remoteDataSource)
+        }
+    ).flow
 
     override suspend fun getProductByIdAsBuyer(id: Int): Product =
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
-
-//    override suspend fun loadBuyerProducts() {
-//        try {
-//            refreshProductCache()
-//        } catch (e: Exception) {
-//            // do nothing
-//        }
-//    }
 
     override suspend fun deleteCachedProducts() {
         localDataSource.deleteCachedProducts()
@@ -129,6 +127,9 @@ class ProductRepositoryImpl @Inject constructor(
         it.mapToDomainModel()
     }
 
-}
+    companion object {
+        const val STARTING_PAGE_INDEX = 1
+        const val NETWORK_PAGE_SIZE = 15
+    }
 
-private const val NETWORK_PAGE_SIZE = 30
+}

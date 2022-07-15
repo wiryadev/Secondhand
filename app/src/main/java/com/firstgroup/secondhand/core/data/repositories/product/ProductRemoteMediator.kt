@@ -6,6 +6,7 @@ import androidx.paging.LoadType
 import androidx.paging.LoadType.*
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.firstgroup.secondhand.core.data.repositories.product.ProductRepositoryImpl.Companion.STARTING_PAGE_INDEX
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.database.product.entity.RemoteKeys
@@ -126,5 +127,3 @@ class ProductRemoteMediator(
         }
     }
 }
-
-private const val STARTING_PAGE_INDEX = 1

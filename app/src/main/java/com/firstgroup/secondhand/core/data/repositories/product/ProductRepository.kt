@@ -5,6 +5,7 @@ import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import kotlinx.coroutines.flow.Flow
 
@@ -20,7 +21,7 @@ interface ProductRepository {
 
     suspend fun getProductsByCategory(categoryId: Int): List<Product>
 
-    suspend fun searchProducts(query: String): List<Product>
+    fun searchProducts(query: String): Flow<PagingData<ProductDto>>
 
     suspend fun getProductByIdAsBuyer(id: Int): Product
 
