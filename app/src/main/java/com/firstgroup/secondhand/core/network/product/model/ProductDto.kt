@@ -1,6 +1,7 @@
 package com.firstgroup.secondhand.core.network.product.model
 
 
+import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.model.Product
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -35,16 +36,31 @@ data class ProductDto(
     fun mapToDomainModel() = Product(
         id = id,
         name = name.orEmpty(),
-        description = description,
+        description = description.orEmpty(),
         price = basePrice ?: 0,
         imageUrl = imageUrl.orEmpty(),
-        location = location,
+        location = location.orEmpty(),
         userId = userId,
         category = try {
             categories[0].name
         } catch (e: Exception) {
             "No Categories!"
         }
+    )
+
+    fun mapToEntityModel() = ProductEntity(
+        id = id,
+        name = name.orEmpty(),
+        description = description.orEmpty(),
+        price = basePrice ?: 0,
+        imageUrl = imageUrl.orEmpty(),
+        location = location.orEmpty(),
+        userId = userId,
+        category = try {
+            categories[0].name
+        } catch (e: Exception) {
+            ""
+        },
     )
 }
 

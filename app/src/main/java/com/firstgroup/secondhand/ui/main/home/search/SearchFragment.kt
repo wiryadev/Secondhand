@@ -13,10 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -24,13 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
+import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
-import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
@@ -60,6 +61,7 @@ class SearchFragment : Fragment() {
 
 }
 
+@ExperimentalCoroutinesApi
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
@@ -67,9 +69,11 @@ fun SearchScreen(
     onProductClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val products = viewModel.products.collectAsLazyPagingItems()
 
     SearchScreen(
         uiState = uiState,
+        products = products,
         backToHomePage = backToHomePage,
         onProductClick = onProductClick,
         searchProducts = viewModel::searchProducts
@@ -80,6 +84,7 @@ fun SearchScreen(
 @Composable
 fun SearchScreen(
     uiState: SearchUiState,
+    products: LazyPagingItems<Product>,
     backToHomePage: () -> Unit,
     onProductClick: (Int) -> Unit,
     searchProducts: (String) -> Unit
@@ -134,21 +139,22 @@ fun SearchScreen(
                 }
             )
         }
-        Column {
-            when (uiState.searchProductState) {
-                is ProductsBySearchState.Error -> {
-
-                }
-                is ProductsBySearchState.Loading -> {
-                    ListProductLoadingScreen()
-                }
-                is ProductsBySearchState.Success -> {
-                    ListProduct(
-                        products = uiState.searchProductState.products,
-                        onProductClick = onProductClick
-                    )
-                }
-            }
-        }
+        ListProduct(
+            products = products,
+            onProductClick = onProductClick
+        )
+//        Column {
+//            when (uiState.searchProductState) {
+//                is ProductsBySearchState.Error -> {
+//
+//                }
+//                is ProductsBySearchState.Loading -> {
+//                    ListProductLoadingScreen()
+//                }
+//                is ProductsBySearchState.Success -> {
+//
+//                }
+//            }
+//        }
     }
 }

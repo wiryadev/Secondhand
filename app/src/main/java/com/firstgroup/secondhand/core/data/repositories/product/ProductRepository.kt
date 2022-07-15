@@ -1,9 +1,11 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
 import androidx.paging.PagingData
+import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
 import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
 import kotlinx.coroutines.flow.Flow
 
@@ -13,13 +15,11 @@ interface ProductRepository {
      * Buyer
      */
 
-    suspend fun loadBuyerProducts()
+    fun getProductsAsBuyer(): Flow<PagingData<ProductEntity>>
 
-    fun getProductsAsBuyer(): Flow<PagingData<Product>>
+    fun getProductsByCategory(categoryId: Int): Flow<PagingData<ProductDto>>
 
-    suspend fun getProductsByCategory(categoryId: Int): List<Product>
-
-    suspend fun searchProducts(query: String): List<Product>
+    fun searchProducts(query: String): Flow<PagingData<ProductDto>>
 
     suspend fun getProductByIdAsBuyer(id: Int): Product
 

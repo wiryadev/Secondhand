@@ -3,6 +3,7 @@ package com.firstgroup.secondhand.core.database.di
 import com.firstgroup.secondhand.core.database.SecondhandDatabase
 import com.firstgroup.secondhand.core.database.product.dao.CategoryDao
 import com.firstgroup.secondhand.core.database.product.dao.ProductCacheDao
+import com.firstgroup.secondhand.core.database.product.dao.RemoteKeysDao
 import com.firstgroup.secondhand.core.database.product.dao.WishlistDao
 import dagger.Module
 import dagger.Provides
@@ -19,6 +20,12 @@ object DaosModule {
     fun provideProductCacheDao(
         database: SecondhandDatabase
     ): ProductCacheDao = database.productCacheDao()
+
+    @Provides
+    @Singleton
+    fun provideRemoteKeysDao(
+        database: SecondhandDatabase
+    ): RemoteKeysDao = database.remoteKeysDao()
 
     @Provides
     @Singleton

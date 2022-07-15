@@ -11,10 +11,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.runtime.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -24,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -34,13 +39,14 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
 import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
-import com.firstgroup.secondhand.ui.main.home.HomeViewModel.Companion.DEFAULT_SELECTED_CATEGORY_ID
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -59,11 +65,7 @@ class HomeFragment : Fragment() {
                         uiState = uiState,
                         products = products,
                         onCategorySelected = viewModel::setCategory,
-                        onProductClick = {
-                            findNavController().navigate(
-                                HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(it)
-                            )
-                        },
+                        onProductClick = ::navigateToProductDetail,
                         onSearchClick = ::navigateToSearchPage
                     )
                 }
@@ -74,6 +76,13 @@ class HomeFragment : Fragment() {
     private fun navigateToSearchPage() {
         findNavController().navigate(R.id.action_main_navigation_home_to_searchFragment)
     }
+
+    private fun navigateToProductDetail(id: Int) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionMainNavigationHomeToDetailFragment(id)
+        )
+    }
+
 }
 
 @Composable
@@ -84,7 +93,6 @@ fun HomeScreen(
     onProductClick: (Int) -> Unit,
     onSearchClick: () -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
     Column {
         Box(
             modifier = Modifier
@@ -111,36 +119,26 @@ fun HomeScreen(
                     )
             )
             Column(modifier = Modifier.fillMaxHeight()) {
-                TextField(
-                    value = search,
-                    onValueChange = { search = it },
-                    textStyle = MaterialTheme.typography.body1,
+                // fake search bar
+                Row(
                     modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, top = 32.dp)
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 38.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    singleLine = true,
-                    placeholder = {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = "Cari di Second Chance",
-                                style = MaterialTheme.typography.body1,
-                                modifier = Modifier.fillMaxWidth(0.9f)
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_search),
-                                contentDescription = null,
-                                modifier = Modifier.clickable(onClick = onSearchClick)
-                            )
-                        }
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        placeholderColor = colorResource(id = R.color.neutral_02),
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
-                    ),
-                )
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colors.background)
+                        .clickable(onClick = onSearchClick)
+                        .padding(all = 16.dp)
+                ) {
+                    Text(
+                        text = "Cari di Second Chance",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                }
                 Spacer(modifier = Modifier.height(200.dp))
                 Text(
                     text = "Telusuri Kategori",
@@ -172,34 +170,31 @@ fun HomeScreen(
             }
         }
 
-        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
-            when (uiState.productsByCategoryState) {
-                is ProductByCategoryUiState.Error -> {
-                    // do nothing yet
-                }
-                is ProductByCategoryUiState.Loading -> {
-                    ListProductLoadingScreen()
-                }
-                is ProductByCategoryUiState.Success -> {
-                    ListProduct(
-                        products = uiState.productsByCategoryState.products,
-                        onProductClick = onProductClick,
-                    )
-                }
+        when (uiState.productsByCategoryState) {
+            is ProductByCategoryUiState.Loading -> {
+                ListProductLoadingScreen()
             }
-        } else {
-            when (uiState.allProductState) {
-                AllProductsUiState.Loading -> {
-                    ListProductLoadingScreen()
-                }
-                AllProductsUiState.Loaded -> {
-                    ListProduct(
-                        products = products,
-                        onProductClick = onProductClick,
-                    )
-                }
+            is ProductByCategoryUiState.Loaded -> {
+                ListProduct(
+                    products = products,
+                    onProductClick = onProductClick,
+                )
             }
         }
+
+//        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
+
+//        } else {
+
+//            when (uiState.allProductState) {
+//                AllProductsUiState.Loading -> {
+//                    ListProductLoadingScreen()
+//                }
+//                AllProductsUiState.Loaded -> {
+//
+//                }
+//            }
+//        }
     }
 }
 

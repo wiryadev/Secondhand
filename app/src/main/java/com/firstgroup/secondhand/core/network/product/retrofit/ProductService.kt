@@ -14,9 +14,11 @@ interface ProductService {
     @GET("buyer/product?status=available")
     @Headers("${NO_AUTH_HEADER_KEY}: true")
     suspend fun getProductsAsBuyer(
+        @Query("page") page: Int,
+        @Query("per_page") size: Int,
         @Query("category_id") categoryId: Int? = null,
         @Query("search") search: String? = null,
-    ): List<ProductDto>
+    ): PagedProductsDto
 
     @GET("buyer/product/{id}")
     @Headers("${NO_AUTH_HEADER_KEY}: true")

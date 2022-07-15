@@ -60,10 +60,10 @@ data class ProductDetailDto(
 
     fun mapToDomainModel() = Product(
         id = id,
-        name = name!!,
-        description = description,
+        name = name.orEmpty(),
+        description = description.orEmpty(),
         price = basePrice ?: 0,
-        imageUrl = imageUrl!!,
+        imageUrl = imageUrl.orEmpty(),
         location = location,
         userId = userId,
         category = try {

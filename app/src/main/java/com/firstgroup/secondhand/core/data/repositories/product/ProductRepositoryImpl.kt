@@ -1,9 +1,9 @@
 package com.firstgroup.secondhand.core.data.repositories.product
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.map
 import com.firstgroup.secondhand.core.database.product.ProductLocalDataSource
 import com.firstgroup.secondhand.core.database.product.entity.CategoryEntity
 import com.firstgroup.secondhand.core.database.product.entity.ProductEntity
@@ -11,10 +11,9 @@ import com.firstgroup.secondhand.core.model.Banner
 import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
+import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
-import com.firstgroup.secondhand.core.network.product.model.filterProductPolicy
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.UnknownHostException
@@ -25,69 +24,56 @@ class ProductRepositoryImpl @Inject constructor(
     private val localDataSource: ProductLocalDataSource,
 ) : ProductRepository {
 
-    override fun getProductsAsBuyer(): Flow<PagingData<Product>> {
+    @ExperimentalPagingApi
+    override fun getProductsAsBuyer(): Flow<PagingData<ProductEntity>> {
+        // TODO: Use it when caching fix
+//        return Pager(
+//            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE),
+//            remoteMediator = ProductRemoteMediator(
+//                remoteDataSource = remoteDataSource,
+//                localDataSource = localDataSource,
+//            ),
+//            pagingSourceFactory = {
+//                localDataSource.getCachedProducts()
+//            }
+//        ).flow
+
         return Pager(
-            config = PagingConfig(pageSize = 10),
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
+            ),
             pagingSourceFactory = {
-                localDataSource.getCachedProducts()
+                ProductPagingSource(remoteDataSource)
             }
-        ).flow.map { pagingData ->
-            pagingData.map { it.mapToDomainModel() }
-        }
+        ).flow
     }
 
-    override suspend fun getProductsByCategory(categoryId: Int): List<Product> =
-        remoteDataSource.getProductsByCategory(categoryId)
-            .filter(::filterProductPolicy)
-            .map { it.mapToDomainModel() }
+    override fun getProductsByCategory(categoryId: Int): Flow<PagingData<ProductDto>> = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false,
+        ),
+        pagingSourceFactory = {
+            ProductByCategoryPagingSource(categoryId, remoteDataSource)
+        }
+    ).flow
 
-    override suspend fun searchProducts(query: String): List<Product> =
-        remoteDataSource.searchProducts(query)
-            .filter(::filterProductPolicy)
-            .map { it.mapToDomainModel() }
+    override fun searchProducts(query: String): Flow<PagingData<ProductDto>> = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false,
+        ),
+        pagingSourceFactory = {
+            SearchProductPagingSource(query, remoteDataSource)
+        }
+    ).flow
 
     override suspend fun getProductByIdAsBuyer(id: Int): Product =
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
 
-    override suspend fun loadBuyerProducts() {
-        try {
-            refreshProductCache()
-        } catch (e: Exception) {
-            // do nothing
-        }
-    }
-
     override suspend fun deleteCachedProducts() {
-        localDataSource.deleteCachedProducts()
-    }
-
-    /**
-     * Only buyer side of products that needs to be cached
-     */
-    private suspend fun refreshProductCache() {
-        val remoteData = remoteDataSource.getProductsAsBuyer()
-        localDataSource.deleteCachedProducts()
-        localDataSource.cacheAllProducts(
-            remoteData
-                .filter(::filterProductPolicy)
-                .map { filteredProduct ->
-                    ProductEntity(
-                        id = filteredProduct.id,
-                        name = filteredProduct.name!!,
-                        description = filteredProduct.description,
-                        price = filteredProduct.basePrice!!,
-                        imageUrl = filteredProduct.imageUrl!!,
-                        location = filteredProduct.location,
-                        userId = filteredProduct.userId,
-                        category = try {
-                            val categories = filteredProduct.categories.map { it.name }
-                            categories.joinToString(separator = ", ")
-                        } catch (e: Exception) {
-                            "No Categories"
-                        },
-                    )
-                }
-        )
+        localDataSource.clearCachedProducts()
     }
 
     private suspend fun refreshCategoryCache() {
@@ -155,4 +141,10 @@ class ProductRepositoryImpl @Inject constructor(
     override suspend fun getBanner(): List<Banner> = remoteDataSource.getBanners().map {
         it.mapToDomainModel()
     }
+
+    companion object {
+        const val STARTING_PAGE_INDEX = 1
+        const val NETWORK_PAGE_SIZE = 20
+    }
+
 }
