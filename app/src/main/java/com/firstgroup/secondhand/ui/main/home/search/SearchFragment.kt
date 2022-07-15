@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,7 +52,11 @@ class SearchFragment : Fragment() {
                     SearchScreen(
                         viewModel = viewModel,
                         backToHomePage = ::navigateToHomePage,
-                        onProductClick = {}
+                        onProductClick = {
+                            findNavController().navigate(
+                                SearchFragmentDirections.actionSearchFragmentToDetailFragment(it)
+                            )
+                        }
                     )
                 }
             }
@@ -93,10 +101,11 @@ fun SearchScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         var searchQuery by remember { mutableStateOf("") }
+        val focusManager = LocalFocusManager.current
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colors.primary)
+                .background(MaterialTheme.colors.background)
                 .padding(top = 8.dp, bottom = 8.dp, end = 8.dp, start = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -134,27 +143,21 @@ fun SearchScreen(
                         contentDescription = null,
                         modifier = Modifier.clickable(
                             enabled = true,
-                            onClick = { searchProducts(searchQuery) })
+                            onClick = {
+                                searchProducts(searchQuery)
+                                focusManager.clearFocus()
+                            })
                     )
-                }
+                },
+                keyboardActions = KeyboardActions(onDone = {
+                    searchProducts(searchQuery)
+                    focusManager.clearFocus()
+                })
             )
         }
         ListProduct(
             products = products,
             onProductClick = onProductClick
         )
-//        Column {
-//            when (uiState.searchProductState) {
-//                is ProductsBySearchState.Error -> {
-//
-//                }
-//                is ProductsBySearchState.Loading -> {
-//                    ListProductLoadingScreen()
-//                }
-//                is ProductsBySearchState.Success -> {
-//
-//                }
-//            }
-//        }
     }
 }

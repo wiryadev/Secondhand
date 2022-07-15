@@ -69,6 +69,7 @@ class SellFragment : Fragment() {
                         onLoginClick = ::goToLoginScreen,
                         onImagePickerClick = ::setProductPictures,
                         onPostProductSuccess = ::goToSellListScreen,
+                        onBackClick = { findNavController().popBackStack() }
                     )
                 }
             }
@@ -126,6 +127,7 @@ fun SellScreen(
     onLoginClick: () -> Unit,
     onImagePickerClick: () -> Unit,
     onPostProductSuccess: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     LaunchedEffect(key1 = uiState.postProductState) {
         if (uiState.postProductState is PostProductState.Success) {
@@ -159,6 +161,7 @@ fun SellScreen(
                                 viewModel.addProduct(name, description, basePrice)
                                 viewModel.showPreviewScreen()
                             },
+                            onBackClick = onBackClick
                         )
                     }
                     SellState.PreviewNewProduct -> {
@@ -186,6 +189,7 @@ fun SellScreen(
     onCategorySelected: (Category) -> Unit,
     onPublishClick: (String, String, String) -> Unit,
     onPreviewClick: (String, String, String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var productName by remember { mutableStateOf("") }
     var productPrice by remember { mutableStateOf("") }
@@ -211,7 +215,7 @@ fun SellScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             IconButton(
-                onClick = { /*TODO back button*/ },
+                onClick = onBackClick,
                 modifier = Modifier
                     .padding(vertical = 14.dp)
                     .size(24.dp)
