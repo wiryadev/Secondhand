@@ -13,7 +13,7 @@ interface ProductLocalDataSource {
 
     suspend fun cacheAllProducts(products: List<ProductEntity>)
 
-    suspend fun deleteCachedProducts()
+    suspend fun clearCachedProducts()
 
     suspend fun insertRemoteKeys(remoteKeys: List<RemoteKeys>)
 

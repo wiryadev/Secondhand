@@ -15,8 +15,6 @@ interface ProductRepository {
      * Buyer
      */
 
-//    suspend fun loadBuyerProducts()
-
     fun getProductsAsBuyer(): Flow<PagingData<ProductEntity>>
 
     fun getProductsByCategory(categoryId: Int): Flow<PagingData<ProductDto>>

@@ -26,14 +26,25 @@ class ProductRepositoryImpl @Inject constructor(
 
     @ExperimentalPagingApi
     override fun getProductsAsBuyer(): Flow<PagingData<ProductEntity>> {
+        // TODO: Use it when caching fix
+//        return Pager(
+//            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE),
+//            remoteMediator = ProductRemoteMediator(
+//                remoteDataSource = remoteDataSource,
+//                localDataSource = localDataSource,
+//            ),
+//            pagingSourceFactory = {
+//                localDataSource.getCachedProducts()
+//            }
+//        ).flow
+
         return Pager(
-            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE),
-            remoteMediator = ProductRemoteMediator(
-                remoteDataSource = remoteDataSource,
-                localDataSource = localDataSource,
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
             ),
             pagingSourceFactory = {
-                localDataSource.getCachedProducts()
+                ProductPagingSource(remoteDataSource)
             }
         ).flow
     }
@@ -62,7 +73,7 @@ class ProductRepositoryImpl @Inject constructor(
         remoteDataSource.getProductByIdAsBuyer(id).mapToDomainModel()
 
     override suspend fun deleteCachedProducts() {
-        localDataSource.deleteCachedProducts()
+        localDataSource.clearCachedProducts()
     }
 
     private suspend fun refreshCategoryCache() {
@@ -133,7 +144,7 @@ class ProductRepositoryImpl @Inject constructor(
 
     companion object {
         const val STARTING_PAGE_INDEX = 1
-        const val NETWORK_PAGE_SIZE = 15
+        const val NETWORK_PAGE_SIZE = 20
     }
 
 }

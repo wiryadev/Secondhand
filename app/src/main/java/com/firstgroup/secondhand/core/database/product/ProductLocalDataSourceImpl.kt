@@ -32,7 +32,7 @@ class ProductLocalDataSourceImpl @Inject constructor(
         productCacheDao.insertOrReplace(products)
     }
 
-    override suspend fun deleteCachedProducts() {
+    override suspend fun clearCachedProducts() {
         productCacheDao.deleteAll()
     }
 
