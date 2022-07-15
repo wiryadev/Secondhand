@@ -34,13 +34,14 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
 import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
-import com.firstgroup.secondhand.ui.main.home.HomeViewModel.Companion.DEFAULT_SELECTED_CATEGORY_ID
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -172,26 +173,22 @@ fun HomeScreen(
             }
         }
 
-        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
-            when (uiState.productsByCategoryState) {
-                is ProductByCategoryUiState.Error -> {
-                    // do nothing yet
-                }
-                is ProductByCategoryUiState.Loading -> {
-                    ListProductLoadingScreen()
-                }
-                is ProductByCategoryUiState.Success -> {
-                    ListProduct(
-                        products = uiState.productsByCategoryState.products,
-                        onProductClick = onProductClick,
-                    )
-                }
+        when (uiState.productsByCategoryState) {
+            is ProductByCategoryUiState.Loading -> {
+                ListProductLoadingScreen()
             }
-        } else {
-            ListProduct(
-                products = products,
-                onProductClick = onProductClick,
-            )
+            is ProductByCategoryUiState.Loaded -> {
+                ListProduct(
+                    products = products,
+                    onProductClick = onProductClick,
+                )
+            }
+        }
+
+//        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
+
+//        } else {
+
 //            when (uiState.allProductState) {
 //                AllProductsUiState.Loading -> {
 //                    ListProductLoadingScreen()
@@ -200,7 +197,7 @@ fun HomeScreen(
 //
 //                }
 //            }
-        }
+//        }
     }
 }
 

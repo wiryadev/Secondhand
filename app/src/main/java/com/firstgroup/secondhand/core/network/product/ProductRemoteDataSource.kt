@@ -12,7 +12,11 @@ interface ProductRemoteDataSource {
         size: Int,
     ): List<ProductDto>
 
-    suspend fun getProductsByCategory(categoryId: Int): List<ProductDto>
+    suspend fun getProductsByCategory(
+        categoryId: Int,
+        page: Int,
+        size: Int,
+    ): List<ProductDto>
 
     suspend fun searchProducts(
         query: String,

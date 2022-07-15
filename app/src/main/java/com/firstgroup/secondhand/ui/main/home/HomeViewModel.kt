@@ -2,6 +2,7 @@ package com.firstgroup.secondhand.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Category
@@ -11,12 +12,12 @@ import com.firstgroup.secondhand.domain.product.GetProductsAsBuyerUseCase
 import com.firstgroup.secondhand.domain.product.GetProductsByCategoryUseCase
 import com.firstgroup.secondhand.domain.product.RefreshCategoriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getProductsAsBuyerUseCase: GetProductsAsBuyerUseCase,
@@ -28,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private val allCategories = listOf(
         Category(id = DEFAULT_SELECTED_CATEGORY_ID, name = "Semua"),
     )
-    val products = getProductsAsBuyerUseCase().cachedIn(viewModelScope)
+
+    val products: Flow<PagingData<Product>>
 
     private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(
         HomeUiState(selectedCategory = allCategories[0])
@@ -36,6 +38,18 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> get() = _uiState
 
     init {
+        products = _uiState
+            .flatMapLatest {
+                val data = if (it.selectedCategory.id == DEFAULT_SELECTED_CATEGORY_ID) {
+                    getProductsAsBuyerUseCase()
+                } else {
+                    getProductsByCategoryUseCase(it.selectedCategory)
+                }
+                showDataWhenLoaded()
+                return@flatMapLatest data
+            }
+            .cachedIn(viewModelScope)
+
         viewModelScope.launch {
             getCategories()
         }
@@ -66,32 +80,18 @@ class HomeViewModel @Inject constructor(
         if (category.id == _uiState.value.selectedCategory.id) return
 
         _uiState.update {
-            it.copy(selectedCategory = category)
+            it.copy(
+                selectedCategory = category,
+                productsByCategoryState = ProductByCategoryUiState.Loading,
+            )
         }
+    }
 
-        // only update productByCategory if selected category is not default
-        if (category.id != DEFAULT_SELECTED_CATEGORY_ID) {
-            _uiState.update {
-                it.copy(productsByCategoryState = ProductByCategoryUiState.Loading)
-            }
-            viewModelScope.launch {
-                when (val result = getProductsByCategoryUseCase(category)) {
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                productsByCategoryState = ProductByCategoryUiState.Error(result.exception?.message)
-                            )
-                        }
-                    }
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                productsByCategoryState = ProductByCategoryUiState.Success(result.data)
-                            )
-                        }
-                    }
-                }
-            }
+    private fun showDataWhenLoaded() {
+        _uiState.update { uiState ->
+            uiState.copy(
+                productsByCategoryState = ProductByCategoryUiState.Loaded,
+            )
         }
     }
 
@@ -102,8 +102,7 @@ class HomeViewModel @Inject constructor(
 }
 
 sealed interface ProductByCategoryUiState {
-    data class Success(val products: List<Product>) : ProductByCategoryUiState
-    data class Error(val message: String?) : ProductByCategoryUiState
+    object Loaded : ProductByCategoryUiState
     object Loading : ProductByCategoryUiState
 }
 

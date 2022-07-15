@@ -19,7 +19,7 @@ interface ProductRepository {
 
     fun getProductsAsBuyer(): Flow<PagingData<ProductEntity>>
 
-    suspend fun getProductsByCategory(categoryId: Int): List<Product>
+    fun getProductsByCategory(categoryId: Int): Flow<PagingData<ProductDto>>
 
     fun searchProducts(query: String): Flow<PagingData<ProductDto>>
 

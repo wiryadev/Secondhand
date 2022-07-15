@@ -17,11 +17,13 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     ).data
 
     override suspend fun getProductsByCategory(
-        categoryId: Int
+        categoryId: Int,
+        page: Int,
+        size: Int,
     ): List<ProductDto> = service.getProductsAsBuyer(
-        page = 1,
-        size = 25,
         categoryId = categoryId,
+        page = page,
+        size = size,
     ).data
 
     override suspend fun searchProducts(

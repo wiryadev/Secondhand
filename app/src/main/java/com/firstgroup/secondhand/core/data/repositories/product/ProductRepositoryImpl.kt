@@ -13,7 +13,6 @@ import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.model.ProductDto
 import com.firstgroup.secondhand.core.network.product.model.ProductRequest
-import com.firstgroup.secondhand.core.network.product.model.filterProductPolicy
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -39,10 +38,15 @@ class ProductRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    override suspend fun getProductsByCategory(categoryId: Int): List<Product> =
-        remoteDataSource.getProductsByCategory(categoryId)
-            .filter(::filterProductPolicy)
-            .map { it.mapToDomainModel() }
+    override fun getProductsByCategory(categoryId: Int): Flow<PagingData<ProductDto>> = Pager(
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,
+            enablePlaceholders = false,
+        ),
+        pagingSourceFactory = {
+            ProductByCategoryPagingSource(categoryId, remoteDataSource)
+        }
+    ).flow
 
     override fun searchProducts(query: String): Flow<PagingData<ProductDto>> = Pager(
         config = PagingConfig(
