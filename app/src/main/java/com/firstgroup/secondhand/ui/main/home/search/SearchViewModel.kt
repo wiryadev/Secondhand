@@ -23,7 +23,11 @@ class SearchViewModel @Inject constructor(
 
     val products: Flow<PagingData<Product>> = _uiState
         .flatMapLatest {
-            searchProductsUseCase(it.query)
+            if (it.query.isNotEmpty()) {
+                searchProductsUseCase(it.query)
+            } else {
+                flowOf(PagingData.empty())
+            }
         }
         .cachedIn(viewModelScope)
 
