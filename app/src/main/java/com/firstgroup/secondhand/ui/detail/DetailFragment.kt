@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
@@ -54,7 +55,8 @@ class DetailFragment : Fragment() {
                     DetailScreen(
                         uiState = uiState,
                         fragmentManager = parentFragmentManager,
-                        onLoginClick = ::goToLoginScreen
+                        onLoginClick = ::goToLoginScreen,
+                        onBackClick = { findNavController().popBackStack() }
                     )
                 }
             }
@@ -78,7 +80,8 @@ class DetailFragment : Fragment() {
 fun DetailScreen(
     uiState: DetailUiState,
     fragmentManager: FragmentManager,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     uiState.product?.let { product ->
         Box(
@@ -249,7 +252,7 @@ fun DetailScreen(
                         top = 44.dp,
                         start = 16.dp
                     )
-                    .clickable { },
+                    .clickable { onBackClick() },
                 shape = RoundedCornerShape(20.dp),
             ) {
                 Icon(
