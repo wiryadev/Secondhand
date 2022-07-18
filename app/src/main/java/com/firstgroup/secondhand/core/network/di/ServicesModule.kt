@@ -5,6 +5,7 @@ import com.firstgroup.secondhand.core.network.history.retrofit.HistoryService
 import com.firstgroup.secondhand.core.network.notification.retrofit.NotificationService
 import com.firstgroup.secondhand.core.network.order.retrofit.OrderService
 import com.firstgroup.secondhand.core.network.product.retrofit.ProductService
+import com.firstgroup.secondhand.core.network.wishlist.retrofit.WishlistService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,6 @@ object ServicesModule {
     @Singleton
     fun provideProductService(retrofit: Retrofit): ProductService = retrofit.create()
 
-
     @Provides
     @Singleton
     fun provideOrderService(retrofit: Retrofit): OrderService = retrofit.create()
@@ -37,5 +37,9 @@ object ServicesModule {
     @Provides
     @Singleton
     fun provideHistoryService(retrofit: Retrofit): HistoryService = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideWishlistService(retrofit: Retrofit): WishlistService = retrofit.create()
 
 }
