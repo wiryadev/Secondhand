@@ -1,15 +1,16 @@
 package com.firstgroup.secondhand.core.network.wishlist.model
 
 
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class AddWishlistDto(
     @Json(name = "name")
-    val name: String?,
+    val name: String,
     @Json(name = "product")
-    val product: Product?
+    val product: Product,
 ) {
     @JsonClass(generateAdapter = true)
     data class Product(
@@ -35,5 +36,10 @@ data class AddWishlistDto(
         val updatedAt: String?,
         @Json(name = "user_id")
         val userId: Int?
+    )
+
+    fun mapToDomainModel() = BasicResponse(
+        name = name,
+        message = product.name.orEmpty(),
     )
 }
