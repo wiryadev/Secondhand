@@ -10,6 +10,8 @@ import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSource
 import com.firstgroup.secondhand.core.network.order.OrderRemoteDataSourceImpl
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSource
 import com.firstgroup.secondhand.core.network.product.ProductRemoteDataSourceImpl
+import com.firstgroup.secondhand.core.network.wishlist.WishlistRemoteDataSource
+import com.firstgroup.secondhand.core.network.wishlist.WishlistRemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -49,5 +51,11 @@ interface RemoteDataSourceModule {
     fun bindsHistoryRemoteDataSource(
         historyRemoteDataSourceImpl: HistoryRemoteDataSourceImpl
     ): HistoryRemoteDataSource
+
+    @Binds
+    @Singleton
+    fun bindsWishlistRemoteDataSource(
+        wishlistRemoteDataSourceImpl: WishlistRemoteDataSourceImpl
+    ): WishlistRemoteDataSource
 
 }
