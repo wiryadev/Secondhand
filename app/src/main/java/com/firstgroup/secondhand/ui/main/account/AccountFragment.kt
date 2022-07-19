@@ -64,7 +64,8 @@ class AccountFragment : Fragment() {
                         onLoginClick = ::goToLoginScreen,
                         onUserLoggedIn = viewModel::getUser,
                         onLogoutClick = viewModel::logout,
-                        onMyOrderClick = ::goToMyOrderAsBuyerFragment
+                        onMyOrderClick = ::goToMyOrderAsBuyerFragment,
+                        onWishlistClick = ::goToWishlistFragment
                     )
                 }
             }
@@ -94,6 +95,12 @@ class AccountFragment : Fragment() {
         )
     }
 
+    private fun goToWishlistFragment(){
+        findNavController().navigate(
+            AccountFragmentDirections.actionMainNavigationAccountToWishlistFragment()
+        )
+    }
+
     private fun goToLoginScreen() {
         startActivity(Intent(requireContext(), AuthActivity::class.java))
     }
@@ -108,7 +115,8 @@ fun AccountScreen(
     onLoginClick: () -> Unit,
     onUserLoggedIn: () -> Unit,
     onLogoutClick: () -> Unit,
-    onMyOrderClick: () -> Unit
+    onMyOrderClick: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     LaunchedEffect(key1 = uiState.loginState) {
         if (uiState.loginState is LoginState.Loaded) {
@@ -130,7 +138,8 @@ fun AccountScreen(
                         onEditAccountClick = onEditAccountClick,
                         onAccountSettingClick = onAccountSettingClick,
                         onLogoutClick = onLogoutClick,
-                        onMyOrderClick = onMyOrderClick
+                        onMyOrderClick = onMyOrderClick,
+                        onWishlistClick = onWishlistClick
                     )
                 } else {
                     GenericLoadingScreen()
@@ -150,7 +159,8 @@ fun AccountScreen(
     onEditAccountClick: (User) -> Unit,
     onAccountSettingClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    onMyOrderClick: () -> Unit
+    onMyOrderClick: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -275,6 +285,34 @@ fun AccountScreen(
             }
 
             // Third divider
+            Spacer(modifier = Modifier.height(18.dp))
+            Divider(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colors.onSecondary,
+                thickness = Dp.Hairline
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Wishlist
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_wishlist_border),
+                    contentDescription = stringResource(R.string.wishlist),
+                    tint = MaterialTheme.colors.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = stringResource(R.string.wishlist),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable(onClick = onWishlistClick)
+                        .height(24.dp)
+                        .padding(vertical = 4.dp),
+                )
+            }
+
+            // Fourth divider
             Spacer(modifier = Modifier.height(18.dp))
             Divider(
                 modifier = Modifier.fillMaxWidth(),
