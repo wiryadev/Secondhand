@@ -57,17 +57,13 @@ class NotificationViewModel @Inject constructor(
     }
 
     fun getNotifications() {
-        _uiState.update {
-            it.copy(isLoading = true)
-        }
         viewModelScope.launch {
             when (val result = getNotificationsUseCase(Unit)) {
                 is Result.Success -> {
                     Log.d("datanotifikasi", result.data.toString())
                     _uiState.update {
                         it.copy(
-                            notifications = result.data,
-                            isLoading = false
+                            notifications = AllNotificationState.Success(result.data)
                         )
                     }
                 }
@@ -75,8 +71,7 @@ class NotificationViewModel @Inject constructor(
                     Log.d("datanotifikasi", result.exception?.message.toString())
                     _uiState.update {
                         it.copy(
-                            errorMessage = result.exception?.message,
-                            isLoading = false
+                            notifications = AllNotificationState.Error(result.exception?.message.toString())
                         )
                     }
                 }
@@ -105,6 +100,7 @@ class NotificationViewModel @Inject constructor(
                 }
                 is Result.Success -> {
                     Log.d("updatenotif", "updateNotificationStatus: ${result.data}")
+
                 }
             }
         }
@@ -114,20 +110,26 @@ class NotificationViewModel @Inject constructor(
         if (isDialogDismissed) {
             _uiState.update {
                 it.copy(
-                    notification = NotificationState.Idle
+                    notification = NotificationState.Idle,
+                    notifications = AllNotificationState.Loading
                 )
             }
+            getNotifications()
         }
     }
 }
 
 data class NotificationUiState(
-    val notifications: List<Notification>? = null,
-    val errorMessage: String? = null,
-    val isLoading: Boolean = false,
+    val notifications: AllNotificationState = AllNotificationState.Loading,
     val loginState: LoginState = LoginState.Idle,
     val notification: NotificationState = NotificationState.Idle,
 )
+
+sealed interface AllNotificationState {
+    data class Success(val data: List<Notification>) : AllNotificationState
+    data class Error(val message: String) : AllNotificationState
+    object Loading : AllNotificationState
+}
 
 sealed interface NotificationState {
     data class Success(val notification: Notification) : NotificationState
