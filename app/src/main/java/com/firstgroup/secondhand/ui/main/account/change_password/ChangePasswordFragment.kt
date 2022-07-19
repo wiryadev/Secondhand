@@ -103,6 +103,7 @@ fun ChangePasswordScreen(
             var newPasswordVisible by rememberSaveable { mutableStateOf(false) }
             var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
             Spacer(modifier = Modifier.height(72.dp))
+            /* TODO = halaman form disamain aja judul diatas kyak edit account sama jual barang + masih bahasa indonesia */
             Text(
                 text = stringResource(R.string.change_password),
                 style = MaterialTheme.typography.h4
@@ -304,6 +305,7 @@ fun ChangePasswordScreen(
             )
             // button
             Spacer(modifier = Modifier.height(24.dp))
+            /* TODO = abis ubah password nampil snackbar tapi diem ditempat dan form form masih ada isinya */
             PrimaryButton(
                 onClick = { onChangeClick(currentPassword, newPassword, confirmPassword) },
                 content = {

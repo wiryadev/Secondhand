@@ -126,6 +126,7 @@ fun SellListScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        /* TODO = Seragamin title biar sama kyak My order, Notification, Account, dll */
         Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
             val pages = remember {
                 listOf(R.string.product, R.string.order)
@@ -171,6 +172,7 @@ fun SellListScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (page) {
                             0 -> {
+                                /* TODO = nggk ada keterangan kalo lagi loading + masuk detail produk sendiri bisa nge bid produk sendiri :" */
                                 if (uiState.productState is SellerProductState.Success) {
                                     ListProduct(
                                         products = uiState.productState.data,
@@ -179,6 +181,7 @@ fun SellListScreen(
                                 }
                             }
                             1 -> {
+                                /* TODO = pindah filter nggk ada keterangan kalo lagi loading */
                                 OrderFilterDropDown(onFilterSelected = viewModel::setFilter)
                                 Spacer(modifier = Modifier.height(16.dp))
                                 if (uiState.orderState is OrderState.Success) {
