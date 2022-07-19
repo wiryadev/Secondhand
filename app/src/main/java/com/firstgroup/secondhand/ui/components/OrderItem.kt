@@ -1,8 +1,9 @@
 package com.firstgroup.secondhand.ui.components
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,9 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -38,7 +41,6 @@ fun ListOrders(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .fillMaxWidth(),
     ) {
         items(
@@ -119,79 +121,94 @@ fun OrderDetails(
     orderData: Order,
     resetAlertDialogState: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    updateBidPrice: (UpdateOrderUseCase.Param) -> Unit
+    updateBidPrice: (UpdateOrderUseCase.Param) -> Unit,
+    onDeleteOrderClick: (Int) -> Unit
 ) {
     var isDialogOpen by remember { mutableStateOf(true) }
     var isLoading by remember { mutableStateOf(true) }
 
     if (isDialogOpen) {
         var isTextFieldVisible by remember { mutableStateOf(false) }
+        var isCurrentBidVisible by remember { mutableStateOf(true) }
+        var confirmCancelOrder by remember { mutableStateOf(false) }
         var newBidPrice by remember { mutableStateOf("${orderData.bidPrice}") }
         AlertDialog(
             onDismissRequest = {},
-            title = {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .height(64.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.buyer_order_detail_title,
-                            orderData.id.toString()
-                        ),
-                        style = MaterialTheme.typography.h5,
-                        modifier = Modifier
-                            .placeholder(
-                                visible = isLoading,
-                                highlight = PlaceholderHighlight.shimmer()
-                            )
-                    )
-                    if (orderData.transactionDate.isNotEmpty()) {
-                        Text(
-                            text = stringResource(
-                                id = R.string.buyer_order_detail_date_and_status,
-                                dateFormatter(orderData.transactionDate),
-                                orderData.status
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .placeholder(
-                                    visible = isLoading,
-                                    highlight = PlaceholderHighlight.shimmer()
-                                ),
-                            textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.body2
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(
-                                id = R.string.error_buyer_order_detail_date_and_status,
-                                "No Transaction date",
-                                orderData.status
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .placeholder(
-                                    visible = isLoading,
-                                    highlight = PlaceholderHighlight.shimmer()
-                                ),
-                            textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                }
-            },
+            title = {},
             text = {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(horizontal = 8.dp)
                         .fillMaxWidth()
-                        .wrapContentSize(),
+                        .wrapContentHeight(),
                 ) {
+                    // Close Icon
+                    IconButton(
+                        onClick = {
+                            isDialogOpen = false
+                            resetAlertDialogState(!isDialogOpen)
+                        },
+                        modifier = Modifier
+                            .align(Alignment.End)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_x_octagon),
+                            contentDescription = "Close Order Details",
+                            tint = MaterialTheme.colors.error
+                        )
+                    }
+                    // Title , date , and status
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.buyer_order_detail_title,
+                                orderData.id.toString()
+                            ),
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier
+                                .placeholder(
+                                    visible = isLoading,
+                                    highlight = PlaceholderHighlight.shimmer()
+                                )
+                        )
+                        if (orderData.transactionDate.isNotEmpty()) {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.buyer_order_detail_date_and_status,
+                                    dateFormatter(orderData.transactionDate),
+                                    orderData.status
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .placeholder(
+                                        visible = isLoading,
+                                        highlight = PlaceholderHighlight.shimmer()
+                                    ),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.body2
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.error_buyer_order_detail_date_and_status,
+                                    "No Transaction date",
+                                    orderData.status
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .placeholder(
+                                        visible = isLoading,
+                                        highlight = PlaceholderHighlight.shimmer()
+                                    ),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.body2
+                            )
+                        }
+                    }
                     // Product Name
                     Text(
                         text = orderData.product.name,
@@ -229,6 +246,7 @@ fun OrderDetails(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
+                                    .size(128.dp)
                                     .weight(1f)
                                     .placeholder(
                                         visible = isLoading || imagePainterLoading,
@@ -248,14 +266,15 @@ fun OrderDetails(
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    // Order Bid Prices
+                    // Animated visibility box case
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp)
                     ) {
+                        // Current Bid Price
                         this@Column.AnimatedVisibility(
-                            visible = !isTextFieldVisible,
+                            visible = isCurrentBidVisible,
                             enter = expandHorizontally(),
                             exit = shrinkHorizontally()
                         ) {
@@ -265,6 +284,7 @@ fun OrderDetails(
                                 style = MaterialTheme.typography.body1,
                             )
                         }
+                        // Text field for new bid price
                         this@Column.AnimatedVisibility(
                             visible = isTextFieldVisible,
                             enter = expandHorizontally(),
@@ -274,14 +294,33 @@ fun OrderDetails(
                                 value = newBidPrice,
                                 onValueChange = { newBidPrice = it },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .border(
-                                        width = 1.dp,
-                                        color = colorResource(id = R.color.neutral_02),
-                                        shape = RoundedCornerShape(16.dp)
-                                    ),
+                                    .fillMaxWidth(),
+                                label = { Text(text = "New Bid Price") },
                                 textStyle = MaterialTheme.typography.body1,
-                                shape = RoundedCornerShape(16.dp)
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    focusedLabelColor = MaterialTheme.colors.primary,
+                                    unfocusedLabelColor = colorResource(id = R.color.neutral_02),
+                                    backgroundColor = MaterialTheme.colors.onPrimary
+                                )
+                            )
+                        }
+                        // Button for confirming delete order
+                        this@Column.AnimatedVisibility(
+                            visible = confirmCancelOrder,
+                            enter = expandHorizontally(),
+                            exit = shrinkHorizontally()
+                        ) {
+                            SecondaryButton(
+                                onClick = {
+                                    onDeleteOrderClick(orderData.id)
+                                    isDialogOpen = false
+                                },
+                                content = {
+                                    Text(text = "Delete this Order ?")
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                borderColor = MaterialTheme.colors.error
                             )
                         }
                     }
@@ -310,20 +349,24 @@ fun OrderDetails(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 PrimaryButton(
-                                    onClick = { isTextFieldVisible = true },
+                                    onClick = {
+                                        isTextFieldVisible = true
+                                        isCurrentBidVisible = false
+                                        confirmCancelOrder = false
+                                    },
                                     content = {
-                                        Text(text = "Update Bid")
+                                        Text(text = "Update Order")
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 SecondaryButton(
                                     onClick = {
-                                        isDialogOpen = false
-                                        resetAlertDialogState(!isDialogOpen)
+                                        confirmCancelOrder = true
+                                        isCurrentBidVisible = false
                                     },
                                     content = {
-                                        Text(text = "Close")
+                                        Text(text = "Cancel Order")
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
@@ -339,7 +382,10 @@ fun OrderDetails(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 SecondaryButton(
-                                    onClick = { isTextFieldVisible = false },
+                                    onClick = {
+                                        isTextFieldVisible = false
+                                        isCurrentBidVisible = true
+                                    },
                                     content = {
                                         Text(text = "Cancel")
                                     },
@@ -353,9 +399,8 @@ fun OrderDetails(
                                 )
                                 PrimaryButton(
                                     onClick = {
-                                        /* update order usecase here */
                                         updateBidPrice(updateParam)
-                                        isTextFieldVisible = false
+                                        isDialogOpen = false
                                     },
                                     content = {
                                         Text(text = "Update")
