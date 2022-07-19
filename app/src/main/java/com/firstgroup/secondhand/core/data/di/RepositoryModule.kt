@@ -10,6 +10,8 @@ import com.firstgroup.secondhand.core.data.repositories.order.OrderRepository
 import com.firstgroup.secondhand.core.data.repositories.order.OrderRepositoryImpl
 import com.firstgroup.secondhand.core.data.repositories.product.ProductRepository
 import com.firstgroup.secondhand.core.data.repositories.product.ProductRepositoryImpl
+import com.firstgroup.secondhand.core.data.repositories.wishlist.WishlistRepository
+import com.firstgroup.secondhand.core.data.repositories.wishlist.WishlistRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -49,5 +51,11 @@ interface RepositoryModule {
     fun bindsHistoryRepository(
         historyRepositoryImpl: HistoryRepositoryImpl
     ): HistoryRepository
+
+    @Binds
+    @Singleton
+    fun bindsWishlistRepository(
+        wishlistRepositoryImpl: WishlistRepositoryImpl
+    ): WishlistRepository
 
 }

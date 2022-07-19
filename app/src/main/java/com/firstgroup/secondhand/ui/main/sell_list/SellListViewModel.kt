@@ -13,7 +13,6 @@ import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,38 +24,36 @@ class SellListViewModel @Inject constructor(
     private val getOrdersAsSellerUseCase: GetOrdersAsSellerUseCase
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<SellListUiState> = MutableStateFlow(
-        SellListUiState()
-    )
+    private val _uiState: MutableStateFlow<SellListUiState> = MutableStateFlow(SellListUiState())
     val uiState: StateFlow<SellListUiState> get() = _uiState
 
-    private val _filter = MutableStateFlow<OrderFilter>(OrderFilter.ALlOrders)
-    val filter = _filter.asStateFlow()
+    fun setFilter(filter: OrderFilter) {
+        if (filter == _uiState.value.selectedFilter) return
 
-    fun setFilter(filter: OrderFilter){
-        _filter.value = filter
+        _uiState.update {
+            it.copy(selectedFilter = filter)
+        }
+
         getOrderAsSeller(filter)
     }
 
-    fun getProductAsSeller(){
+    fun getProductAsSeller() {
         _uiState.update {
-            it.copy(isLoading = true)
+            it.copy(productState = SellerProductState.Loading)
         }
         viewModelScope.launch {
-            when (val result = getProductsAsSellerUseCase(Unit)){
+            when (val result = getProductsAsSellerUseCase(Unit)) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
-                            product = result.data,
-                            isLoading = false
+                            productState = SellerProductState.Success(result.data)
                         )
                     }
                 }
                 is Result.Error -> {
                     _uiState.update {
                         it.copy(
-                            errorMessage = result.exception?.message,
-                            isLoading = false
+                            productState = SellerProductState.Error(result.exception?.message.toString()),
                         )
                     }
                 }
@@ -64,25 +61,23 @@ class SellListViewModel @Inject constructor(
         }
     }
 
-    fun getOrderAsSeller(filter: OrderFilter){
+    fun getOrderAsSeller(filter: OrderFilter) {
         _uiState.update {
-            it.copy(isLoading = true)
+            it.copy(orderState = OrderState.Loading)
         }
         viewModelScope.launch {
-            when (val result = getOrdersAsSellerUseCase(filter)){
+            when (val result = getOrdersAsSellerUseCase(filter)) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
-                            order = result.data,
-                            isLoading = false
+                            orderState = OrderState.Success(result.data)
                         )
                     }
                 }
                 is Result.Error -> {
                     _uiState.update {
                         it.copy(
-                            errorMessage = result.exception?.message,
-                            isLoading = false
+                            orderState = OrderState.Error(result.exception?.message.toString())
                         )
                     }
                 }
@@ -90,7 +85,7 @@ class SellListViewModel @Inject constructor(
         }
     }
 
-    fun getSession(){
+    fun getSession() {
         viewModelScope.launch {
             getSessionUseCase(Unit).collect { result ->
                 when (result) {
@@ -118,9 +113,20 @@ class SellListViewModel @Inject constructor(
 }
 
 data class SellListUiState(
-    val product : List<Product>? = null,
-    val order: List<Order>? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val selectedFilter: OrderFilter = OrderFilter.ALlOrders,
+    val productState: SellerProductState = SellerProductState.Loading,
+    val orderState: OrderState = OrderState.Loading,
     val loginState: LoginState = LoginState.Idle,
 )
+
+sealed interface OrderState {
+    object Loading : OrderState
+    data class Success(val data: List<Order>) : OrderState
+    data class Error(val message: String) : OrderState
+}
+
+sealed interface SellerProductState {
+    object Loading : SellerProductState
+    data class Success(val data: List<Product>) : SellerProductState
+    data class Error(val message: String) : SellerProductState
+}

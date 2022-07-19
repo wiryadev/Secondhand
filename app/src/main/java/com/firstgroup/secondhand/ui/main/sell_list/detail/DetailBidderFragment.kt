@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
@@ -59,7 +60,8 @@ class DetailBidderFragment : Fragment() {
                         uiState = uiState,
                         onResponseClick = { id, response ->
                             viewModel.respondOrder(id, response)
-                        }
+                        },
+                        onBackClick = { findNavController().popBackStack() }
                     )
                 }
             }
@@ -72,6 +74,7 @@ fun DetailBidderScreen(
     fragmentManager: FragmentManager,
     uiState: DetailBidderUiState,
     onResponseClick: (Int, Boolean) -> Unit,
+    onBackClick: () -> Unit
 ) {
     uiState.order?.let { order ->
         Column(
@@ -94,7 +97,7 @@ fun DetailBidderScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 IconButton(
-                    onClick = { /*TODO back button*/ },
+                    onClick = onBackClick,
                     modifier = Modifier
                         .padding(vertical = 14.dp)
                         .size(24.dp)
