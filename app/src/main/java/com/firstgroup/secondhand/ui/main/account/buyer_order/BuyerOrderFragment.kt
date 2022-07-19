@@ -4,16 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -46,11 +44,17 @@ class BuyerOrderFragment : Fragment() {
                         uiState = uiState,
                         onOrderClick = viewModel::getOrderById,
                         onAlertDialogDismiss = viewModel::resetAlertDialogState,
-                        updateBidPrice = viewModel::updateBidPrice
+                        updateBidPrice = viewModel::updateBidPrice,
+                        onDeleteOrderClick = viewModel::cancelOrderById,
+                        showSuccessMessage = ::showSuccessMessage
                     )
                 }
             }
         }
+    }
+
+    private fun showSuccessMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,36 +68,41 @@ fun BuyerOrderScreen(
     uiState: BuyerOrderUiState,
     onOrderClick: (Int) -> Unit,
     onAlertDialogDismiss: (Boolean) -> Unit,
-    updateBidPrice: (UpdateOrderUseCase.Param) -> Unit
+    updateBidPrice: (UpdateOrderUseCase.Param) -> Unit,
+    onDeleteOrderClick: (Int) -> Unit,
+    showSuccessMessage: (String) -> Unit
 ) {
+    LaunchedEffect(key1 = uiState.message) {
+        if (!uiState.message.isNullOrEmpty()) showSuccessMessage.invoke(uiState.message)
+    }
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(id = R.string.my_order),
-            style = MaterialTheme.typography.h3
+            style = MaterialTheme.typography.h5
         )
-        uiState.orders.let {
-            when (uiState.orders) {
-                is BuyerAllOrderState.Error -> {
-
-                }
-                is BuyerAllOrderState.Success -> {
-                    ListOrders(
-                        orders = uiState.orders.ordersData,
-                        onOrderClick = onOrderClick
-                    )
-                }
-                is BuyerAllOrderState.Loading -> {
-                    GenericLoadingScreen()
-                }
+        Spacer(modifier = Modifier.height(8.dp))
+        when (uiState.orders) {
+            is BuyerAllOrderState.Error -> {
+                // Error Handler
+            }
+            is BuyerAllOrderState.Success -> {
+                ListOrders(
+                    orders = uiState.orders.ordersData,
+                    onOrderClick = onOrderClick
+                )
+            }
+            is BuyerAllOrderState.Loading -> {
+                GenericLoadingScreen()
             }
         }
-        when(uiState.order) {
+        when (uiState.order) {
             is BuyerOrderState.Idle -> {
-
+                // Do nothing
             }
             is BuyerOrderState.Error -> {
                 // Error Alert Dialog
@@ -102,7 +111,8 @@ fun BuyerOrderScreen(
                 OrderDetails(
                     orderData = uiState.order.orderData,
                     resetAlertDialogState = onAlertDialogDismiss,
-                    updateBidPrice = updateBidPrice
+                    updateBidPrice = updateBidPrice,
+                    onDeleteOrderClick = onDeleteOrderClick
                 )
             }
         }
