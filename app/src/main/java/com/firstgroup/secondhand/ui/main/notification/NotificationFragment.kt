@@ -6,16 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
@@ -82,15 +88,11 @@ fun NotificationScreen(
         }
         is LoginState.Loaded -> {
             if (uiState.loginState.isLoggedIn) {
-                if (uiState.notifications != null) {
-                    NotificationScreen(
-                        uiState = uiState,
-                        onNotificationClick = viewModel::getNotificationById,
-                        onDialogDismiss = viewModel::resetNotificationState
-                    )
-                } else {
-                    GenericLoadingScreen()
-                }
+                NotificationScreen(
+                    uiState = uiState,
+                    onNotificationClick = viewModel::getNotificationById,
+                    onDialogDismiss = viewModel::resetNotificationState
+                )
             } else {
                 LoginLayoutPlaceholder(onButtonClick = onLoginClick)
             }
@@ -107,11 +109,24 @@ fun NotificationScreen(
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        uiState.notifications?.let { notificationData ->
-            NotificationList(
-                notifications = notificationData,
-                onNotificationClick = onNotificationClick
-            )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.notification),
+            style = MaterialTheme.typography.h5
+        )
+        when(uiState.notifications) {
+            is AllNotificationState.Error -> {
+
+            }
+            is AllNotificationState.Loading -> {
+                GenericLoadingScreen()
+            }
+            is AllNotificationState.Success -> {
+                NotificationList(
+                    notifications = uiState.notifications.data,
+                    onNotificationClick = onNotificationClick
+                )
+            }
         }
         when(uiState.notification) {
             is NotificationState.Idle -> {
