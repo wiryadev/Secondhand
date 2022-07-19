@@ -21,10 +21,7 @@ import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.domain.order.OrderFilter
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
-import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
-import com.firstgroup.secondhand.ui.components.ListBidProduct
-import com.firstgroup.secondhand.ui.components.ListProduct
-import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
+import com.firstgroup.secondhand.ui.components.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -185,7 +182,7 @@ fun SellListScreen(
                                 OrderFilterDropDown(onFilterSelected = viewModel::setFilter)
                                 Spacer(modifier = Modifier.height(16.dp))
                                 if (uiState.orderState is OrderState.Success) {
-                                    ListBidProduct(
+                                    ListOrders(
                                         orders = uiState.orderState.data,
                                         onOrderClick = onOrderClick,
                                     )
