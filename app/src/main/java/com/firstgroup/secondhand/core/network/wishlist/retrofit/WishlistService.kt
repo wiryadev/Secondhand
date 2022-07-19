@@ -21,7 +21,7 @@ interface WishlistService {
         @Path("id") id: Int
     ): WishlistDto
 
-    @DELETE("buyer/order/{id}")
+    @DELETE("buyer/wishlist/{id}")
     suspend fun removeFromWishlist(
         @Path("id") id: Int
     ): DeleteWishlistDto
