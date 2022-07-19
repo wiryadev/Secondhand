@@ -53,6 +53,9 @@
         <action
             android:id="@+id/action_main_navigation_account_to_buyerOrderFragment"
             app:destination="@id/buyerOrderFragment" />
+        <action
+            android:id="@+id/action_main_navigation_account_to_wishlistFragment"
+            app:destination="@id/wishlistFragment" />
     </fragment>
 
     <fragment
@@ -110,6 +113,14 @@
         <action
             android:id="@+id/action_buyerOrderFragment_to_main_navigation_account"
             app:destination="@id/main_navigation_account" />
+    </fragment>
+    <fragment
+        android:id="@+id/wishlistFragment"
+        android:name="com.firstgroup.secondhand.ui.main.account.wishlist.WishlistFragment"
+        android:label="WishlistFragment" >
+        <action
+            android:id="@+id/action_wishlistFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
 
 </navigation>
