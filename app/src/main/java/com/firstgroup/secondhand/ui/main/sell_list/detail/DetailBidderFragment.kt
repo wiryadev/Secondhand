@@ -32,7 +32,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.core.network.order.model.GetOrderDto
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.SecondaryButton
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -292,6 +291,7 @@ fun DetailBidderScreen(
                         },
                         modifier = Modifier
                             .padding(start = 8.dp)
+                            .fillMaxWidth()
                     )
                 } else {
                     Text(
@@ -308,36 +308,3 @@ fun DetailBidderScreen(
         }
     }
 }
-
-val dummyOrder = GetOrderDto(
-    id = 159,
-    productId = 1,
-    buyerId = 274,
-    price = 100000,
-    status = "pending",
-    product = GetOrderDto.ProductData(
-        name = "adidas red",
-        description = "null",
-        basePrice = 100000,
-        imageUrl = "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/avatar%2FAV-1655983009420-hina.PNG?alt=media",
-        imageName = "adidas image",
-        location = "bandung",
-        userId = 5,
-        status = "pending",
-        user = GetOrderDto.ProductData.User(
-            address = "",
-            city = "",
-            email = "",
-            fullName = "",
-            id = 0,
-            phoneNumber = ""
-        )
-    ),
-    user = GetOrderDto.User(
-        fullName = "Agus WIlliam",
-        email = "agusrt026@mail.com",
-        phoneNumber = "081208120812",
-        address = "bekasi",
-        city = "Kab. Bekasi"
-    )
-)

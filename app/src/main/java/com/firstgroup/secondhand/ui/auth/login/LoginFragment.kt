@@ -228,6 +228,7 @@ fun LoginScreen(
                     )
                 },
                 enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth()
             )
             // Login Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
@@ -286,8 +287,3 @@ fun LoginScreen(
     }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun LoginPreview() {
-////    MdcTheme { LoginScreen() }
-//}

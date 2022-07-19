@@ -208,7 +208,7 @@ fun DetailScreen(
                 // third card, contain product description
                 // check if its description available
                 val textDescription =
-                    product.description ?: stringResource(R.string.no_description)
+                    product.description
 
                 Card(
                     modifier = Modifier
@@ -274,12 +274,13 @@ fun DetailScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            when(uiState.loginState) {
+            when (uiState.loginState) {
                 is LoginState.Loaded -> {
                     if (uiState.loginState.isLoggedIn) {
                         PrimaryButton(
                             onClick = {
-                                val orderBottomsheet = OrderBottomSheetFragment.newInstance(uiState.product.id)
+                                val orderBottomsheet =
+                                    OrderBottomSheetFragment.newInstance(uiState.product.id)
                                 orderBottomsheet.show(fragmentManager, orderBottomsheet.tag)
                             },
                             content = {
@@ -287,7 +288,8 @@ fun DetailScreen(
                                     text = stringResource(R.string.bid),
                                     style = MaterialTheme.typography.button
                                 )
-                            }
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         )
                     } else {
                         PrimaryButton(
@@ -297,7 +299,8 @@ fun DetailScreen(
                                     text = stringResource(R.string.login),
                                     style = MaterialTheme.typography.button
                                 )
-                            }
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

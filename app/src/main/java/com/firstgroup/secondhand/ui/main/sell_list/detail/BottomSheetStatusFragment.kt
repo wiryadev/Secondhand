@@ -121,7 +121,8 @@ class BottomSheetStatusFragment: BottomSheetDialogFragment() {
                             content = {
                                 Text(text = context.getString(R.string.submit))
                             },
-                            enabled = selected != ""
+                            enabled = selected != "",
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                     }

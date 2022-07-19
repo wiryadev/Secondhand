@@ -39,7 +39,8 @@ fun LoginLayoutPlaceholder(
             onClick = onButtonClick,
             content = {
                 Text(text = stringResource(id = R.string.login))
-            }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.weight(1f))
     }

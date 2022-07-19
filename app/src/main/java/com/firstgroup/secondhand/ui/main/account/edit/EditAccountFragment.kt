@@ -308,7 +308,8 @@ fun EditAccountScreen(
                 },
                 content = {
                     Text(text = stringResource(R.string.save))
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
         }
         IconButton(
