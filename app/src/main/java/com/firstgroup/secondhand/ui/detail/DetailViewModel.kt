@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Product
+import com.firstgroup.secondhand.core.model.Wishlist
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.product.GetProductByIdAsBuyerUseCase
+import com.firstgroup.secondhand.domain.wishlist.AddToWishlistUseCase
+import com.firstgroup.secondhand.domain.wishlist.GetWishlistUseCase
 import com.firstgroup.secondhand.ui.auth.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +21,8 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val getSessionUseCase: GetSessionUseCase,
     private val getProductByIdAsBuyerUseCase: GetProductByIdAsBuyerUseCase,
+    private val getWishlistUseCase: GetWishlistUseCase,
+    private val addToWishListUseCase: AddToWishlistUseCase,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<DetailUiState> = MutableStateFlow(DetailUiState())
@@ -74,11 +79,48 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun getWishlist(){
+        viewModelScope.launch {
+            when (val result = getWishlistUseCase(Unit)){
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(wishlist = result.data)
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(errorMessage = result.exception?.message.toString())
+                    }
+                }
+            }
+        }
+    }
+
+    fun addToWishlist(id: Int){
+        viewModelScope.launch {
+            when (val result = addToWishListUseCase(id)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(isSuccess = true)
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(errorMessage = result.exception?.message.toString())
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 data class DetailUiState(
     val loginState: LoginState = LoginState.Idle,
     val product: Product? = null,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val wishlist: List<Wishlist>? = null,
+    val isSuccess: Boolean = false
 )
