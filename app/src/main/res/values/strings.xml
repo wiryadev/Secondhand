@@ -117,5 +117,6 @@
     <string name="buyer_order_detail_date_and_status">%1$s\n%2$s</string>
     <string name="error_buyer_order_detail_date_and_status">%1$s\n%2$s</string>
     <string name="buyer_order_detail_title">Order #%1$s</string>
+    <string name="wishlist">Wishlist</string>
 
 </resources>
