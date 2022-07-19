@@ -9,16 +9,16 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -32,6 +32,7 @@ import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
 import com.firstgroup.secondhand.ui.components.PrimaryButton
+import com.firstgroup.secondhand.ui.components.SecondaryButton
 import com.firstgroup.secondhand.ui.detail.create_order.OrderBottomSheetFragment
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +57,8 @@ class DetailFragment : Fragment() {
                         uiState = uiState,
                         fragmentManager = parentFragmentManager,
                         onLoginClick = ::goToLoginScreen,
-                        onBackClick = { findNavController().popBackStack() }
+                        onBackClick = { findNavController().popBackStack() },
+                        onWishlistClick = { viewModel.addToWishlist(it) }
                     )
                 }
             }
@@ -72,6 +74,9 @@ class DetailFragment : Fragment() {
         viewModel.getSession()
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
+            if (viewModel.uiState.value.loginState != LoginState.Idle){
+                viewModel.getWishlist()
+            }
         }
     }
 }
@@ -81,6 +86,7 @@ fun DetailScreen(
     uiState: DetailUiState,
     fragmentManager: FragmentManager,
     onLoginClick: () -> Unit,
+    onWishlistClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
     uiState.product?.let { product ->
@@ -264,7 +270,7 @@ fun DetailScreen(
             }
         }
         // box for button 'terbitkan'
-        Box(
+        Row(
             modifier = Modifier
                 .padding(
                     start = 16.dp,
@@ -272,12 +278,19 @@ fun DetailScreen(
                     bottom = 24.dp
                 )
                 .fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
+            verticalAlignment = Alignment.Bottom
         ) {
             when (uiState.loginState) {
                 is LoginState.Loaded -> {
                     if (uiState.loginState.isLoggedIn) {
+                        var wishlist by remember{ mutableStateOf(false) }
+                        uiState.wishlist?.forEach {
+                            if (it.product.id == uiState.product.id) {
+                                wishlist = true
+                            }
+                        }
                         PrimaryButton(
+                            modifier = Modifier.fillMaxWidth(0.8f),
                             onClick = {
                                 val orderBottomsheet =
                                     OrderBottomSheetFragment.newInstance(uiState.product.id)
@@ -289,7 +302,27 @@ fun DetailScreen(
                                     style = MaterialTheme.typography.button
                                 )
                             },
-                            modifier = Modifier.fillMaxWidth()
+                        )
+                        SecondaryButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                if(!wishlist) {
+                                    onWishlistClick(uiState.product.id)
+                                    wishlist = true
+                                }
+                                      },
+                            content = {
+                                Icon(
+                                    imageVector =
+                                    if(wishlist)
+                                        ImageVector.vectorResource(id = R.drawable.ic_wishlist)
+                                    else
+                                        ImageVector.vectorResource(id = R.drawable.ic_wishlist_border)
+                                    ,
+                                    contentDescription = null
+                                )
+                            },
+                            enabled = !wishlist
                         )
                     } else {
                         PrimaryButton(
