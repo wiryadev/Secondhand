@@ -5,6 +5,7 @@ data class Order(
     val bidPrice: Int,
     val status: String,
     val product: Product,
+    val transactionDate: String,
 )
 
 data class CreateOrder(
