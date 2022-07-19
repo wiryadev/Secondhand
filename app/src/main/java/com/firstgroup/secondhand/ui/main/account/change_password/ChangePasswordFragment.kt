@@ -316,6 +316,7 @@ fun ChangePasswordScreen(
                     )
                 },
                 enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth()
             )
         }
         IconButton(

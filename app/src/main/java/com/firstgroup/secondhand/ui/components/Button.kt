@@ -23,11 +23,10 @@ fun PrimaryButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
             .heightIn(min = 48.dp),
         shape = RoundedCornerShape(16.dp),
         enabled = enabled,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+//        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
     ) {
         content()
     }
@@ -43,7 +42,6 @@ fun SecondaryButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
             .heightIn(min = 48.dp)
             .border(
                 1.dp,
@@ -52,18 +50,7 @@ fun SecondaryButton(
             ),
         shape = RoundedCornerShape(16.dp),
         enabled = enabled,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
     ) {
         content()
     }
 }
-
-//@Preview
-//@Composable
-//fun ButtonPreview() {
-//    MdcTheme() {
-//        PrimaryButton(
-//            onClick = {}, content = { Text(text = "tombol panjaaaannnnnnnnnggggggggggg yang sangat panjang") }
-//        )
-//    }
-//}

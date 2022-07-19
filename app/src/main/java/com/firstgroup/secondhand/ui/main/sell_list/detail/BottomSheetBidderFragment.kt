@@ -225,7 +225,8 @@ fun BottomSheetBidderScreen(
                             contentDescription = null,
                         )
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(24.dp))
         }

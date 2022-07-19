@@ -446,7 +446,9 @@ fun RegisterScreen(
                             stringResource(id = R.string.register)
                         },
                     )
-                }, enabled = !uiState.isLoading && password == confirmpassword
+                },
+                enabled = !uiState.isLoading && password == confirmpassword,
+                modifier = Modifier.fillMaxWidth()
             )
             // Register Bottom Clickable Text
             Spacer(modifier = Modifier.heightIn(min = 16.dp, max = 32.dp))

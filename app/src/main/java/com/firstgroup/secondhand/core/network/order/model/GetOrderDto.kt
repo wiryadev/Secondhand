@@ -14,6 +14,8 @@ data class GetOrderDto(
     val id: Int,
     @Json(name = "price")
     val price: Int,
+    @Json(name = "transaction_date")
+    val transactionDate: String?,
     @Json(name = "Product")
     val product: ProductData,
     @Json(name = "product_id")
@@ -28,11 +30,11 @@ data class GetOrderDto(
         @Json(name = "base_price")
         val basePrice: Int,
         @Json(name = "description")
-        val description: String,
+        val description: String?,
         @Json(name = "image_name")
-        val imageName: String,
+        val imageName: String?,
         @Json(name = "image_url")
-        val imageUrl: String,
+        val imageUrl: String?,
         @Json(name = "location")
         val location: String,
         @Json(name = "name")
@@ -79,12 +81,13 @@ data class GetOrderDto(
         id = id,
         bidPrice = price,
         status = status,
+        transactionDate = transactionDate.orEmpty(),
         product = Product(
             id = productId,
             name = product.name,
-            description = product.description,
+            description = product.description.orEmpty(),
             price = product.basePrice,
-            imageUrl = product.imageUrl,
+            imageUrl = product.imageUrl.orEmpty(),
             location = product.location,
             userId = product.userId,
             category = "",

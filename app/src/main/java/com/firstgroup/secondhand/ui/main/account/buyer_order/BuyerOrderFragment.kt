@@ -21,7 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.firstgroup.secondhand.R
-import com.firstgroup.secondhand.ui.components.ListBidProduct
+import com.firstgroup.secondhand.domain.order.UpdateOrderUseCase
+import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
+import com.firstgroup.secondhand.ui.components.ListOrders
+import com.firstgroup.secondhand.ui.components.OrderDetails
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +44,9 @@ class BuyerOrderFragment : Fragment() {
                 MdcTheme {
                     BuyerOrderScreen(
                         uiState = uiState,
-                        onOrderClick = {}
+                        onOrderClick = viewModel::getOrderById,
+                        onAlertDialogDismiss = viewModel::resetAlertDialogState,
+                        updateBidPrice = viewModel::updateBidPrice
                     )
                 }
             }
@@ -57,7 +62,9 @@ class BuyerOrderFragment : Fragment() {
 @Composable
 fun BuyerOrderScreen(
     uiState: BuyerOrderUiState,
-    onOrderClick: (Int) -> Unit
+    onOrderClick: (Int) -> Unit,
+    onAlertDialogDismiss: (Boolean) -> Unit,
+    updateBidPrice: (UpdateOrderUseCase.Param) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -70,18 +77,33 @@ fun BuyerOrderScreen(
         )
         uiState.orders.let {
             when (uiState.orders) {
-                is BuyerOrdersState.Error -> {
+                is BuyerAllOrderState.Error -> {
 
                 }
-                is BuyerOrdersState.Success -> {
-                    ListBidProduct(
+                is BuyerAllOrderState.Success -> {
+                    ListOrders(
                         orders = uiState.orders.ordersData,
                         onOrderClick = onOrderClick
                     )
                 }
-                is BuyerOrdersState.Loading -> {
-
+                is BuyerAllOrderState.Loading -> {
+                    GenericLoadingScreen()
                 }
+            }
+        }
+        when(uiState.order) {
+            is BuyerOrderState.Idle -> {
+
+            }
+            is BuyerOrderState.Error -> {
+                // Error Alert Dialog
+            }
+            is BuyerOrderState.Success -> {
+                OrderDetails(
+                    orderData = uiState.order.orderData,
+                    resetAlertDialogState = onAlertDialogDismiss,
+                    updateBidPrice = updateBidPrice
+                )
             }
         }
     }

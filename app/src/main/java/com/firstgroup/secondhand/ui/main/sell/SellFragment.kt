@@ -445,6 +445,7 @@ fun SellScreen(
                 },
                 modifier = Modifier
                     .padding(start = 8.dp)
+                    .fillMaxWidth()
             )
         }
     }

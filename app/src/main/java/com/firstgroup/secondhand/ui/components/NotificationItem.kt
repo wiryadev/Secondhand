@@ -102,12 +102,9 @@ fun NotificationItem(
                             color = Color.Gray
                         )
                     )
-                    if (notification.date != "") {
-                        val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
-                        val convertedDate =
-                            OffsetDateTime.parse(notification.date).format(transactionDateFormat)
+                    if (notification.date.isNotEmpty()) {
                         Text(
-                            text = "Ordered on : $convertedDate",
+                            text = "Ordered on : ${dateFormatter(notification.date)}",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.End,
                             style = MaterialTheme.typography.body2.copy(
@@ -115,12 +112,8 @@ fun NotificationItem(
                             )
                         )
                     } else {
-                        val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
-                        val convertedDateCreate =
-                            OffsetDateTime.parse(notification.dateCreated)
-                                .format(transactionDateFormat)
                         Text(
-                            text = "Published on : $convertedDateCreate",
+                            text = "Published on : ${dateFormatter(notification.dateCreated)}",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.End,
                             style = MaterialTheme.typography.body2.copy(
@@ -269,13 +262,8 @@ fun NotificationDetails(
                                     )
                             )
                             if (notificationDetails.date != "") {
-                                val transactionDateFormat =
-                                    DateTimeFormatter.ofPattern("dd MMM, HH:mm")
-                                val convertedDate =
-                                    OffsetDateTime.parse(notificationDetails.date)
-                                        .format(transactionDateFormat)
                                 Text(
-                                    text = "Ordered on : $convertedDate",
+                                    text = "Ordered on : ${dateFormatter(notificationDetails.date)}",
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.End,
                                     style = MaterialTheme.typography.body2.copy(
@@ -284,12 +272,8 @@ fun NotificationDetails(
                                 )
                             }
                         } else {
-                            val transactionDateFormat = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
-                            val convertedDateCreate =
-                                OffsetDateTime.parse(notificationDetails.dateCreated)
-                                    .format(transactionDateFormat)
                             Text(
-                                text = "Published on : $convertedDateCreate",
+                                text = "Published on : ${dateFormatter(notificationDetails.dateCreated)}",
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.End,
                                 style = MaterialTheme.typography.body2.copy(

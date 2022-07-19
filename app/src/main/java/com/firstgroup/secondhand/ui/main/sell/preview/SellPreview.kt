@@ -234,7 +234,8 @@ fun SellPreview(
                     text = stringResource(R.string.publish),
                     style = MaterialTheme.typography.button
                 )
-            }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

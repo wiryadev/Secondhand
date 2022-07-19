@@ -187,7 +187,7 @@ fun HomeScreen(
 //        } else {
 
 //            when (uiState.allProductState) {
-//                AllProductsUiState.Loading -> {
+//                AllProductsUiState.Idle -> {
 //                    ListProductLoadingScreen()
 //                }
 //                AllProductsUiState.Loaded -> {

@@ -142,7 +142,8 @@ fun SuccessOrderUi(
             onClick = onDismissClick,
             content = {
                 Text(text = stringResource(id = R.string.make_another_order))
-            }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(24.dp))
     }
@@ -276,7 +277,8 @@ fun OrderFormUi(
                             modifier = Modifier.fillMaxWidth(0.8f)
                         )
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(24.dp))
         }

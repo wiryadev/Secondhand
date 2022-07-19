@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Order
+import com.firstgroup.secondhand.domain.order.GetOrderByIdAsBuyerUseCase
 import com.firstgroup.secondhand.domain.order.GetOrdersAsBuyerUseCase
+import com.firstgroup.secondhand.domain.order.UpdateOrderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class BuyerOrderViewModel @Inject constructor(
     private val getOrdersAsBuyerUseCase: GetOrdersAsBuyerUseCase,
-): ViewModel() {
+    private val getOrderByIdAsBuyerUseCase: GetOrderByIdAsBuyerUseCase,
+    private val updateOrderUseCase: UpdateOrderUseCase
+) : ViewModel() {
 
     private val _uiState: MutableStateFlow<BuyerOrderUiState> = MutableStateFlow(
         BuyerOrderUiState()
@@ -25,12 +29,12 @@ class BuyerOrderViewModel @Inject constructor(
 
     fun getOrder() {
         viewModelScope.launch {
-            when(val result = getOrdersAsBuyerUseCase(Unit)) {
+            when (val result = getOrdersAsBuyerUseCase(Unit)) {
                 is Result.Success -> {
                     Log.d("getOrder", "get Order Success: ${result.data} ")
                     _uiState.update {
                         it.copy(
-                            orders = BuyerOrdersState.Success(result.data)
+                            orders = BuyerAllOrderState.Success(result.data)
                         )
                     }
                 }
@@ -38,7 +42,7 @@ class BuyerOrderViewModel @Inject constructor(
                     Log.d("getOrder", "get Order Error: ${result.exception?.message.toString()}")
                     _uiState.update {
                         it.copy(
-                            orders = BuyerOrdersState.Error(result.exception?.message.toString())
+                            orders = BuyerAllOrderState.Error(result.exception?.message.toString())
                         )
                     }
                 }
@@ -46,14 +50,61 @@ class BuyerOrderViewModel @Inject constructor(
         }
     }
 
+    fun getOrderById(orderId: Int) {
+        viewModelScope.launch {
+            when (val result = getOrderByIdAsBuyerUseCase(orderId)) {
+                is Result.Error -> {
+                    Log.d("orderbyid", "getOrderByIderror: ${result.exception?.message}")
+                }
+                is Result.Success -> {
+                    Log.d("orderbyid", "getOrderByIdsuccess: ${result.data}")
+                    _uiState.update {
+                        it.copy(
+                            order = BuyerOrderState.Success(result.data)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun resetAlertDialogState(isDialogDismissed: Boolean) {
+        if (isDialogDismissed) {
+            _uiState.update {
+                it.copy(
+                    order = BuyerOrderState.Idle
+                )
+            }
+        }
+    }
+
+    fun updateBidPrice(updateParam: UpdateOrderUseCase.Param) {
+        viewModelScope.launch {
+            when(val result = updateOrderUseCase(updateParam)) {
+                is Result.Error -> {
+                    Log.d("updateBidPrice", "updateBidPrice: ${result.exception?.message}")
+                }
+                is Result.Success -> {
+                    Log.d("updateBidPrice", "updateBidPrice: ${result.data}")
+                }
+            }
+        }
+    }
 }
 
 data class BuyerOrderUiState(
-    val orders: BuyerOrdersState = BuyerOrdersState.Loading
+    val orders: BuyerAllOrderState = BuyerAllOrderState.Loading,
+    val order: BuyerOrderState = BuyerOrderState.Idle
 )
 
-sealed interface BuyerOrdersState{
-    data class Success(val ordersData: List<Order>): BuyerOrdersState
-    data class Error(val error: String): BuyerOrdersState
-    object Loading: BuyerOrdersState
+sealed interface BuyerAllOrderState {
+    data class Success(val ordersData: List<Order>) : BuyerAllOrderState
+    data class Error(val error: String) : BuyerAllOrderState
+    object Loading : BuyerAllOrderState
+}
+
+sealed interface BuyerOrderState {
+    data class Success(val orderData: Order) : BuyerOrderState
+    data class Error(val error: String) : BuyerOrderState
+    object Idle : BuyerOrderState
 }
