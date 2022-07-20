@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
 import com.firstgroup.secondhand.core.model.Product
-import com.firstgroup.secondhand.core.model.Wishlist
 import com.firstgroup.secondhand.domain.auth.GetSessionUseCase
 import com.firstgroup.secondhand.domain.product.GetProductByIdAsBuyerUseCase
 import com.firstgroup.secondhand.domain.wishlist.AddToWishlistUseCase
@@ -59,7 +58,7 @@ class DetailViewModel @Inject constructor(
             it.copy(isLoading = true)
         }
         viewModelScope.launch {
-            when(val result = getProductByIdAsBuyerUseCase(id)) {
+            when (val result = getProductByIdAsBuyerUseCase(id)) {
                 is Result.Error -> {
                     _uiState.update {
                         it.copy(
@@ -80,12 +79,15 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getWishlist(){
+    fun getWishlist(id: Int) {
         viewModelScope.launch {
-            when (val result = getWishlistUseCase(Unit)){
+            when (val result = getWishlistUseCase(Unit)) {
                 is Result.Success -> {
+                    val isWishListed = result.data.any {
+                        it.product.id == id
+                    }
                     _uiState.update {
-                        it.copy(wishlist = result.data)
+                        it.copy(isWishListed = isWishListed)
                     }
                 }
                 is Result.Error -> {
@@ -97,7 +99,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun addToWishlist(id: Int){
+    fun addToWishlist(id: Int) {
         viewModelScope.launch {
             when (val result = addToWishListUseCase(id)) {
                 is Result.Success -> {
@@ -121,6 +123,6 @@ data class DetailUiState(
     val product: Product? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val wishlist: List<Wishlist>? = null,
+    val isWishListed: Boolean = false,
     val isSuccess: Boolean = false
 )
