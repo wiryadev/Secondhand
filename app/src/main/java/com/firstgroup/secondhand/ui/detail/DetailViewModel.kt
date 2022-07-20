@@ -106,6 +106,7 @@ class DetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isSuccess = true)
                     }
+                    getWishlist(id)
                 }
                 is Result.Error -> {
                     _uiState.update {

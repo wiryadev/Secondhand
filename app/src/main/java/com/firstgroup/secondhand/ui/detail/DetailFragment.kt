@@ -69,7 +69,6 @@ class DetailFragment : Fragment() {
                         },
                         onWishlistClick = {
                             viewModel.addToWishlist(it)
-                            viewModel.getWishlist(it)
                         }
                     )
                 }
@@ -275,7 +274,8 @@ fun DetailScreen(
                 is LoginState.Loaded -> {
                     if (uiState.loginState.isLoggedIn) {
                         PrimaryButton(
-                            modifier = Modifier.fillMaxWidth(0.8f),
+                            modifier = Modifier
+                                .fillMaxWidth(0.8f),
                             onClick = {
                                 val orderBottomsheet =
                                     OrderBottomSheetFragment.newInstance(uiState.product.id)
@@ -288,6 +288,7 @@ fun DetailScreen(
                                 )
                             },
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
                         SecondaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {

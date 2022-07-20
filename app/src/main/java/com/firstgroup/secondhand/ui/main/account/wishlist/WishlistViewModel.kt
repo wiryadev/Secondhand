@@ -30,7 +30,8 @@ class WishlistViewModel @Inject constructor(
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
-                            wishlist = WishlistState.Success(result.data)
+                            wishlist = WishlistState.Success(result.data),
+                            isSuccess = true
                         )
                     }
                 }
@@ -52,6 +53,7 @@ class WishlistViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isSuccess = true)
                     }
+                    getWishlist()
                 }
                 is Result.Error -> {
                     _uiState.update {
@@ -60,15 +62,6 @@ class WishlistViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun resetWishlist(){
-        _uiState.update {
-            it.copy(
-                wishlist = WishlistState.Loading
-            )
-        }
-        getWishlist()
     }
 
 }
