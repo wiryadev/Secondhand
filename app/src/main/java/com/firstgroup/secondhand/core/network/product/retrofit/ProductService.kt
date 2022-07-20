@@ -18,7 +18,7 @@ interface ProductService {
         @Query("per_page") size: Int,
         @Query("category_id") categoryId: Int? = null,
         @Query("search") search: String? = null,
-    ): PagedProductsDto
+    ): List<ProductDto>
 
     @GET("buyer/product/{id}")
     @Headers("${NO_AUTH_HEADER_KEY}: true")

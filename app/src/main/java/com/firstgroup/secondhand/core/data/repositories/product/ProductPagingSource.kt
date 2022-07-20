@@ -20,6 +20,7 @@ class ProductPagingSource(
                 page = position,
                 size = params.loadSize,
             ).map { it.mapToEntityModel() }
+
             val nextKey = if (products.isEmpty()) {
                 null
             } else {
@@ -27,6 +28,7 @@ class ProductPagingSource(
                 // ensure we're not requesting duplicating items, at the 2nd request
                 position + (params.loadSize / NETWORK_PAGE_SIZE)
             }
+
             LoadResult.Page(
                 data = products,
                 prevKey = if (position == STARTING_PAGE_INDEX) null else position - 1,

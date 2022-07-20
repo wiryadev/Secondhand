@@ -74,6 +74,7 @@ class DetailFragment : Fragment() {
         viewModel.getSession()
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
+            // TODO: fix crash getwishlisht
             if (viewModel.uiState.value.loginState != LoginState.Idle){
                 viewModel.getWishlist()
             }
