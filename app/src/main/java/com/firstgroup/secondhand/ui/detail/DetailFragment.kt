@@ -5,11 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,20 +54,23 @@ class DetailFragment : Fragment() {
     private val args: DetailFragmentArgs by navArgs()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
                 MdcTheme {
-                    DetailScreen(
-                        uiState = uiState,
+                    DetailScreen(uiState = uiState,
                         fragmentManager = parentFragmentManager,
                         onLoginClick = ::goToLoginScreen,
                         onBackClick = { findNavController().popBackStack() },
-                        onWishlistClick = { viewModel.addToWishlist(it) }
+                        onCheckWishlist = {
+                            viewModel.getWishlist(args.id)
+                        },
+                        onWishlistClick = {
+                            viewModel.addToWishlist(it)
+                            viewModel.getWishlist(it)
+                        }
                     )
                 }
             }
@@ -72,12 +84,9 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getSession()
+        
         if (savedInstanceState == null) {
             viewModel.getProductDetailById(args.id)
-            // TODO: fix crash getwishlisht
-            if (viewModel.uiState.value.loginState != LoginState.Idle){
-                viewModel.getWishlist()
-            }
         }
     }
 }
@@ -87,13 +96,19 @@ fun DetailScreen(
     uiState: DetailUiState,
     fragmentManager: FragmentManager,
     onLoginClick: () -> Unit,
+    onCheckWishlist: () -> Unit,
     onWishlistClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
+    LaunchedEffect(key1 = uiState.loginState) {
+        if (uiState.loginState is LoginState.Loaded && uiState.loginState.isLoggedIn) {
+            onCheckWishlist.invoke()
+        }
+    }
+
     uiState.product?.let { product ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             val painter = rememberAsyncImagePainter(
                 model = product.imageUrl
@@ -108,8 +123,7 @@ fun DetailScreen(
                     .fillMaxWidth()
             )
             Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
                 // spacer from top of parent
                 Spacer(modifier = Modifier.height(265.dp))
@@ -122,30 +136,23 @@ fun DetailScreen(
                     elevation = 4.dp,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
+                        modifier = Modifier.padding(horizontal = 24.dp)
                     ) {
                         // text product name
                         Text(
-                            text = product.name,
-                            style = MaterialTheme.typography.body1.copy(
+                            text = product.name, style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
-                                .padding(
-                                    top = 16.dp,
-                                )
+                            ), modifier = Modifier.padding(
+                                top = 16.dp,
+                            )
                         )
                         // text product category
                         Text(
-                            text = product.category,
-                            style = MaterialTheme.typography.body2.copy(
+                            text = product.category, style = MaterialTheme.typography.body2.copy(
                                 color = Color.Gray
-                            ),
-                            modifier = Modifier
-                                .padding(
-                                    top = 4.dp,
-                                )
+                            ), modifier = Modifier.padding(
+                                top = 4.dp,
+                            )
                         )
                         // text product price
                         Text(
@@ -153,11 +160,9 @@ fun DetailScreen(
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            modifier = Modifier
-                                .padding(
-                                    top = 8.dp,
-                                    bottom = 16.dp
-                                )
+                            modifier = Modifier.padding(
+                                top = 8.dp, bottom = 16.dp
+                            )
                         )
                     }
                 }
@@ -165,9 +170,7 @@ fun DetailScreen(
                 Card(
                     modifier = Modifier
                         .padding(
-                            top = 16.dp,
-                            start = 16.dp,
-                            end = 16.dp
+                            top = 16.dp, start = 16.dp, end = 16.dp
                         )
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
@@ -176,8 +179,7 @@ fun DetailScreen(
                     Row(
                         modifier = Modifier
                             .padding(horizontal = 16.dp, vertical = 16.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
                     ) {
                         val painterSellerImage = rememberAsyncImagePainter(
                             model = product.seller?.imageUrl
@@ -186,12 +188,10 @@ fun DetailScreen(
                         Image(
                             painter = painterSellerImage,
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(48.dp)
+                            modifier = Modifier.size(48.dp)
                         )
                         Column(
-                            modifier = Modifier
-                                .padding(start = 16.dp)
+                            modifier = Modifier.padding(start = 16.dp)
                         ) {
                             // text seller full name
                             Text(
@@ -206,31 +206,26 @@ fun DetailScreen(
                                 style = MaterialTheme.typography.body2.copy(
                                     color = Color.Gray
                                 ),
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
+                                modifier = Modifier.padding(top = 4.dp)
                             )
                         }
                     }
                 }
                 // third card, contain product description
                 // check if its description available
-                val textDescription =
-                    product.description
+                val textDescription = product.description
 
                 Card(
                     modifier = Modifier
                         .padding(
-                            top = 19.dp,
-                            start = 16.dp,
-                            end = 16.dp
+                            top = 19.dp, start = 16.dp, end = 16.dp
                         )
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     elevation = 4.dp,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .padding(all = 16.dp)
+                        modifier = Modifier.padding(all = 16.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.description),
@@ -239,8 +234,7 @@ fun DetailScreen(
                             )
                         )
                         Text(
-                            modifier = Modifier
-                                .padding(top = 16.dp),
+                            modifier = Modifier.padding(top = 16.dp),
                             text = textDescription,
                             style = MaterialTheme.typography.body1.copy(
                                 color = Color.Gray
@@ -256,8 +250,7 @@ fun DetailScreen(
             Card(
                 modifier = Modifier
                     .padding(
-                        top = 44.dp,
-                        start = 16.dp
+                        top = 44.dp, start = 16.dp
                     )
                     .clickable { onBackClick() },
                 shape = RoundedCornerShape(20.dp),
@@ -274,22 +267,13 @@ fun DetailScreen(
         Row(
             modifier = Modifier
                 .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 24.dp
+                    start = 16.dp, end = 16.dp, bottom = 24.dp
                 )
-                .fillMaxSize(),
-            verticalAlignment = Alignment.Bottom
+                .fillMaxSize(), verticalAlignment = Alignment.Bottom
         ) {
             when (uiState.loginState) {
                 is LoginState.Loaded -> {
                     if (uiState.loginState.isLoggedIn) {
-                        var wishlist by remember{ mutableStateOf(false) }
-                        uiState.wishlist?.forEach {
-                            if (it.product.id == uiState.product.id) {
-                                wishlist = true
-                            }
-                        }
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(0.8f),
                             onClick = {
@@ -307,23 +291,20 @@ fun DetailScreen(
                         SecondaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                if(!wishlist) {
+                                if (!uiState.isWishListed) {
                                     onWishlistClick(uiState.product.id)
-                                    wishlist = true
                                 }
-                                      },
+                            },
                             content = {
                                 Icon(
-                                    imageVector =
-                                    if(wishlist)
-                                        ImageVector.vectorResource(id = R.drawable.ic_wishlist)
-                                    else
-                                        ImageVector.vectorResource(id = R.drawable.ic_wishlist_border)
-                                    ,
+                                    imageVector = if (uiState.isWishListed) ImageVector.vectorResource(
+                                        id = R.drawable.ic_wishlist
+                                    )
+                                    else ImageVector.vectorResource(id = R.drawable.ic_wishlist_border),
                                     contentDescription = null
                                 )
                             },
-                            enabled = !wishlist
+                            enabled = !uiState.isWishListed,
                         )
                     } else {
                         PrimaryButton(
@@ -334,7 +315,7 @@ fun DetailScreen(
                                     style = MaterialTheme.typography.button
                                 )
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
