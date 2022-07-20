@@ -69,7 +69,6 @@ class DetailFragment : Fragment() {
                         },
                         onWishlistClick = {
                             viewModel.addToWishlist(it)
-                            viewModel.getWishlist(it)
                         }
                     )
                 }
