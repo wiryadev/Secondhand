@@ -419,6 +419,7 @@ fun SellScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            /* TODO = form kosong tombol preview bisa diteken dan nggk ada error */
             SecondaryButton(
                 onClick = { onPreviewClick(productName, productDescription, productPrice) },
                 content = {
@@ -433,6 +434,7 @@ fun SellScreen(
                     .fillMaxWidth(0.5f)
                     .padding(end = 8.dp)
             )
+            /* TODO = form kosong tombol publish bisa diteken dan nggk ada error */
             PrimaryButton(
                 onClick = {
                     onPublishClick(productName, productDescription, productPrice)

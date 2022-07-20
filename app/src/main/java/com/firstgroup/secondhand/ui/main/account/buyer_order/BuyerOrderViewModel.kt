@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
+import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.Order
+import com.firstgroup.secondhand.domain.order.CancelOrderUseCase
 import com.firstgroup.secondhand.domain.order.GetOrderByIdAsBuyerUseCase
 import com.firstgroup.secondhand.domain.order.GetOrdersAsBuyerUseCase
 import com.firstgroup.secondhand.domain.order.UpdateOrderUseCase
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class BuyerOrderViewModel @Inject constructor(
     private val getOrdersAsBuyerUseCase: GetOrdersAsBuyerUseCase,
     private val getOrderByIdAsBuyerUseCase: GetOrderByIdAsBuyerUseCase,
-    private val updateOrderUseCase: UpdateOrderUseCase
+    private val updateOrderUseCase: UpdateOrderUseCase,
+    private val cancelOrderUseCase: CancelOrderUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<BuyerOrderUiState> = MutableStateFlow(
@@ -85,7 +88,33 @@ class BuyerOrderViewModel @Inject constructor(
                     Log.d("updateBidPrice", "updateBidPrice: ${result.exception?.message}")
                 }
                 is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            orders = BuyerAllOrderState.Loading,
+                            message = "Bid Price Updated"
+                        )
+                    }
+                    getOrder()
                     Log.d("updateBidPrice", "updateBidPrice: ${result.data}")
+                }
+            }
+        }
+    }
+
+    fun cancelOrderById(orderId: Int){
+        viewModelScope.launch {
+            when(val result = cancelOrderUseCase(orderId)) {
+                is Result.Error -> {
+                    Log.d("cancelorder", "cancelOrderById Error: ${result.exception?.message}")
+                }
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            orders = BuyerAllOrderState.Loading,
+                            message = result.data.message
+                        )
+                    }
+                    getOrder()
                 }
             }
         }
@@ -94,7 +123,8 @@ class BuyerOrderViewModel @Inject constructor(
 
 data class BuyerOrderUiState(
     val orders: BuyerAllOrderState = BuyerAllOrderState.Loading,
-    val order: BuyerOrderState = BuyerOrderState.Idle
+    val order: BuyerOrderState = BuyerOrderState.Idle,
+    val message: String? = null
 )
 
 sealed interface BuyerAllOrderState {
