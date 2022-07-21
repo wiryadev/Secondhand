@@ -141,7 +141,7 @@ fun NotificationItem(
                 Spacer(modifier = Modifier.height(4.dp))
                 if (notification.bidPrice != 0) {
                     Text(
-                        text = "Ditawar Rp ${notification.bidPrice}",
+                        text = "Bidded Rp ${notification.bidPrice}",
                         style = MaterialTheme.typography.body1.copy(
                             fontWeight = FontWeight.Bold
                         )
