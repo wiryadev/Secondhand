@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -130,7 +131,7 @@ fun HomeScreen(
                         .padding(all = 16.dp)
                 ) {
                     Text(
-                        text = "Cari di Second Chance",
+                        text = stringResource(R.string.search_second_hand),
                         style = MaterialTheme.typography.body1,
                         modifier = Modifier.fillMaxWidth(0.9f)
                     )
@@ -141,7 +142,7 @@ fun HomeScreen(
                 }
                 Spacer(modifier = Modifier.height(200.dp))
                 Text(
-                    text = "Telusuri Kategori",
+                    text = stringResource(R.string.find_category),
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
                 )
                 when (uiState.categoryState) {

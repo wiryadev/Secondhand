@@ -103,7 +103,7 @@ fun ListOrders(
                         // buyer bid for selected product
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Ditawar Rp ${order.bidPrice}",
+                            text = "Bidded Rp ${order.bidPrice}",
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.Bold
                             )

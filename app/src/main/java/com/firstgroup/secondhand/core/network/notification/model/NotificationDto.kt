@@ -79,7 +79,7 @@ data class NotificationDto(
         @Json(name = "id")
         val id: Int,
         @Json(name = "image_url")
-        val imageUrl: String,
+        val imageUrl: String?,
         @Json(name = "phone_number")
         val phoneNumber: String
     )
