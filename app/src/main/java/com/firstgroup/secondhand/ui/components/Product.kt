@@ -2,7 +2,6 @@ package com.firstgroup.secondhand.ui.components
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,8 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.firstgroup.secondhand.core.model.Product
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -47,13 +45,8 @@ fun ProductItem(
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
-            val painter = rememberAsyncImagePainter(
-                model = product.imageUrl
-            )
-            val isImageLoading = painter.state is AsyncImagePainter.State.Loading
-
-            Image(
-                painter = painter,
+            AsyncImage(
+                model = product.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -62,7 +55,7 @@ fun ProductItem(
                     .padding(all = 4.dp)
                     .clip(shape = RoundedCornerShape(16.dp))
                     .placeholder(
-                        visible = isLoading || isImageLoading,
+                        visible = isLoading,
                         highlight = PlaceholderHighlight.shimmer(),
                     )
             )
