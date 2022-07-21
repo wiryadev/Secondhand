@@ -96,7 +96,7 @@ class HomeViewModel @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_SELECTED_CATEGORY_ID = 1
+        const val DEFAULT_SELECTED_CATEGORY_ID = 0
     }
 
 }
