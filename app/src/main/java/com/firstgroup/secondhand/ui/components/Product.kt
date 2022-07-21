@@ -134,7 +134,6 @@ fun ListProduct(
     ) {
         items(
             items = products,
-            key = { it.id }
         ) { product ->
             product?.let {
                 ProductItem(
