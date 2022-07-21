@@ -128,7 +128,7 @@ fun SearchScreen(
                 singleLine = true,
                 placeholder = {
                     Text(
-                        text = "Jam tangan T-rex..",
+                        text = "T-rex Watch..",
                         style = MaterialTheme.typography.body1,
                         modifier = Modifier.fillMaxWidth()
                     )
