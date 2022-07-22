@@ -22,7 +22,7 @@ fun WishlistLayoutPlaceholder(){
             .padding(all = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.search_placeholder))
+        val rawLottie by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.wishlist_placeholder))
         Spacer(modifier = Modifier.weight(1f))
         LottieAnimation(
             composition = rawLottie,
