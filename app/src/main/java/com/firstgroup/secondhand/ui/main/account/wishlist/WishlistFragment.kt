@@ -25,6 +25,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
+import com.firstgroup.secondhand.ui.components.WishlistLayoutPlaceholder
 import com.firstgroup.secondhand.ui.components.WishlistProduct
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -112,11 +113,15 @@ fun WishlistScreen(
 
             }
             is WishlistState.Success -> {
-                WishlistProduct(
-                    wishlist = uiState.wishlist.wishlist,
-                    onWishlistClick = onWishlistClick,
-                    onRemoveWishlistClick = onRemoveWishlistClick
-                )
+                if(uiState.wishlist.wishlist.isNotEmpty()) {
+                    WishlistProduct(
+                        wishlist = uiState.wishlist.wishlist,
+                        onWishlistClick = onWishlistClick,
+                        onRemoveWishlistClick = onRemoveWishlistClick
+                    )
+                } else {
+                    WishlistLayoutPlaceholder()
+                }
             }
             is WishlistState.Loading -> {
                 GenericLoadingScreen()
