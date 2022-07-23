@@ -120,5 +120,6 @@
     <string name="wishlist">Wishlist</string>
     <string name="search_second_hand">Search on SecondHand</string>
     <string name="find_category">Find Category</string>
+    <string name="retry">Retry</string>
 
 </resources>
