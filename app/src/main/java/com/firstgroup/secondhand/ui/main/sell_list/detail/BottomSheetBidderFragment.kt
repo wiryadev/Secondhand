@@ -15,12 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.PrimaryButton
@@ -127,12 +129,10 @@ fun BottomSheetBidderScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val painterBuyerImage = rememberAsyncImagePainter(
-                            model = R.drawable.img_profile_placeholder // it should user.imageUrl, but order response doesn't give any image from buyer
-                        )
                         // seller profile image
-                        Image(
-                            painter = painterBuyerImage,
+                        AsyncImage(
+                            model = order?.buyer?.imageUrl,
+                            error = painterResource(id = R.drawable.img_profile_placeholder),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(48.dp)
@@ -142,7 +142,7 @@ fun BottomSheetBidderScreen(
                                 .padding(start = 16.dp)
                         ) {
                             // text buyer full name
-                            val buyerName = order?.product?.seller?.name ?: "No Name"
+                            val buyerName = order?.buyer?.fullName ?: "No Name"
                             Text(
                                 text = buyerName,
                                 style = MaterialTheme.typography.body1.copy(
@@ -150,7 +150,7 @@ fun BottomSheetBidderScreen(
                                 ),
                             )
                             // text buyer city
-                            val buyerCity = order?.product?.seller?.city ?: ""
+                            val buyerCity = order?.buyer?.city ?: ""
                             Text(
                                 text = buyerCity, // response is any
                                 style = MaterialTheme.typography.body2.copy(
