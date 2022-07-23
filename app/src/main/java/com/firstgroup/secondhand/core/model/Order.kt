@@ -6,6 +6,17 @@ data class Order(
     val status: String,
     val product: Product,
     val transactionDate: String,
+    val buyer: Buyer
+)
+
+data class Buyer(
+    val id: Int,
+    val fullName: String,
+    val email: String,
+    val phoneNumber: String,
+    val address: String,
+    val imageUrl: String,
+    val city: String
 )
 
 data class CreateOrder(
