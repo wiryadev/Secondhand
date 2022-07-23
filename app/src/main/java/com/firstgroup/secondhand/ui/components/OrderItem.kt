@@ -41,6 +41,7 @@ fun ListOrders(
 ) {
     LazyColumn(
         modifier = Modifier
+            .padding(horizontal = 16.dp)
             .fillMaxWidth(),
     ) {
         items(
