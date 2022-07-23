@@ -2,6 +2,7 @@ package com.firstgroup.secondhand.core.network.product
 
 import com.firstgroup.secondhand.core.network.product.model.*
 import com.firstgroup.secondhand.core.network.product.retrofit.ProductService
+import com.firstgroup.secondhand.utils.wrapEspressoIdlingResource
 import javax.inject.Inject
 
 class ProductRemoteDataSourceImpl @Inject constructor(
@@ -11,10 +12,14 @@ class ProductRemoteDataSourceImpl @Inject constructor(
     override suspend fun getProductsAsBuyer(
         page: Int,
         size: Int,
-    ): List<ProductDto> = service.getProductsAsBuyer(
-        page = page,
-        size = size,
-    )
+    ): List<ProductDto> {
+        wrapEspressoIdlingResource {
+            return service.getProductsAsBuyer(
+                page = page,
+                size = size,
+            )
+        }
+    }
 
     override suspend fun getProductsByCategory(
         categoryId: Int,

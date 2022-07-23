@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -34,6 +35,7 @@ import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.TopSnackBar
+import com.firstgroup.secondhand.utils.TestTag
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,9 +45,7 @@ class LoginFragment : Fragment() {
     private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
@@ -108,14 +108,14 @@ fun LoginScreen(
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(TestTag.LOGIN_TITLE)
             )
             Spacer(modifier = Modifier.height(24.dp))
             // Login Email Field
             Text(
                 text = stringResource(id = R.string.email),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
@@ -125,14 +125,11 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        1.dp,
-                        colorResource(id = R.color.neutral_02),
-                        RoundedCornerShape(16.dp)
-                    ),
+                        1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)
+                    )
+                    .testTag(TestTag.EMAIL_TEXT_FIELD),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                keyboardActions = KeyboardActions(
-                    onDone = { focusManager.moveFocus(FocusDirection.Down) }
-                ),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) }),
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 placeholder = {
@@ -152,8 +149,7 @@ fun LoginScreen(
             Text(
                 text = stringResource(R.string.password),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
@@ -163,10 +159,9 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        1.dp,
-                        colorResource(id = R.color.neutral_02),
-                        RoundedCornerShape(16.dp)
-                    ),
+                        1.dp, colorResource(id = R.color.neutral_02), RoundedCornerShape(16.dp)
+                    )
+                    .testTag(TestTag.PASSWORD_TEXT_FIELD),
                 visualTransformation = if (passwordVisible) {
                     VisualTransformation.None
                 } else {
@@ -175,30 +170,25 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 trailingIcon = {
-                    val description =
-                        if (passwordVisible) {
-                            stringResource(R.string.desc_hide_password)
-                        } else {
-                            stringResource(R.string.desc_show_password)
-                        }
-                    if (passwordVisible) {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(
-                                    id = R.drawable.ic_show_password
-                                ),
-                                description
-                            )
-                        }
+                    val description = if (passwordVisible) {
+                        stringResource(R.string.desc_hide_password)
                     } else {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(
-                                    id = R.drawable.ic_hide_password
-                                ),
-                                description
-                            )
-                        }
+                        stringResource(R.string.desc_show_password)
+                    }
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible },
+                        modifier = Modifier.testTag(TestTag.PASSWORD_VISIBILITY_TOGGLE)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(
+                                id = if (passwordVisible) {
+                                    R.drawable.ic_show_password
+                                } else {
+                                    R.drawable.ic_hide_password
+                                }
+                            ),
+                            contentDescription = description,
+                        )
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
@@ -228,28 +218,25 @@ fun LoginScreen(
                     )
                 },
                 enabled = !uiState.isLoading,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestTag.LOGIN_BUTTON),
             )
             // Login Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = stringResource(R.string.account_question1),
                     style = MaterialTheme.typography.body1
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.not_have_account),
+                Text(text = stringResource(R.string.not_have_account),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.dark_blue_04),
-                    modifier = Modifier
-                        .clickable { toRegister() }
-                )
+                    modifier = Modifier.clickable { toRegister() })
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -275,14 +262,12 @@ fun LoginScreen(
         }
 
         if (uiState.isSuccess) {
-            TopSnackBar(
-                message = stringResource(id = R.string.login_success),
+            TopSnackBar(message = stringResource(id = R.string.login_success),
                 isError = false,
                 onDismissClick = {
                     onSnackbarDismissed()
                     onLoginSuccess()
-                }
-            )
+                })
         }
     }
 }
