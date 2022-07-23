@@ -24,10 +24,7 @@ import androidx.fragment.app.viewModels
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.auth.AuthActivity
 import com.firstgroup.secondhand.ui.auth.LoginState
-import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
-import com.firstgroup.secondhand.ui.components.LoginLayoutPlaceholder
-import com.firstgroup.secondhand.ui.components.NotificationDetails
-import com.firstgroup.secondhand.ui.components.NotificationList
+import com.firstgroup.secondhand.ui.components.*
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -114,7 +111,7 @@ fun NotificationScreen(
             text = stringResource(id = R.string.notification),
             style = MaterialTheme.typography.h5
         )
-        when(uiState.notifications) {
+        when (uiState.notifications) {
             is AllNotificationState.Error -> {
 
             }
@@ -122,13 +119,17 @@ fun NotificationScreen(
                 GenericLoadingScreen()
             }
             is AllNotificationState.Success -> {
-                NotificationList(
-                    notifications = uiState.notifications.data,
-                    onNotificationClick = onNotificationClick
-                )
+                if (uiState.notifications.data.isEmpty()) {
+                    OrderLayoutPlaceholder(message = "Notification Empty")
+                } else {
+                    NotificationList(
+                        notifications = uiState.notifications.data,
+                        onNotificationClick = onNotificationClick
+                    )
+                }
             }
         }
-        when(uiState.notification) {
+        when (uiState.notification) {
             is NotificationState.Idle -> {
 
             }
@@ -138,7 +139,8 @@ fun NotificationScreen(
             is NotificationState.Success -> {
                 NotificationDetails(
                     notificationDetails = uiState.notification.notification,
-                    resetStateOnDialogDismiss = onDialogDismiss,)
+                    resetStateOnDialogDismiss = onDialogDismiss,
+                )
             }
         }
     }

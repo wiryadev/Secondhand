@@ -328,22 +328,3 @@ fun DetailScreen(
         }
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun DetailPreview() {
-//    MdcTheme {
-////        DetailScreen()
-//    }
-//}
-
-//val dummyUser = User(
-//    fullName = "Agus William",
-//    email = "agus12@mail.com",
-//    password = "123456",
-//    phoneNo = "081907280637",
-//    address = "Bekasi",
-//    profilePicture = "https://firebasestorage.googleapis.com/v0/b/market-final-project.appspot.com/o/avatar%2FAV-1655983009420-hina.PNG?alt=media",
-//    city = "Bekasi"
-//)
-
