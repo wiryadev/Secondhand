@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +20,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,6 +29,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
+import com.firstgroup.secondhand.ui.components.SearchLayoutPlaceholder
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -149,15 +148,33 @@ fun SearchScreen(
                             })
                     )
                 },
-                keyboardActions = KeyboardActions(onDone = {
-                    searchProducts(searchQuery)
-                    focusManager.clearFocus()
-                })
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        searchProducts(searchQuery)
+                        focusManager.clearFocus()
+                    }
+                )
             )
         }
-        ListProduct(
-            products = products,
-            onProductClick = onProductClick
-        )
+        when {
+            uiState.query.isEmpty() -> {
+                SearchLayoutPlaceholder(
+                    message = "Search Something...",
+                    isIdle = true
+                )
+            }
+            products.itemCount == 0 -> {
+                SearchLayoutPlaceholder(
+                    message = "No Product Found :(",
+                    isIdle = false
+                )
+            }
+            else -> {
+                ListProduct(
+                    products = products,
+                    onProductClick = onProductClick
+                )
+            }
+        }
     }
 }
