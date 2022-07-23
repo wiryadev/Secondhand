@@ -13,7 +13,7 @@ data class GetOrderDto(
     @Json(name = "id")
     val id: Int,
     @Json(name = "price")
-    val price: Int,
+    val price: Int?,
     @Json(name = "transaction_date")
     val transactionDate: String?,
     @Json(name = "Product")
@@ -79,7 +79,7 @@ data class GetOrderDto(
 
     fun mapToDomain() = Order(
         id = id,
-        bidPrice = price,
+        bidPrice = price ?: 0,
         status = status,
         transactionDate = transactionDate.orEmpty(),
         product = Product(
