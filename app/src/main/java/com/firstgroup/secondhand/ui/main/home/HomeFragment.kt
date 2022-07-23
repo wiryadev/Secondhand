@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +41,7 @@ import com.firstgroup.secondhand.core.model.Category
 import com.firstgroup.secondhand.core.model.Product
 import com.firstgroup.secondhand.ui.components.ListProduct
 import com.firstgroup.secondhand.ui.components.ListProductLoadingScreen
+import com.firstgroup.secondhand.utils.TestTag
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -107,6 +109,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .height(398.dp)
                     .fillMaxWidth()
+                    .testTag(TestTag.BANNER_SECTION)
             )
             Box(
                 modifier = Modifier
@@ -119,7 +122,10 @@ fun HomeScreen(
                         )
                     )
             )
-            Column(modifier = Modifier.fillMaxHeight()) {
+            Column(
+                modifier = Modifier.fillMaxHeight()
+                    .testTag(TestTag.FAKE_SEARCH_BAR)
+            ) {
                 // fake search bar
                 Row(
                     modifier = Modifier
@@ -179,23 +185,10 @@ fun HomeScreen(
                 ListProduct(
                     products = products,
                     onProductClick = onProductClick,
+                    modifier = Modifier.testTag(TestTag.PRODUCT_LIST_SECTION),
                 )
             }
         }
-
-//        if (uiState.selectedCategory.id != DEFAULT_SELECTED_CATEGORY_ID) {
-
-//        } else {
-
-//            when (uiState.allProductState) {
-//                AllProductsUiState.Idle -> {
-//                    ListProductLoadingScreen()
-//                }
-//                AllProductsUiState.Loaded -> {
-//
-//                }
-//            }
-//        }
     }
 }
 
@@ -210,6 +203,7 @@ fun ListCategory(
         modifier = Modifier
             .padding(start = 8.dp)
             .height(44.dp)
+            .testTag(TestTag.CATEGORY_SECTION)
     ) {
         items(
             items = categories,
