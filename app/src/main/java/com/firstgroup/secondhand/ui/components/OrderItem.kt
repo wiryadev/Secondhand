@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -116,6 +117,7 @@ fun ListOrders(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OrderDetails(
     orderData: Order,
@@ -231,9 +233,7 @@ fun OrderDetails(
                         shape = RoundedCornerShape(16.dp),
                         elevation = 4.dp,
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
+                        Column {
                             val notificationDetailImage = rememberAsyncImagePainter(
                                 model = orderData.product.imageUrl
                             )
@@ -244,23 +244,20 @@ fun OrderDetails(
                                 painter = notificationDetailImage,
                                 contentDescription = "Product Image",
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .size(254.dp)
                                     .padding(horizontal = 8.dp)
-                                    .size(128.dp)
-                                    .weight(1f)
                                     .placeholder(
                                         visible = isLoading || imagePainterLoading,
                                         highlight = PlaceholderHighlight.shimmer()
                                     ),
                                 contentScale = ContentScale.FillBounds
                             )
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
                             // Product Description
                             Text(
                                 text = orderData.product.description,
                                 style = MaterialTheme.typography.body2,
                                 modifier = Modifier
-                                    .weight(1f)
                                     .padding(4.dp)
                             )
                         }
@@ -417,7 +414,8 @@ fun OrderDetails(
             shape = RoundedCornerShape(16.dp),
             properties = DialogProperties(
                 dismissOnClickOutside = false,
-                dismissOnBackPress = false
+                dismissOnBackPress = false,
+                usePlatformDefaultWidth = false
             )
         )
     }
