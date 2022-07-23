@@ -8,12 +8,11 @@ import com.firstgroup.secondhand.utils.TestTag.LOGIN_BUTTON
 import com.firstgroup.secondhand.utils.TestTag.LOGIN_TITLE
 import com.firstgroup.secondhand.utils.TestTag.PASSWORD_TEXT_FIELD
 import com.google.android.material.composethemeadapter.MdcTheme
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 
-@HiltAndroidTest
 class LoginScreenTest {
+
     @get:Rule
     val composeTestRule = createComposeRule()
 
