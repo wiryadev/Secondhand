@@ -2,24 +2,29 @@ package com.firstgroup.secondhand.ui.components
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
+import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.core.model.Product
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -81,6 +86,40 @@ fun ProductItem(
                 modifier = Modifier.padding(all = 8.dp),
                 style = MaterialTheme.typography.body1
             )
+        }
+    }
+}
+
+@Composable
+fun ErrorCard(
+    message: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = 4.dp,
+        border = BorderStroke(width = 2.dp, color = MaterialTheme.colors.error),
+        modifier = modifier
+            .size(width = 156.dp, height = 206.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.body2.copy(
+                    color = MaterialTheme.colors.error
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onClick) {
+                Text(text = stringResource(id = R.string.retry))
+            }
         }
     }
 }
@@ -157,24 +196,23 @@ fun ListProduct(
                         )
                     }
                 }
-                // wait for the composable to be created
-//                loadState.refresh is LoadState.Error -> {
-//                    item {
-//                        GenericErrorScreen(
-//                            message = errorState?.error?.message.toString(),
-//                            modifier = Modifier.fillParentMaxSize(),
-//                            onClick = ::retry,
-//                        )
-//                    }
-//                }
-//                loadState.append is LoadState.Error -> {
-//                    item {
-//                        ErrorCard(
-//                            message = errorState?.error?.message.toString(),
-//                            onClick = ::retry,
-//                        )
-//                    }
-//                }
+                loadState.refresh is LoadState.Error -> {
+                    item {
+                        GenericErrorScreen(
+                            message = errorState?.error?.message.toString(),
+                            modifier = Modifier.fillMaxSize(),
+                            onClick = ::retry,
+                        )
+                    }
+                }
+                loadState.append is LoadState.Error -> {
+                    item {
+                        ErrorCard(
+                            message = errorState?.error?.message.toString(),
+                            onClick = ::retry,
+                        )
+                    }
+                }
             }
         }
     }
