@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.room.Index
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.domain.order.OrderFilter
 import com.firstgroup.secondhand.ui.auth.AuthActivity
@@ -29,6 +30,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class SellListFragment : Fragment() {
@@ -70,8 +72,9 @@ class SellListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewModel.getSession()
+        viewModel.refreshProduct()
+        viewModel.refreshOrderAsSeller()
     }
 
     private fun goToLoginScreen() {
@@ -126,7 +129,14 @@ fun SellListScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        /* TODO = Seragamin title biar sama kyak My order, Notification, Account, dll */
+        // Seller title
+        Text(
+            text = stringResource(id = R.string.sell_list),
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
         Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
             val pages = remember {
                 listOf(R.string.product, R.string.order)
@@ -172,23 +182,46 @@ fun SellListScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (page) {
                             0 -> {
-                                /* TODO = nggk ada keterangan kalo lagi loading + masuk detail produk sendiri bisa nge bid produk sendiri :" */
-                                if (uiState.productState is SellerProductState.Success) {
-                                    ListProduct(
-                                        products = uiState.productState.data,
-                                        onProductClick = onProductClick,
-                                    )
+                                when (uiState.productState) {
+                                    is SellerProductState.Loading -> {
+                                        GenericLoadingScreen()
+                                    }
+                                    is SellerProductState.Error -> {
+                                        // Error Handler
+                                    }
+                                    is SellerProductState.Success -> {
+                                        if (uiState.productState.data.isEmpty()){
+                                         OrderLayoutPlaceholder(message = "Lets make post sell first!")
+                                        } else {
+                                            ListProduct(
+                                                products = uiState.productState.data,
+                                                onProductClick = onProductClick,
+                                            )    
+                                        }
+                                    }
                                 }
                             }
                             1 -> {
-                                /* TODO = pindah filter nggk ada keterangan kalo lagi loading */
                                 OrderFilterDropDown(onFilterSelected = viewModel::setFilter)
                                 Spacer(modifier = Modifier.height(16.dp))
-                                if (uiState.orderState is OrderState.Success) {
-                                    ListOrders(
-                                        orders = uiState.orderState.data,
-                                        onOrderClick = onOrderClick,
-                                    )
+                                when (uiState.orderState) {
+                                    is OrderState.Error -> {
+                                        Timber.d(uiState.orderState.message)
+                                    }
+                                    is OrderState.Loading -> {
+                                        GenericLoadingScreen()
+                                    }
+                                    is OrderState.Success -> {
+                                        Timber.d(uiState.orderState.data.isEmpty().toString())
+                                        if (uiState.orderState.data.isEmpty()) {
+                                            OrderLayoutPlaceholder(message = "You have no order yet :(")
+                                        } else {
+                                            ListOrders(
+                                                orders = uiState.orderState.data,
+                                                onOrderClick = onOrderClick,
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -204,9 +237,9 @@ fun OrderFilterDropDown(
     onFilterSelected: (OrderFilter) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var filterText by remember { mutableStateOf(getDropdownTitle(OrderFilter.ALlOrders)) }
+    var filterText by remember { mutableStateOf(getDropdownTitle(OrderFilter.AllOrders)) }
     val filter: List<OrderFilter> = listOf(
-        OrderFilter.ALlOrders,
+        OrderFilter.AllOrders,
         OrderFilter.AcceptedOrders,
         OrderFilter.DeclinedOrders,
         OrderFilter.PendingOrders
@@ -243,7 +276,7 @@ fun OrderFilterDropDown(
 }
 
 private fun getDropdownTitle(selectedFilter: OrderFilter) = when (selectedFilter) {
-    OrderFilter.ALlOrders -> R.string.all_orders
+    OrderFilter.AllOrders -> R.string.all_orders
     OrderFilter.AcceptedOrders -> R.string.accepted_orders
     OrderFilter.DeclinedOrders -> R.string.declined_orders
     OrderFilter.PendingOrders -> R.string.pending_orders
