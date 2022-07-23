@@ -15,15 +15,18 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 @HiltAndroidTest
 class MainActivityTest {
 
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    private val hiltRule = HiltAndroidRule(this)
+    private val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @get:Rule
-    val hiltRule = HiltAndroidRule(this)
+    val rule: RuleChain = RuleChain
+        .outerRule(hiltRule)
+        .around(composeTestRule)
 
     @Before
     fun setUp() {
@@ -47,6 +50,5 @@ class MainActivityTest {
                 .assertIsDisplayed()
         }
     }
-
 
 }
