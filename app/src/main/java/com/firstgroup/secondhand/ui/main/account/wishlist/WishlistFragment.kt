@@ -25,7 +25,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.GenericLoadingScreen
-import com.firstgroup.secondhand.ui.components.WishlistLayoutPlaceholder
+import com.firstgroup.secondhand.ui.components.OrderLayoutPlaceholder
 import com.firstgroup.secondhand.ui.components.WishlistProduct
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,8 +49,6 @@ class WishlistFragment: Fragment() {
                         onBackClick = { findNavController().popBackStack() },
                         onRemoveWishlistClick = {
                             viewModel.removeFromWishlist(it)
-//                            viewModel.resetWishlist()
-//                            viewModel.getWishlist()
                         }
                     )
                 }
@@ -120,7 +118,9 @@ fun WishlistScreen(
                         onRemoveWishlistClick = onRemoveWishlistClick
                     )
                 } else {
-                    WishlistLayoutPlaceholder()
+                    OrderLayoutPlaceholder(
+                        message = "Whislist Empty"
+                    )
                 }
             }
             is WishlistState.Loading -> {
