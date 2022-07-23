@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -34,6 +35,7 @@ import androidx.navigation.fragment.findNavController
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.TopSnackBar
+import com.firstgroup.secondhand.utils.TestTag
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -108,6 +110,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(TestTag.LOGIN_TITLE)
             )
             Spacer(modifier = Modifier.height(24.dp))
             // Login Email Field
@@ -128,7 +131,8 @@ fun LoginScreen(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
-                    ),
+                    )
+                    .testTag(TestTag.EMAIL_TEXT_FIELD),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.moveFocus(FocusDirection.Down) }
@@ -166,7 +170,8 @@ fun LoginScreen(
                         1.dp,
                         colorResource(id = R.color.neutral_02),
                         RoundedCornerShape(16.dp)
-                    ),
+                    )
+                    .testTag(TestTag.PASSWORD_TEXT_FIELD),
                 visualTransformation = if (passwordVisible) {
                     VisualTransformation.None
                 } else {
@@ -229,6 +234,7 @@ fun LoginScreen(
                 },
                 enabled = !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
+                    .testTag(TestTag.LOGIN_BUTTON),
             )
             // Login Bottom Clickable Text
             Spacer(modifier = Modifier.weight(1f))
