@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firstgroup.secondhand.core.common.result.Result
-import com.firstgroup.secondhand.core.model.BasicResponse
 import com.firstgroup.secondhand.core.model.Order
 import com.firstgroup.secondhand.domain.order.CancelOrderUseCase
 import com.firstgroup.secondhand.domain.order.GetOrderByIdAsBuyerUseCase
@@ -54,6 +53,11 @@ class BuyerOrderViewModel @Inject constructor(
     }
 
     fun getOrderById(orderId: Int) {
+        _uiState.update {
+            it.copy(
+                order = BuyerOrderState.Idle
+            )
+        }
         viewModelScope.launch {
             when (val result = getOrderByIdAsBuyerUseCase(orderId)) {
                 is Result.Error -> {
@@ -83,7 +87,7 @@ class BuyerOrderViewModel @Inject constructor(
 
     fun updateBidPrice(updateParam: UpdateOrderUseCase.Param) {
         viewModelScope.launch {
-            when(val result = updateOrderUseCase(updateParam)) {
+            when (val result = updateOrderUseCase(updateParam)) {
                 is Result.Error -> {
                     Log.d("updateBidPrice", "updateBidPrice: ${result.exception?.message}")
                 }
@@ -101,9 +105,9 @@ class BuyerOrderViewModel @Inject constructor(
         }
     }
 
-    fun cancelOrderById(orderId: Int){
+    fun cancelOrderById(orderId: Int) {
         viewModelScope.launch {
-            when(val result = cancelOrderUseCase(orderId)) {
+            when (val result = cancelOrderUseCase(orderId)) {
                 is Result.Error -> {
                     Log.d("cancelorder", "cancelOrderById Error: ${result.exception?.message}")
                 }
