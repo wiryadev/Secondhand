@@ -29,11 +29,9 @@ class SellListViewModel @Inject constructor(
 
     fun setFilter(filter: OrderFilter) {
         if (filter == _uiState.value.selectedFilter) return
-
         _uiState.update {
             it.copy(selectedFilter = filter)
         }
-
         getOrderAsSeller(filter)
     }
 
@@ -110,10 +108,28 @@ class SellListViewModel @Inject constructor(
             }
         }
     }
+
+    fun refreshProduct(){
+        _uiState.update {
+            it.copy(
+                productState = SellerProductState.Loading
+            )
+        }
+        getProductAsSeller()
+    }
+
+    fun refreshOrderAsSeller(){
+        _uiState.update {
+            it.copy(
+                orderState = OrderState.Loading
+            )
+        }
+        getOrderAsSeller(filter = uiState.value.selectedFilter)
+    }
 }
 
 data class SellListUiState(
-    val selectedFilter: OrderFilter = OrderFilter.ALlOrders,
+    val selectedFilter: OrderFilter = OrderFilter.AllOrders,
     val productState: SellerProductState = SellerProductState.Loading,
     val orderState: OrderState = OrderState.Loading,
     val loginState: LoginState = LoginState.Idle,

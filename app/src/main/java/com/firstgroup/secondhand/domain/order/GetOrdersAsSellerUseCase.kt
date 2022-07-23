@@ -15,7 +15,7 @@ class GetOrdersAsSellerUseCase @Inject constructor(
 
     override suspend fun execute(param: OrderFilter): List<Order> {
         return when(param) {
-            OrderFilter.ALlOrders -> orderRepository.getAllOrdersAsSeller()
+            OrderFilter.AllOrders -> orderRepository.getAllOrdersAsSeller()
             OrderFilter.AcceptedOrders -> orderRepository.getAcceptedOrdersAsSeller()
             OrderFilter.DeclinedOrders -> orderRepository.getDeclinedOrdersAsSeller()
             OrderFilter.PendingOrders -> orderRepository.getPendingOrdersAsSeller()
@@ -25,7 +25,7 @@ class GetOrdersAsSellerUseCase @Inject constructor(
 }
 
 sealed interface OrderFilter {
-    object ALlOrders: OrderFilter
+    object AllOrders: OrderFilter
     object AcceptedOrders: OrderFilter
     object DeclinedOrders: OrderFilter
     object PendingOrders: OrderFilter

@@ -15,7 +15,9 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.firstgroup.secondhand.R
 
 @Composable
-fun WishlistLayoutPlaceholder(){
+fun OrderLayoutPlaceholder(
+    message: String
+){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +32,7 @@ fun WishlistLayoutPlaceholder(){
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Go find the thing you want!",
+            text = message,
             style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center)
         )
         Spacer(modifier = Modifier.weight(1f))
