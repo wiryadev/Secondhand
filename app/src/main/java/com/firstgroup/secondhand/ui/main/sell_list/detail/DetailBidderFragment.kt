@@ -1,5 +1,7 @@
 package com.firstgroup.secondhand.ui.main.sell_list.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,12 +32,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.firstgroup.secondhand.R
 import com.firstgroup.secondhand.ui.components.PrimaryButton
 import com.firstgroup.secondhand.ui.components.SecondaryButton
+import com.firstgroup.secondhand.ui.components.dateFormatter
+import com.firstgroup.secondhand.ui.components.orderStatus
 import com.google.android.material.composethemeadapter.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class DetailBidderFragment : Fragment() {
@@ -51,20 +57,40 @@ class DetailBidderFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
-                viewModel.getOrderAsSeller(args.id)
                 MdcTheme {
                     val fragmentManager = (activity as FragmentActivity).supportFragmentManager
                     DetailBidderScreen(
                         fragmentManager = fragmentManager,
                         uiState = uiState,
-                        onResponseClick = { id, response ->
-                            viewModel.respondOrder(id, response)
-                        },
-                        onBackClick = { findNavController().popBackStack() }
+                        onResponseClick = viewModel::respondOrder,
+                        onBackClick = { findNavController().popBackStack() },
+                        onClickWhatsapp = ::onClickWhatsapp
                     )
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.getOrderAsSeller(args.id)
+
+    }
+
+    private fun onClickWhatsapp(phoneNumber: String, productName: String) {
+        val message = "Hello im the seller of $productName"
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    String.format(
+                        "https://api.whatsapp.com/send?phone=%s&text=%s",
+                        phoneNumber,
+                        message
+                    )
+                )
+            )
+        )
     }
 }
 
@@ -73,7 +99,9 @@ fun DetailBidderScreen(
     fragmentManager: FragmentManager,
     uiState: DetailBidderUiState,
     onResponseClick: (Int, Boolean) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onClickWhatsapp: (String, String) -> Unit
+
 ) {
     uiState.order?.let { order ->
         Column(
@@ -120,12 +148,10 @@ fun DetailBidderScreen(
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val painterBuyerImage = rememberAsyncImagePainter(
-                        model = R.drawable.img_profile_placeholder // it should user.imageUrl, but order response doesn't give any image from buyer
-                    )
                     // seller profile image
-                    Image(
-                        painter = painterBuyerImage,
+                    AsyncImage(
+                        model = order.buyer.imageUrl,
+                        error = painterResource(id = R.drawable.img_profile_placeholder),
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
@@ -135,7 +161,7 @@ fun DetailBidderScreen(
                             .padding(start = 16.dp)
                     ) {
                         // text buyer full name
-                        val buyerName = order.product.seller?.name ?: "No Name"
+                        val buyerName = order.buyer.fullName
                         Text(
                             text = buyerName,
                             style = MaterialTheme.typography.body1.copy(
@@ -143,7 +169,7 @@ fun DetailBidderScreen(
                             ),
                         )
                         // text buyer city
-                        val buyerCity = order.product.seller?.city ?: ""
+                        val buyerCity = order.buyer.city
                         Text(
                             text = buyerCity, // response is any
                             style = MaterialTheme.typography.body2.copy(
@@ -186,14 +212,21 @@ fun DetailBidderScreen(
                                 color = Color.Gray
                             )
                         )
-                        Text(
-                            text = "16 Apr 14:04", // it should date, but no date in order response
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.body2.copy(
-                                color = Color.Gray
+                        if (order.transactionDate.isNotEmpty()) {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.buyer_order_detail_date_and_status,
+                                    dateFormatter(order.transactionDate),
+                                    orderStatus(order.status)
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Gray
+                                )
                             )
-                        )
+                        }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -228,34 +261,22 @@ fun DetailBidderScreen(
             ) {
                 // for 'tolak' and 'status'
                 if (order.status != "declined") {
-                    SecondaryButton(
-                        onClick = {
-                            // if its pending then decline order with 'tolak' text
-                            if (order.status == "pending") {
-                                onResponseClick(order.id, false)
-                            }
-                            // if its not then show bottom status with 'status' text
-                            else {
-                                val bsStatus = BottomSheetStatusFragment()
-                                bsStatus.show(fragmentManager, bsStatus.tag)
-                            }
-                        },
-                        content = {
-                            Text(
-                                text =
-                                if (order.status == "pending")
-                                    stringResource(R.string.decline)
-                                else
-                                    stringResource(R.string.status),
-                                style = MaterialTheme.typography.button.copy(
-                                    color = Color.Black
+                    if (order.status == "pending") {
+                        SecondaryButton(
+                            onClick = { onResponseClick(order.id, false) },
+                            content = {
+                                Text(
+                                    text = stringResource(R.string.decline),
+                                    style = MaterialTheme.typography.button.copy(
+                                        color = Color.Black
+                                    )
                                 )
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .padding(end = 8.dp)
-                    )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .padding(end = 8.dp)
+                        )
+                    }
                     // for 'terima' and 'hubungi'
                     PrimaryButton(
                         onClick = {
@@ -267,7 +288,7 @@ fun DetailBidderScreen(
                             }
                             // if its not then contact buyer via whatsapp with 'hubungi' text
                             else {
-                                /*TODO Contact via Whatsapp*/
+                                onClickWhatsapp(order.buyer.phoneNumber, order.product.name)
                             }
                         },
                         content = {
