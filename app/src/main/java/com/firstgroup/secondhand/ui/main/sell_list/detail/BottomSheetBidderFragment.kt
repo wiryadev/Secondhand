@@ -1,5 +1,7 @@
 package com.firstgroup.secondhand.ui.main.sell_list.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -53,11 +55,28 @@ class BottomSheetBidderFragment: BottomSheetDialogFragment() {
                 val uiState by viewModel.uiState.collectAsState()
                 MdcTheme{
                     BottomSheetBidderScreen(
-                        uiState = uiState
+                        uiState = uiState,
+                        onClickWhatsapp = ::onClickWhatsapp
                     )
                 }
             }
         }
+    }
+
+    private fun onClickWhatsapp(phoneNumber: String, productName: String) {
+        val message = "Hello im the seller of $productName"
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    String.format(
+                        "https://api.whatsapp.com/send?phone=%s&text=%s",
+                        phoneNumber,
+                        message
+                    )
+                )
+            )
+        )
     }
 
     companion object {
@@ -74,9 +93,10 @@ class BottomSheetBidderFragment: BottomSheetDialogFragment() {
 @Composable
 fun BottomSheetBidderScreen(
     uiState: BottomSheetBidderUiState,
+    onClickWhatsapp: (String, String) -> Unit
 ){
 
-    uiState.apply {
+    uiState.order?.let { order ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -131,7 +151,7 @@ fun BottomSheetBidderScreen(
                     ) {
                         // seller profile image
                         AsyncImage(
-                            model = order?.buyer?.imageUrl,
+                            model = order.buyer.imageUrl,
                             error = painterResource(id = R.drawable.img_profile_placeholder),
                             contentDescription = null,
                             modifier = Modifier
@@ -142,7 +162,7 @@ fun BottomSheetBidderScreen(
                                 .padding(start = 16.dp)
                         ) {
                             // text buyer full name
-                            val buyerName = order?.buyer?.fullName ?: "No Name"
+                            val buyerName = order.buyer.fullName
                             Text(
                                 text = buyerName,
                                 style = MaterialTheme.typography.body1.copy(
@@ -150,7 +170,7 @@ fun BottomSheetBidderScreen(
                                 ),
                             )
                             // text buyer city
-                            val buyerCity = order?.buyer?.city ?: ""
+                            val buyerCity = order.buyer.city
                             Text(
                                 text = buyerCity, // response is any
                                 style = MaterialTheme.typography.body2.copy(
@@ -165,7 +185,7 @@ fun BottomSheetBidderScreen(
                     Row(modifier = Modifier.fillMaxWidth()) {
                         // image product
                         val painterProductImage = rememberAsyncImagePainter(
-                            model = order?.product?.imageUrl
+                            model = order.product.imageUrl
                         )
                         Image(
                             painter = painterProductImage,
@@ -177,7 +197,7 @@ fun BottomSheetBidderScreen(
                         // product detail : name, price, bid
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Spacer(modifier = Modifier.height(4.dp))
-                            val productName = order?.product?.name ?: ""
+                            val productName = order.product.name
                             Text(
                                 text = productName,
                                 style = MaterialTheme.typography.body1.copy(
@@ -186,7 +206,7 @@ fun BottomSheetBidderScreen(
                             )
                             // product normal price
                             Spacer(modifier = Modifier.height(4.dp))
-                            val productPrice = order?.product?.price ?: 0
+                            val productPrice = order.product.price
                             Text(
                                 text = "Rp $productPrice",
                                 style = MaterialTheme.typography.body1.copy(
@@ -196,7 +216,7 @@ fun BottomSheetBidderScreen(
                             )
                             // buyer bid for selected product
                             Spacer(modifier = Modifier.height(4.dp))
-                            val productBid = order?.bidPrice ?: 0
+                            val productBid = order.bidPrice
                             Text(
                                 text = "Ditawar Rp $productBid",
                                 style = MaterialTheme.typography.body1.copy(
@@ -210,7 +230,7 @@ fun BottomSheetBidderScreen(
             Spacer(modifier = Modifier.height(24.dp))
             // button to contact buyer via whatsapp
             PrimaryButton(
-                onClick = { /*TODO whatsapp*/ },
+                onClick = { onClickWhatsapp(order.buyer.phoneNumber, order.product.name) },
                 content = {
                     Row {
                         Text(
