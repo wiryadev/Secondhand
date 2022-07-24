@@ -316,7 +316,7 @@ fun DetailBidderScreen(
                     )
                 } else {
                     Text(
-                        text = "Penawaranmu ditolak",
+                        text = "You decline this order",
                         style = MaterialTheme.typography.body1.copy(
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.dark_blue_04),
